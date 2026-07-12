@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Little Millennium Sullurpeta Core-ERP</title>
+    <title>Little Millennium Sullurpeta Master ERP</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -13,9 +13,8 @@
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-16 selection:bg-indigo-500 selection:text-white">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-16">
 
-    <!-- Auth Shield Screen -->
     <div id="authShield" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-4">
         <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border-4 border-amber-400">
             <h1 class="text-2xl font-black text-indigo-950 mb-1">Little Millennium</h1>
@@ -26,7 +25,6 @@
         </div>
     </div>
 
-    <!-- Main Navigation Bar -->
     <header class="bg-indigo-950 text-white shadow-xl sticky top-0 z-40 px-4 py-3">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-3 cursor-pointer" onclick="goToHome()">
@@ -40,15 +38,13 @@
                 <button onclick="goToHome()" class="bg-indigo-900 hover:bg-indigo-800 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">🏠 Home</button>
                 <button onclick="openChangePasswordModal()" class="bg-indigo-900 hover:bg-indigo-800 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">🔑 Security</button>
                 <button onclick="refreshApplicationState()" class="bg-indigo-800 hover:bg-indigo-700 p-1.5 rounded-lg text-xs font-bold transition">🔄 Sync</button>
-                <button onclick="triggerSystemLogout()" class="bg-rose-700 hover:bg-rose-600 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">🚪 Logout</button>
+                <button onclick="triggerSystemLogout()" class="bg-rose-700 hover:bg-rose-600 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">UI Logout 🚪</button>
             </div>
         </div>
     </header>
 
-    <!-- Main Workspace Container -->
     <main id="appWorkspace" class="max-w-7xl mx-auto p-4 space-y-6 hidden">
         
-        <!-- Cohort Headcount Tracking Grid -->
         <section class="grid grid-cols-2 md:grid-cols-6 gap-4">
             <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-indigo-600">
                 <span class="text-[10px] uppercase font-bold text-slate-400">DR Count</span>
@@ -76,16 +72,14 @@
             </div>
         </section>
 
-        <!-- Live Outstanding Monthly Reminders Panel -->
         <section class="bg-white p-5 rounded-3xl shadow-sm border border-indigo-100 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
                 <h3 class="font-black text-sm text-indigo-950 uppercase tracking-wider flex items-center space-x-2">
                     <span>⏰</span> <span>Live Outstanding Monthly Reminders</span>
                 </h3>
-                <span class="bg-indigo-100 text-indigo-800 text-[10px] font-black px-2.5 py-0.5 rounded-full">July Context Cycle</span>
+                <span class="bg-indigo-100 text-indigo-800 text-[10px] font-black px-2.5 py-0.5 rounded-full">Current Period</span>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Van Reminders -->
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
                         <span>Transit (Van)</span>
@@ -93,7 +87,6 @@
                     </h4>
                     <div id="containerVanReminders" class="space-y-2 max-h-48 overflow-y-auto text-[11px] font-semibold pr-1"></div>
                 </div>
-                <!-- Day Care Reminders -->
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
                         <span>Day Care Operations</span>
@@ -101,7 +94,6 @@
                     </h4>
                     <div id="containerDayCareReminders" class="space-y-2 max-h-48 overflow-y-auto text-[11px] font-semibold pr-1"></div>
                 </div>
-                <!-- Custom Monthly Reminders -->
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
                         <span>Custom Monthly Opt</span>
@@ -112,7 +104,6 @@
             </div>
         </section>
 
-        <!-- Birthday Calendar Panel -->
         <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="bg-gradient-to-br from-amber-400 to-orange-500 rounded-3xl p-5 text-white shadow-lg relative overflow-hidden">
                 <div class="absolute -right-6 -bottom-6 text-8xl opacity-10">🎂</div>
@@ -128,14 +119,12 @@
             </div>
         </section>
 
-        <!-- Navigation Tabs -->
         <nav class="flex space-x-2 bg-slate-200 p-1.5 rounded-xl overflow-x-auto hide-scrollbar">
             <button id="btn-studentsTab" onclick="switchTab('studentsTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold bg-white text-indigo-950 shadow-sm flex-1 text-center">👶 Student Registry</button>
             <button id="btn-financeTab" onclick="switchTab('financeTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-300 flex-1 text-center">📊 Financial Ledger & Metrics</button>
             <button id="btn-calendarTab" onclick="switchTab('calendarTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-300 flex-1 text-center">🗓️ Academic Calendar</button>
         </nav>
 
-        <!-- Tab Content Viewport 1: Student Roster and Entry -->
         <div id="studentsTab" class="tab-pane space-y-6">
             <details class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden group">
                 <summary class="p-5 font-black text-sm tracking-wide text-indigo-950 cursor-pointer hover:bg-slate-50 list-none flex justify-between items-center">
@@ -210,7 +199,7 @@
                     </div>
 
                     <div id="sectionIntakeServices" class="border-t pt-3">
-                        <h4 class="text-indigo-950 font-black mb-2 text-sm">Monthly Service Activation</h4>
+                        <h4 class="text-indigo-950 font-black mb-2 text-sm">Monthly Service Activation Engine</h4>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="bg-slate-50 p-3 rounded-xl border" id="boxFormVan">
                                 <label class="flex items-center space-x-2 font-bold text-slate-700">
@@ -273,7 +262,6 @@
                 </form>
             </details>
 
-            <!-- Filters Dashboard bar -->
             <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
                 <div class="flex flex-wrap gap-1.5">
                     <button onclick="filterCohort('ALL')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white">All Rosters</button>
@@ -289,7 +277,6 @@
             <div id="studentCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
-        <!-- Tab Content Viewport 2: Finance Metrics Ledger -->
         <div id="financeTab" class="tab-pane hidden space-y-6">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
@@ -326,7 +313,6 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Log Expense Form -->
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
                     <h4 class="font-black text-sm text-slate-700 mb-3" id="expenseFormHeader">Commit Operational Expenditure Row</h4>
                     <form id="expenseForm" onsubmit="handleExpenseSubmission(event)" class="space-y-3 text-xs font-semibold">
@@ -371,7 +357,6 @@
                     </form>
                 </div>
 
-                <!-- Categorized Expenditure Itemization Streams -->
                 <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 flex flex-col justify-between">
                     <div>
                         <h4 class="font-black text-sm text-slate-700 mb-3">Itemized Operational Expenditure Stream</h4>
@@ -381,7 +366,6 @@
             </div>
         </div>
 
-        <!-- Tab Content Viewport 3: Events Agenda -->
         <div id="calendarTab" class="tab-pane hidden space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 text-xs font-semibold">
@@ -423,7 +407,6 @@
         </div>
     </main>
 
-    <!-- Student Profile Detailed View & Edit Modal -->
     <div id="studentDetailModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-[2rem] max-w-2xl w-full p-6 shadow-2xl space-y-4 border-2 border-indigo-100 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-start border-b pb-3">
@@ -434,10 +417,13 @@
                         <p id="detailStudentClassHeader" class="text-[10px] font-bold text-amber-600 tracking-wider uppercase">Loading...</p>
                     </div>
                 </div>
-                <button onclick="closeStudentDetailModal()" class="text-2xl text-slate-400 hover:text-slate-600 font-bold leading-none">&times;</button>
+                <button type="button" onclick="closeStudentDetailModal()" class="text-2xl text-slate-400 hover:text-slate-600 font-bold leading-none">&times;</button>
             </div>
 
             <form id="studentDetailUpdateForm" onsubmit="handleStudentDetailUpdate(event)" class="text-xs font-semibold space-y-4">
+                <input type="hidden" id="detailStudentID" name="StudentID">
+                <input type="hidden" id="detailPhotoBase64" name="PhotoBase64">
+                
                 <div id="editModelWrapper" class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 flex items-center space-x-6">
                     <span class="font-black text-indigo-950">Billing Pipeline Model:</span>
                     <label class="flex items-center space-x-1 cursor-pointer">
@@ -556,7 +542,7 @@
                         <span>🗑️</span> <span>Delete Student Record</span>
                     </button>
                     <div class="flex space-x-2">
-                        <button type="button" onclick="closeStudentDetailModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl">Cancel</button>
+                        <button type="button" onclick="closeStudentDetailModal()" class="px-4 py-2 bg-slate-100 text-slate-600 font-bold rounded-xl">Cancel</button>
                         <button type="submit" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md">Commit Profile Changes</button>
                     </div>
                 </div>
@@ -564,7 +550,6 @@
         </div>
     </div>
 
-    <!-- Security Settings Modal -->
     <div id="changePasswordModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-amber-400 text-center space-y-4">
             <h3 class="font-black text-indigo-950 text-lg">System Security Hub</h3>
@@ -577,7 +562,6 @@
         </div>
     </div>
 
-    <!-- Redesigned Fee Particulars Modal -->
     <div id="paymentModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-[2rem] max-w-md w-full p-6 shadow-2xl space-y-4 border-2 border-indigo-100 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
@@ -618,7 +602,7 @@
                 </div>
                 <div>
                     <label class="block mb-1 text-slate-500">Remarks / Verification Track Key</label>
-                    <input type="text" id="txRemarks" placeholder="Reference notes or reference remarks" class="w-full p-2 rounded-xl border bg-slate-50">
+                    <input type="text" id="txRemarks" placeholder="Reference notes or bank tracking numbers" class="w-full p-2 rounded-xl border bg-slate-50">
                 </div>
                 <div class="flex space-x-2 pt-2">
                     <button type="button" onclick="closePaymentModal()" class="w-1/3 bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl">Close</button>
@@ -628,9 +612,9 @@
         </div>
     </div>
 
-    <!-- Javascript Engine Hub Logic Block -->
     <script>
-        const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwFQ7XxcSrYBWq8HJYocTnLE8fCVCqmD99vuZ_iLPjr788dTnC_dwAWrdNHaG2YlQRTJQ/exec";
+        // INSERT TARGET WEB APP LINK URL BELOW
+        const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyuyIo28b72WwAu9_UmnSWLaWBWn6xJYZ1X5BoX_OfXPjv_rxiZ9-MXKVwxFpUZK62yGQ/exec";
         
         let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "ApexSullurpeta2026!";
         let globalAppState = { students: [], payments: [], expenses: [], events: [], standardFees: { "DR":41000, "EW":42000, "RTF1":43000, "RTF2":44000 } };
@@ -660,7 +644,6 @@
             document.getElementById('changePasswordModalOverlay').classList.remove('hidden');
         }
         function closeChangePasswordModal() { document.getElementById('changePasswordModalOverlay').classList.add('hidden'); }
-        
         function commitNewPasscodeKey() {
             const val = document.getElementById('newPasscodeInput').value.trim();
             if(val) {
@@ -799,7 +782,7 @@
                     renderInsightsPanel();
                     renderFrontPageReminders();
                 }
-            } catch (err) { console.error("Database connectivity fault:", err); }
+            } catch (err) { console.error("Database connection fault:", err); }
         }
 
         function renderCohortHeadcounts() {
@@ -826,7 +809,6 @@
                     ? `<img src="${student.PhotoBase64}" class="w-full h-full object-cover">` 
                     : `<div class="w-full h-full ${colorClass} text-white font-black flex items-center justify-center text-xl shadow-inner uppercase">${student.StudentName.charAt(0)}</div>`;
 
-                // Dynamic Action Button Allocation Config: Regular Accounts Only get Balance Ledger Modals
                 const trackingActionBtn = isRegularModel 
                     ? `<button onclick="openPaymentModal('${student.StudentID}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-[11px]">💰 Fee Particulars</button>`
                     : `<span class="text-[10px] bg-slate-100 px-2 py-1 rounded text-slate-400 font-bold">Monthly Account</span>`;
@@ -863,99 +845,84 @@
                 const currentMonthPayment = payments.find(x => x.MonthYear === activeSystemMonthContext) || {};
                 const nulls = currentMonthPayment.NullifiedServices ? currentMonthPayment.NullifiedServices.split(',') : [];
                 
-                const isVanActive = Number(s.VanFee) > 0;
-                const isDcActive = Number(s.DayCareFee) > 0 || s.Class === "DayCare";
-                const isOptActive = Number(s.OptMonthlyFee) > 0;
+                let cumulativePaid = 0;
+                payments.forEach(p => cumulativePaid += (Number(p.AmountPaid) || 0));
+                
+                const totalBilledStructure = (Number(s.CustomFee)||0) + (Number(s.AdmissionFee)||0) + (Number(s.StudentKitFee)||0) + (Number(s.SpareUniformFee)||0) + (Number(s.VanFee)||0) + (Number(s.DayCareFee)||0) + (Number(s.OptMonthlyFee)||0);
+                const outstandingBalance = totalBilledStructure - cumulativePaid;
 
-                // 1. Transit Van Reminders Stream Config Layout Block
-                if(isVanActive) {
+                if(Number(s.VanFee) > 0 && currentMonthPayment.Status !== "Settled") {
+                    vCount++;
                     const isNullified = nulls.includes('Van');
-                    const isSettled = currentMonthPayment.Status === "Settled";
-                    
-                    if(!isSettled) {
-                        vCount++;
-                        vanBox.insertAdjacentHTML('beforeend', `
-                            <div class="bg-white p-3 rounded-xl border mb-2 shadow-sm space-y-2">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-bold text-slate-800">${s.StudentName}</span>
-                                    <span class="text-rose-600 font-black">${isNullified ? '₹0 (Frozen)' : '₹' + s.VanFee}</span>
-                                </div>
-                                <div class="flex items-center justify-between gap-1 pt-1 border-t">
-                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
-                                        <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID}','Van',this.checked)" ${isNullified?'checked':''} class="rounded">
-                                        <span>Freeze</span>
-                                    </label>
-                                    <div class="flex items-center space-x-1 ${isNullified?'hidden':''}">
-                                        <select id="mode-van-${s.StudentID}" class="text-[10px] bg-slate-50 border rounded p-1">
-                                            <option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Netbanking">Bank</option>
-                                        </select>
-                                        <button onclick="commitReminderSettlement('${s.StudentID}','Van',${s.VanFee})" class="bg-emerald-500 text-white font-bold px-2.5 py-1 rounded text-[10px]">Submit</button>
-                                    </div>
+                    vanBox.insertAdjacentHTML('beforeend', `
+                        <div class="bg-white p-3 rounded-xl border mb-2 shadow-sm space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-slate-800">${s.StudentName}</span>
+                                <span class="text-rose-600 font-black">${isNullified ? '₹0 (Frozen)' : '₹' + s.VanFee}</span>
+                            </div>
+                            <div class="flex items-center justify-between gap-1 pt-1 border-t">
+                                <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
+                                    <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID}','Van',this.checked)" ${isNullified?'checked':''}>
+                                    <span>Freeze</span>
+                                </label>
+                                <div class="flex items-center space-x-1 ${isNullified?'hidden':''}">
+                                    <select id="mode-van-${s.StudentID}" class="text-[10px] bg-slate-50 border rounded p-0.5">
+                                        <option value="Cash">Cash</option><option value="UPI">UPI</option>
+                                    </select>
+                                    <button onclick="commitReminderSettlement('${s.StudentID}','Van',${s.VanFee})" class="bg-emerald-500 text-white font-bold px-2 py-0.5 rounded text-[10px]">Submit</button>
                                 </div>
                             </div>
-                        `);
-                    }
+                        </div>
+                    `);
                 }
-
-                // 2. Day Care Management Reminders Stream Config Layout Block
-                if(isDcActive) {
+                if((Number(s.DayCareFee) > 0 || s.Class === "DayCare") && currentMonthPayment.Status !== "Settled") {
+                    dCount++;
                     const isNullified = nulls.includes('DayCare');
-                    const isSettled = currentMonthPayment.Status === "Settled";
                     const fallbackFee = s.Class === "DayCare" ? (s.OptMonthlyFee || 0) : s.DayCareFee;
-                    
-                    if(!isSettled) {
-                        dCount++;
-                        dcBox.insertAdjacentHTML('beforeend', `
-                            <div class="bg-white p-3 rounded-xl border mb-2 shadow-sm space-y-2">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-bold text-slate-800">${s.StudentName}</span>
-                                    <span class="text-rose-600 font-black">${isNullified ? '₹0 (Frozen)' : '₹' + fallbackFee}</span>
-                                </div>
-                                <div class="flex items-center justify-between gap-1 pt-1 border-t">
-                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
-                                        <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID}','DayCare',this.checked)" ${isNullified?'checked':''} class="rounded">
-                                        <span>Freeze</span>
-                                    </label>
-                                    <div class="flex items-center space-x-1 ${isNullified?'hidden':''}">
-                                        <select id="mode-dc-${s.StudentID}" class="text-[10px] bg-slate-50 border rounded p-1">
-                                            <option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Netbanking">Bank</option>
-                                        </select>
-                                        <button onclick="commitReminderSettlement('${s.StudentID}','DayCare',${fallbackFee})" class="bg-emerald-500 text-white font-bold px-2.5 py-1 rounded text-[10px]">Submit</button>
-                                    </div>
+                    dcBox.insertAdjacentHTML('beforeend', `
+                        <div class="bg-white p-3 rounded-xl border mb-2 shadow-sm space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-slate-800">${s.StudentName}</span>
+                                <span class="text-rose-600 font-black">${isNullified ? '₹0 (Frozen)' : '₹' + fallbackFee}</span>
+                            </div>
+                            <div class="flex items-center justify-between gap-1 pt-1 border-t">
+                                <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
+                                    <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID}','DayCare',this.checked)" ${isNullified?'checked':''}>
+                                    <span>Freeze</span>
+                                </label>
+                                <div class="flex items-center space-x-1 ${isNullified?'hidden':''}">
+                                    <select id="mode-dc-${s.StudentID}" class="text-[10px] bg-slate-50 border rounded p-0.5">
+                                        <option value="Cash">Cash</option><option value="UPI">UPI</option>
+                                    </select>
+                                    <button onclick="commitReminderSettlement('${s.StudentID}','DayCare',${fallbackFee})" class="bg-emerald-500 text-white font-bold px-2 py-0.5 rounded text-[10px]">Submit</button>
                                 </div>
                             </div>
-                        `);
-                    }
+                        </div>
+                    `);
                 }
-
-                // 3. Custom Monthly Opt Parametric Reminders Stream Config Layout Block
-                if(isOptActive && s.Class !== "DayCare") {
+                if(Number(s.OptMonthlyFee) > 0 && s.Class !== "DayCare" && currentMonthPayment.Status !== "Settled") {
+                    oCount++;
                     const isNullified = nulls.includes('OptMonthly');
-                    const isSettled = currentMonthPayment.Status === "Settled";
-                    
-                    if(!isSettled) {
-                        oCount++;
-                        optBox.insertAdjacentHTML('beforeend', `
-                            <div class="bg-white p-3 rounded-xl border mb-2 shadow-sm space-y-2">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-bold text-slate-800">${s.StudentName}</span>
-                                    <span class="text-rose-600 font-black">${isNullified ? '₹0 (Frozen)' : '₹' + s.OptMonthlyFee}</span>
-                                </div>
-                                <div class="flex items-center justify-between gap-1 pt-1 border-t">
-                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
-                                        <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID}','OptMonthly',this.checked)" ${isNullified?'checked':''} class="rounded">
-                                        <span>Freeze</span>
-                                    </label>
-                                    <div class="flex items-center space-x-1 ${isNullified?'hidden':''}">
-                                        <select id="mode-opt-${s.StudentID}" class="text-[10px] bg-slate-50 border rounded p-1">
-                                            <option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Netbanking">Bank</option>
-                                        </select>
-                                        <button onclick="commitReminderSettlement('${s.StudentID}','OptMonthly',${s.OptMonthlyFee})" class="bg-emerald-500 text-white font-bold px-2.5 py-1 rounded text-[10px]">Submit</button>
-                                    </div>
+                    optBox.insertAdjacentHTML('beforeend', `
+                        <div class="bg-white p-3 rounded-xl border mb-2 shadow-sm space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-slate-800">${s.StudentName}</span>
+                                <span class="text-rose-600 font-black">${isNullified ? '₹0 (Frozen)' : '₹' + s.OptMonthlyFee}</span>
+                            </div>
+                            <div class="flex items-center justify-between gap-1 pt-1 border-t">
+                                <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
+                                    <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID}','OptMonthly',this.checked)" ${isNullified?'checked':''}>
+                                    <span>Freeze</span>
+                                </label>
+                                <div class="flex items-center space-x-1 ${isNullified?'hidden':''}">
+                                    <select id="mode-opt-${s.StudentID}" class="text-[10px] bg-slate-50 border rounded p-0.5">
+                                        <option value="Cash">Cash</option><option value="UPI">UPI</option>
+                                    </select>
+                                    <button onclick="commitReminderSettlement('${s.StudentID}','OptMonthly',${s.OptMonthlyFee})" class="bg-emerald-500 text-white font-bold px-2 py-0.5 rounded text-[10px]">Submit</button>
                                 </div>
                             </div>
-                        `);
-                    }
+                        </div>
+                    `);
                 }
             });
 
@@ -968,7 +935,7 @@
             const pId = "PAY-" + sid + "-" + activeSystemMonthContext;
             const pObj = globalAppState.payments.find(x => x.PaymentID === pId) || {};
             
-            let currentNulls = pObj.NullifiedServices ? pObj.NullifiedServices.split(',') : [];
+            let currentNulls = pObj.NullifiedServices ? pObj.NullifiedServices.toString().split(',') : [];
             if(isChecked) {
                 if(!currentNulls.includes(serviceKey)) currentNulls.push(serviceKey);
             } else {
@@ -976,7 +943,7 @@
             }
 
             const row = [
-                pId, sid, activeSystemMonthContext, false, false, false, false, false, 
+                pId, sid, activeSystemMonthContext, 0, "", "Cash", "Toggled structural freeze month state flags", 
                 0, 0, 0, 0, "Active", currentNulls.join(',')
             ];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Fee_Payments", rowId: pId, rowData: row })});
@@ -993,7 +960,7 @@
             const row = [
                 pId, sid, activeSystemMonthContext, Number(feeValue),
                 new Date().toISOString().substring(0,10), channelMode,
-                `Settled front-end monthly service reminder: ${serviceKey}`, 0, 0, 0, 0, "Settled", ""
+                `Settledfront-end monthly service reminder: ${serviceKey}`, 0, 0, 0, 0, "Settled", ""
             ];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Fee_Payments", rowId: pId, rowData: row })});
             alert("Payment processed and synchronized!");
@@ -1044,7 +1011,7 @@
             if(!s) return;
             document.getElementById('detailStudentID').value = s.StudentID;
             document.getElementById('detailStudentNameHeader').innerText = s.StudentName;
-            document.getElementById('detailStudentClassHeader').innerText = `${s.Class} Profile Database Record`;
+            document.getElementById('detailStudentClassHeader').innerText = `${s.Class} Master Record`;
             
             document.getElementById('editStudentName').value = s.StudentName;
             document.getElementById('editDOB').value = s.DOB ? s.DOB.substring(0,10) : "";
@@ -1093,7 +1060,7 @@
 
         async function triggerDeleteStudent() {
             const sid = document.getElementById('detailStudentID').value;
-            if(confirm("Permanently wipe out student enrollment data row from the servers?")) {
+            if(confirm("Permanently wipe out student enrollment data row?")) {
                 await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: [sid, "DELETED", "", "", "", "", "", "", "", "N/A"] })});
                 alert("Profile Terminated!"); closeStudentDetailModal(); refreshApplicationState();
             }
@@ -1180,7 +1147,7 @@
         }
 
         async function triggerDeleteExpense(expId) {
-            if(confirm("Permanently wipe this outflow row out from the database ledgers?")) {
+            if(confirm("Permanently wipe this outflow row out?")) {
                 await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Expenses", rowId: expId, rowData: [expId, "DELETED", "Rent", 0, "", "Fixed"] })});
                 alert("Row Purged!"); resetExpenseForm(); refreshApplicationState();
             }
@@ -1189,10 +1156,8 @@
         function renderBirthdayWidget() {
             const c = document.getElementById('birthdayRosterContainer'); const bdays = [];
             globalAppState.students.filter(s => s.StudentName && s.StudentName !== "DELETED").forEach(s => {
-                if(!s.DOB) return;
-                const dateClean = s.DOB.toString().substring(0,10);
-                const parts = dateClean.split('-');
-                if(parts.length >= 3) bdays.push(`🎂 <strong>${s.StudentName}</strong> - Date: July ${parseInt(parts[2],10)} (Turning ${calculateExactAge(s.DOB)} Yrs)`);
+                if(!s.DOB) return; const p = s.DOB.toString().substring(0,10).split('-');
+                if(p.length >= 3) bdays.push(`🎂 <strong>${s.StudentName}</strong> - Date: July ${parseInt(p[2],10)} (Turning ${calculateExactAge(s.DOB)} Yrs)`);
             });
             c.innerHTML = bdays.length ? bdays.join('<br>') : "✨ No birthdays recorded for July.";
         }
@@ -1225,25 +1190,19 @@
             ];
 
             try {
-                // Post to Student Profile Sheet Matrix
                 await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Students", rowData: studentRow })});
-                
-                // Initialize Payment Record Row context variables safely
-                const pRow = ["PAY-"+sid+"-"+activeSystemMonthContext, sid, activeSystemMonthContext, 0, "", "Cash", "Intake Account Provision", 0, 0, 0, 0, "Active", ""];
+                const pRow = ["PAY-"+sid+"-"+activeSystemMonthContext, sid, activeSystemMonthContext, 0, "", "Cash", "Intake Provisining", 0, 0, 0, 0, "Active", ""];
                 await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: pRow })});
                 
                 alert("Comprehensive Admissions Registry Logged Successfully!");
                 event.target.reset();
                 document.getElementById('base64PayloadCache').value = "";
                 await refreshApplicationState();
-            } catch(e) {
-                console.error("Intake stream crashed: ", e);
-            }
+            } catch(e) { console.error(e); }
         }
 
         async function handleEventSubmission(e) { e.preventDefault(); const f = new FormData(e.target); const row = ["EVT-"+Date.now(), f.get('Title'), f.get('Date'), f.get('Time'), f.get('Category')]; await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Events", rowData: row })}); alert("Event Logged!"); e.target.reset(); refreshApplicationState(); }
 
-        // Start Up Form Mechanics Hook initialization
         handleFormBillingTypeChange('Regular');
     </script>
 </body>
