@@ -46,26 +46,30 @@
 
     <main id="appWorkspace" class="max-w-7xl mx-auto p-4 space-y-6 hidden">
         
-        <section class="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <section class="grid grid-cols-2 md:grid-cols-6 gap-4">
             <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-indigo-600">
-                <span class="text-[10px] uppercase font-bold text-slate-400">DR Class Count</span>
-                <h4 class="text-xl font-black text-indigo-950 mt-1" id="countCohortDR">0 Kids</h4>
+                <span class="text-[10px] uppercase font-bold text-slate-400">DR Count</span>
+                <h4 class="text-lg font-black text-indigo-950 mt-1" id="countCohortDR">0 Kids</h4>
             </div>
             <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-rose-500">
-                <span class="text-[10px] uppercase font-bold text-slate-400">EW Class Count</span>
-                <h4 class="text-xl font-black text-indigo-950 mt-1" id="countCohortEW">0 Kids</h4>
+                <span class="text-[10px] uppercase font-bold text-slate-400">EW Count</span>
+                <h4 class="text-lg font-black text-indigo-950 mt-1" id="countCohortEW">0 Kids</h4>
             </div>
             <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-amber-500">
-                <span class="text-[10px] uppercase font-bold text-slate-400">RTF1 Class Count</span>
-                <h4 class="text-xl font-black text-indigo-950 mt-1" id="countCohortRTF1">0 Kids</h4>
+                <span class="text-[10px] uppercase font-bold text-slate-400">RTF1 Count</span>
+                <h4 class="text-lg font-black text-indigo-950 mt-1" id="countCohortRTF1">0 Kids</h4>
             </div>
             <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-emerald-500">
-                <span class="text-[10px] uppercase font-bold text-slate-400">RTF2 Class Count</span>
-                <h4 class="text-xl font-black text-indigo-950 mt-1" id="countCohortRTF2">0 Kids</h4>
+                <span class="text-[10px] uppercase font-bold text-slate-400">RTF2 Count</span>
+                <h4 class="text-lg font-black text-indigo-950 mt-1" id="countCohortRTF2">0 Kids</h4>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-purple-500">
+                <span class="text-[10px] uppercase font-bold text-slate-400">Day Care Only</span>
+                <h4 class="text-lg font-black text-indigo-950 mt-1" id="countCohortDC">0 Kids</h4>
             </div>
             <div class="bg-gradient-to-br from-indigo-950 to-slate-900 p-4 rounded-2xl shadow-md text-white col-span-2 md:col-span-1">
-                <span class="text-[10px] uppercase font-bold text-indigo-300">Total Enrollment</span>
-                <h4 class="text-xl font-black text-amber-300 mt-1" id="countCohortTotal">0 Active</h4>
+                <span class="text-[10px] uppercase font-bold text-indigo-300">Total Rosters</span>
+                <h4 class="text-lg font-black text-amber-300 mt-1" id="countCohortTotal">0 Active</h4>
             </div>
         </section>
 
@@ -74,26 +78,25 @@
                 <h3 class="font-black text-sm text-indigo-950 uppercase tracking-wider flex items-center space-x-2">
                     <span>⏰</span> <span>Live Outstanding Monthly Reminders</span>
                 </h3>
-                <span class="bg-indigo-100 text-indigo-800 text-[10px] font-black px-2.5 py-0.5 rounded-full">July Context Cycle</span>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
-                        <span>🚌 Van Service Dues</span>
+                        <span>Transit (Van)</span>
                         <span id="countVanDues" class="bg-rose-100 text-rose-700 rounded-full px-2 text-[10px]">0</span>
                     </h4>
                     <div id="containerVanReminders" class="space-y-1.5 max-h-40 overflow-y-auto text-[11px] font-semibold"></div>
                 </div>
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
-                        <span>☀️ Day Care Dues</span>
+                        <span>Day Care Operations</span>
                         <span id="countDayCareDues" class="bg-rose-100 text-rose-700 rounded-full px-2 text-[10px]">0</span>
                     </h4>
                     <div id="containerDayCareReminders" class="space-y-1.5 max-h-40 overflow-y-auto text-[11px] font-semibold"></div>
                 </div>
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
-                        <span>🗓️ Monthly Opt Dues</span>
+                        <span>Custom Monthly Opt</span>
                         <span id="countOptDues" class="bg-rose-100 text-rose-700 rounded-full px-2 text-[10px]">0</span>
                     </h4>
                     <div id="containerOptReminders" class="space-y-1.5 max-h-40 overflow-y-auto text-[11px] font-semibold"></div>
@@ -105,9 +108,7 @@
             <div class="bg-gradient-to-br from-amber-400 to-orange-500 rounded-3xl p-5 text-white shadow-lg relative overflow-hidden">
                 <div class="absolute -right-6 -bottom-6 text-8xl opacity-10">🎂</div>
                 <h3 class="font-black text-lg flex items-center space-x-2"><span>🎈</span> <span id="birthdayTitleMonth">Monthly Birthday Desk</span></h3>
-                <div id="birthdayRosterContainer" class="mt-3 space-y-2 text-sm font-bold max-h-36 overflow-y-auto pr-1">
-                    <p class="opacity-90">Scanning birthday timelines...</p>
-                </div>
+                <div id="birthdayRosterContainer" class="mt-3 space-y-2 text-sm font-bold max-h-36 overflow-y-auto pr-1"></div>
             </div>
             <div class="bg-gradient-to-br from-indigo-900 to-slate-900 rounded-3xl p-5 text-indigo-100 shadow-lg relative overflow-hidden">
                 <div class="absolute -right-6 -bottom-6 text-8xl opacity-10">💡</div>
@@ -119,9 +120,9 @@
         </section>
 
         <nav class="flex space-x-2 bg-slate-200 p-1.5 rounded-xl overflow-x-auto hide-scrollbar">
-            <button id="btn-studentsTab" onclick="switchTab('studentsTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap bg-white text-indigo-950 shadow-sm flex-1 text-center">👶 Student Registry</button>
-            <button id="btn-financeTab" onclick="switchTab('financeTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap text-slate-600 hover:bg-slate-300 flex-1 text-center">📊 Financial Ledger & Metrics</button>
-            <button id="btn-calendarTab" onclick="switchTab('calendarTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap text-slate-600 hover:bg-slate-300 flex-1 text-center">🗓️ Academic Calendar</button>
+            <button id="btn-studentsTab" onclick="switchTab('studentsTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold bg-white text-indigo-950 shadow-sm flex-1 text-center">👶 Student Registry</button>
+            <button id="btn-financeTab" onclick="switchTab('financeTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-300 flex-1 text-center">📊 Financial Ledger & Metrics</button>
+            <button id="btn-calendarTab" onclick="switchTab('calendarTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-300 flex-1 text-center">🗓️ Academic Calendar</button>
         </nav>
 
         <div id="studentsTab" class="tab-pane space-y-6">
@@ -132,14 +133,14 @@
                     <span class="text-xs text-indigo-600 font-bold hidden group-open:inline">Close Intake Sheet ↑</span>
                 </summary>
                 <form id="studentEnrollmentForm" onsubmit="handleStudentSubmission(event)" class="p-5 border-t border-slate-100 space-y-4 text-xs font-semibold">
-                    <div class="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 flex items-center space-x-6">
+                    <div id="formModelWrapper" class="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 flex items-center space-x-6">
                         <span class="font-black text-indigo-950">Select Billing Pipeline Model:</span>
                         <label class="flex items-center space-x-2 cursor-pointer text-slate-700">
-                            <input type="radio" name="BillingModel" value="Regular" checked onchange="handleFormBillingTypeChange('Regular')" class="text-indigo-600">
+                            <input type="radio" name="BillingModel" value="Regular" checked onchange="handleFormBillingTypeChange('Regular')">
                             <span class="font-bold">Regular Base Model</span>
                         </label>
                         <label class="flex items-center space-x-2 cursor-pointer text-slate-700">
-                            <input type="radio" name="BillingModel" value="Monthly" onchange="handleFormBillingTypeChange('Monthly')" class="text-indigo-600">
+                            <input type="radio" name="BillingModel" value="Monthly" onchange="handleFormBillingTypeChange('Monthly')">
                             <span class="font-bold">Custom Monthly Model</span>
                         </label>
                     </div>
@@ -147,78 +148,79 @@
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
                             <label class="block mb-1 text-slate-500">Student Name *</label>
-                            <input type="text" name="StudentName" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-600">
+                            <input type="text" name="StudentName" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
                         </div>
                         <div>
                             <label class="block mb-1 text-slate-500">Date of Birth *</label>
-                            <input type="date" name="DOB" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-600">
+                            <input type="date" name="DOB" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
                         </div>
                         <div>
                             <label class="block mb-1 text-slate-500">Gender *</label>
-                            <select name="Gender" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                            <select name="Gender" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
                                 <option value="Boy">Boy</option>
                                 <option value="Girl">Girl</option>
                             </select>
                         </div>
                         <div>
                             <label class="block mb-1 text-slate-500">Cohort Class Assignment *</label>
-                            <select id="intakeClassSelect" name="Class" onchange="updateIntakeClassFeeDefault()" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                            <select id="intakeClassSelect" name="Class" onchange="updateIntakeClassFeeDefault()" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
                                 <option value="DR">DR (Developing Roots)</option>
                                 <option value="EW">EW (Emerging Wings)</option>
                                 <option value="RTF1">RTF1 (Ready to Fly 1)</option>
                                 <option value="RTF2">RTF2 (Ready to Fly 2)</option>
+                                <option value="DayCare">Day Care Only Track</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="border-t pt-3">
+                    <div id="sectionIntakeFees" class="border-t pt-3">
                         <div class="flex justify-between items-center mb-2">
-                            <h4 class="text-indigo-950 font-black text-sm">Admissions Fee Component Configurations</h4>
+                            <h4 class="text-indigo-950 font-black text-sm">Fee Configurations</h4>
                             <span id="intakeDiscountBadge" class="bg-emerald-50 text-emerald-700 px-3 py-0.5 rounded-lg text-[11px] font-black">₹0 Offered Discount</span>
                         </div>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div>
+                            <div id="rowAnnualTuition">
                                 <label class="block mb-1 text-slate-500">Agreed Annual Base Tuition (₹)</label>
-                                <input type="number" id="intakeAnnualTuition" name="CustomFee" value="41000" oninput="calculateIntakeDiscount()" class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                                <input type="number" id="intakeAnnualTuition" name="CustomFee" value="41000" oninput="calculateIntakeDiscount()" class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
                             </div>
-                            <div>
+                            <div id="rowAdmissionFee">
                                 <label class="block mb-1 text-slate-500">Admission Processing Fees (₹)</label>
-                                <input type="number" id="intakeAdmissionFee" name="AdmissionFee" value="0" class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                                <input type="number" id="intakeAdmissionFee" name="AdmissionFee" value="0" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
                             </div>
-                            <div>
+                            <div id="rowKitFee">
                                 <label class="block mb-1 text-slate-500">Student Welcome Kit Cost (₹)</label>
-                                <input type="number" id="intakeKitFee" name="StudentKitFee" value="0" class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                                <input type="number" id="intakeKitFee" name="StudentKitFee" value="0" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
                             </div>
-                            <div>
+                            <div id="rowUniformFee">
                                 <label class="block mb-1 text-slate-500">Spare Uniform Outlay (₹)</label>
-                                <input type="number" id="intakeUniformFee" name="SpareUniformFee" value="0" class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                                <input type="number" id="intakeUniformFee" name="SpareUniformFee" value="0" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
                             </div>
                         </div>
                     </div>
 
-                    <div class="border-t pt-3">
-                        <h4 class="text-indigo-950 font-black mb-2 text-sm">Monthly Service Activation Engine</h4>
+                    <div id="sectionIntakeServices" class="border-t pt-3">
+                        <h4 class="text-indigo-950 font-black mb-2 text-sm">Monthly Service Activation</h4>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="bg-slate-50 p-3 rounded-xl border" id="boxFormVan">
                                 <label class="flex items-center space-x-2 font-bold text-slate-700">
                                     <input type="checkbox" name="VanOpted" onchange="toggleFormFeeInput(this, 'FormVanFee')" class="rounded">
-                                    <span>🚌 Activate Van Commute Service</span>
+                                    <span>🚌 Van Commute Service</span>
                                 </label>
-                                <input type="number" id="FormVanFee" name="VanFee" value="0" disabled class="w-full mt-2 px-3 py-1.5 rounded-lg border bg-white focus:outline-none">
+                                <input type="number" id="FormVanFee" name="VanFee" value="0" disabled class="w-full mt-2 px-3 py-1.5 rounded-lg border bg-white">
                             </div>
                             <div class="bg-slate-50 p-3 rounded-xl border" id="boxFormDayCare">
                                 <label class="flex items-center space-x-2 font-bold text-slate-700">
                                     <input type="checkbox" name="DayCareOpted" onchange="toggleFormFeeInput(this, 'FormDayCareFee')" class="rounded">
-                                    <span>☀️ Activate Day Care Management</span>
+                                    <span>☀️ Day Care Management</span>
                                 </label>
-                                <input type="number" id="FormDayCareFee" name="DayCareFee" value="0" disabled class="w-full mt-2 px-3 py-1.5 rounded-lg border bg-white focus:outline-none">
+                                <input type="number" id="FormDayCareFee" name="DayCareFee" value="0" disabled class="w-full mt-2 px-3 py-1.5 rounded-lg border bg-white">
                             </div>
-                            <div class="bg-slate-50 p-3 rounded-xl border" id="boxFormOptMonthly" style="opacity: 0.4;">
+                            <div class="bg-slate-50 p-3 rounded-xl border" id="boxFormOptMonthly">
                                 <label class="flex items-center space-x-2 font-bold text-slate-700">
-                                    <input type="checkbox" id="chkOptMonthly" disabled name="OptMonthlyActive" onchange="toggleFormFeeInput(this, 'FormOptMonthlyFee')" class="rounded">
+                                    <input type="checkbox" id="chkOptMonthly" name="OptMonthlyActive" onchange="toggleFormFeeInput(this, 'FormOptMonthlyFee')" class="rounded">
                                     <span>🗓️ Custom Monthly Committed Fee</span>
                                 </label>
-                                <input type="number" id="FormOptMonthlyFee" name="OptMonthlyFee" value="0" disabled class="w-full mt-2 px-3 py-1.5 rounded-lg border bg-white focus:outline-none">
+                                <input type="number" id="FormOptMonthlyFee" name="OptMonthlyFee" value="0" disabled class="w-full mt-2 px-3 py-1.5 rounded-lg border bg-white">
                             </div>
                         </div>
                     </div>
@@ -226,49 +228,39 @@
                     <div class="border-t pt-3 grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
                             <label class="block mb-1 text-slate-500">Primary Guardian Name *</label>
-                            <input type="text" name="GuardianName" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
+                            <input type="text" name="GuardianName" required class="w-full px-3 py-2 rounded-xl border bg-slate-50">
                         </div>
                         <div>
                             <label class="block mb-1 text-slate-500">Mobile Contact Number *</label>
-                            <input type="tel" name="Contact" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
+                            <input type="tel" name="Contact" required class="w-full px-3 py-2 rounded-xl border bg-slate-50">
                         </div>
-                        <div>
-                            <label class="block mb-1 text-slate-500">Alternative Contact</label>
-                            <input type="tel" name="AltContact" value="N/A" class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
-                        </div>
-                        <div>
-                            <label class="block mb-1 text-slate-500">Residential Address</label>
-                            <input type="text" name="Address" value="N/A" class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-3">
                         <div>
                             <label class="block mb-1 text-slate-500">Blood Group</label>
-                            <input type="text" name="BloodGroup" placeholder="e.g. O+" class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
+                            <input type="text" name="BloodGroup" placeholder="e.g. O+" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
                         </div>
                         <div>
-                            <label class="block mb-1 text-slate-500">Profile Photo Attachment</label>
-                            <input type="file" accept="image/*" onchange="processImageUpload(this)" class="w-full file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700">
+                            <label class="block mb-1 text-slate-500">Photo Attachment</label>
+                            <input type="file" accept="image/*" onchange="processImageUpload(this)" class="w-full text-xs">
                             <input type="hidden" id="base64PayloadCache">
                         </div>
                     </div>
 
                     <div class="flex justify-end pt-2">
-                        <button type="submit" class="bg-indigo-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-md hover:bg-indigo-700 transition">Transmit Admission Entry</button>
+                        <button type="submit" class="bg-indigo-600 text-white font-bold px-6 py-2.5 rounded-xl shadow">Save Admission Profile</button>
                     </div>
                 </form>
             </details>
 
             <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-                <div class="flex flex-wrap gap-1.5" id="classFiltersPanel">
+                <div class="flex flex-wrap gap-1.5">
                     <button onclick="filterCohort('ALL')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white">All Rosters</button>
                     <button onclick="filterCohort('DR')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">DR</button>
                     <button onclick="filterCohort('EW')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">EW</button>
                     <button onclick="filterCohort('RTF1')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">RTF1</button>
                     <button onclick="filterCohort('RTF2')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">RTF2</button>
+                    <button onclick="filterCohort('DayCare')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">Day Care Only</button>
                 </div>
-                <input type="text" id="rosterSearch" oninput="executeSearchFilter()" placeholder="🔍 Search student name..." class="px-3 py-2 rounded-xl text-xs font-medium border bg-slate-50 focus:bg-white focus:outline-none w-full md:w-64">
+                <input type="text" id="rosterSearch" oninput="executeSearchFilter()" placeholder="🔍 Search student name..." class="px-3 py-2 rounded-xl text-xs font-medium border bg-slate-50 w-full md:w-64">
             </div>
 
             <div id="studentCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
@@ -294,56 +286,72 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
-                    <h4 class="font-black text-sm text-slate-700 mb-4">Total Collections vs Outstanding Balance</h4>
-                    <div class="max-h-64 flex justify-center"><canvas id="collectionsBalanceChart"></canvas></div>
+            <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 space-y-4">
+                <div class="flex justify-between items-center flex-wrap gap-2 border-b pb-2">
+                    <h4 class="font-black text-sm text-indigo-950 uppercase tracking-wide">Expense Analysis Filter</h4>
+                    <div class="flex space-x-1 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+                        <button onclick="setExpenseGraphTimeframe('monthly')" id="btnExpTime-monthly" class="px-3 py-1.5 rounded-lg bg-white text-indigo-950 shadow-sm">Monthly Data</button>
+                        <button onclick="setExpenseGraphTimeframe('currentYear')" id="btnExpTime-currentYear" class="px-3 py-1.5 rounded-lg text-slate-600">Financial Year (From June)</button>
+                        <button onclick="setExpenseGraphTimeframe('overall')" id="btnExpTime-overall" class="px-3 py-1.5 rounded-lg text-slate-600">Overall Historical</button>
+                    </div>
                 </div>
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
-                    <h4 class="font-black text-sm text-slate-700 mb-4">Expense Distribution Categories</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="max-h-64 flex justify-center"><canvas id="collectionsBalanceChart"></canvas></div>
                     <div class="max-h-64 flex justify-center"><canvas id="expenseCategoryChart"></canvas></div>
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 max-w-xl mx-auto">
-                <h4 class="font-black text-sm text-slate-700 mb-3">Commit Operational Expenditure Row</h4>
-                <form id="expenseForm" onsubmit="handleExpenseSubmission(event)" class="space-y-3 text-xs font-semibold">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block mb-1 text-slate-500">Outflow Date *</label>
-                            <input type="date" name="Date" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                    <h4 class="font-black text-sm text-slate-700 mb-3" id="expenseFormHeader">Commit Operational Expenditure Row</h4>
+                    <form id="expenseForm" onsubmit="handleExpenseSubmission(event)" class="space-y-3 text-xs font-semibold">
+                        <input type="hidden" id="expenseFormID" name="ExpenseID">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block mb-1 text-slate-500">Outflow Date *</label>
+                                <input type="date" id="expenseInputDate" name="Date" required class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block mb-1 text-slate-500">Category Bucket *</label>
+                                <select id="expenseInputCategory" name="Category" required class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                                    <option value="Salaries">Staff Salaries</option>
+                                    <option value="Rent">Infrastructure Rent</option>
+                                    <option value="Utilities">Utilities & Power</option>
+                                    <option value="Marketing">Marketing & Banners</option>
+                                    <option value="Events">Summer Camps & Celebrations</option>
+                                    <option value="Maintenance">General Asset Repairs</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block mb-1 text-slate-500">Debit Outflow Value (₹) *</label>
+                                <input type="number" id="expenseInputAmount" name="Amount" required class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block mb-1 text-slate-500">Commitment Character *</label>
+                                <select id="expenseInputType" name="Type" required class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                                    <option value="Fixed">Fixed Operational Commitment</option>
+                                    <option value="Variable">Variable Running Cost</option>
+                                </select>
+                            </div>
                         </div>
                         <div>
-                            <label class="block mb-1 text-slate-500">Category Bucket *</label>
-                            <select name="Category" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
-                                <option value="Salaries">Staff Salaries</option>
-                                <option value="Rent">Infrastructure Rent</option>
-                                <option value="Utilities">Utilities & Power</option>
-                                <option value="Marketing">Marketing & Banners</option>
-                                <option value="Events">Summer Camps & Celebrations</option>
-                                <option value="Maintenance">General Asset Repairs</option>
-                            </select>
+                            <label class="block mb-1 text-slate-500">Ledger Entry Description</label>
+                            <input type="text" id="expenseInputDescription" name="Description" placeholder="Provide contextual verification comments" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
                         </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block mb-1 text-slate-500">Debit Outflow Value (₹) *</label>
-                            <input type="number" name="Amount" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                        <div class="flex space-x-2 pt-1" id="expenseFormActions">
+                            <button type="submit" class="w-full bg-rose-600 text-white font-bold py-2.5 rounded-xl shadow hover:bg-rose-700 transition">Save Ledger Entry</button>
                         </div>
-                        <div>
-                            <label class="block mb-1 text-slate-500">Commitment Character *</label>
-                            <select name="Type" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
-                                <option value="Fixed">Fixed Operational Commitment</option>
-                                <option value="Variable">Variable Running Cost</option>
-                            </select>
-                        </div>
-                    </div>
+                    </form>
+                </div>
+
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 flex flex-col justify-between">
                     <div>
-                        <label class="block mb-1 text-slate-500">Ledger Entry Description</label>
-                        <input type="text" name="Description" placeholder="Provide contextual verification comments" class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                        <h4 class="font-black text-sm text-slate-700 mb-3">Itemized Operational Expenditure Stream</h4>
+                        <div id="containerRunningExpensesList" class="space-y-2 max-h-52 overflow-y-auto pr-1 text-xs"></div>
                     </div>
-                    <button type="submit" class="w-full bg-rose-600 text-white font-bold py-2.5 rounded-xl shadow hover:bg-rose-700 transition">Save Ledger Entry</button>
-                </form>
+                </div>
             </div>
         </div>
 
@@ -381,7 +389,7 @@
                 <div class="md:col-span-2 bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
                     <h4 class="font-black text-sm text-slate-700 mb-4" id="calendarAgendaHeader">Active Event Agenda Timeline</h4>
                     <div id="calendarAgendaStream" class="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-                        <p class="text-xs text-slate-400 font-medium">No events posted on the schedule matching current context filters.</p>
+                        <p class="text-xs text-slate-400 font-medium">No events posted on the schedule matching current filters.</p>
                     </div>
                 </div>
             </div>
@@ -405,7 +413,7 @@
                 <input type="hidden" id="detailStudentID" name="StudentID">
                 <input type="hidden" id="detailPhotoBase64" name="PhotoBase64">
                 
-                <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 flex items-center space-x-6">
+                <div id="editModelWrapper" class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 flex items-center space-x-6">
                     <span class="font-black text-indigo-950">Billing Pipeline Model:</span>
                     <label class="flex items-center space-x-1 cursor-pointer">
                         <input type="radio" id="editModelRegular" name="EditBillingModel" value="Regular" onchange="handleEditFormBillingTypeChange('Regular')">
@@ -420,67 +428,68 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                     <div>
                         <label class="block mb-1 text-slate-400">Student Name</label>
-                        <input type="text" id="editStudentName" name="StudentName" required class="w-full p-2 border rounded-xl bg-slate-50 focus:bg-white">
+                        <input type="text" id="editStudentName" name="StudentName" required class="w-full p-2 border rounded-xl bg-slate-50">
                     </div>
                     <div>
                         <label class="block mb-1 text-slate-400">Date of Birth</label>
-                        <input type="date" id="editDOB" name="DOB" required class="w-full p-2 border rounded-xl bg-slate-50 focus:bg-white">
+                        <input type="date" id="editDOB" name="DOB" required class="w-full p-2 border rounded-xl bg-slate-50">
                     </div>
                     <div>
                         <label class="block mb-1 text-slate-400">Gender</label>
-                        <select id="editGender" name="Gender" required class="w-full p-2 border rounded-xl bg-slate-50 focus:bg-white">
+                        <select id="editGender" name="Gender" required class="w-full p-2 border rounded-xl bg-slate-50">
                             <option value="Boy">Boy</option>
                             <option value="Girl">Girl</option>
                         </select>
                     </div>
                     <div>
                         <label class="block mb-1 text-slate-400">Class Assigned</label>
-                        <select id="editClass" name="Class" onchange="updateEditClassFeeDefault()" required class="w-full p-2 border rounded-xl bg-slate-50 focus:bg-white">
+                        <select id="editClass" name="Class" onchange="updateEditClassFeeDefault()" required class="w-full p-2 border rounded-xl bg-slate-50">
                             <option value="DR">DR</option>
                             <option value="EW">EW</option>
                             <option value="RTF1">RTF1</option>
                             <option value="RTF2">RTF2</option>
+                            <option value="DayCare">Day Care Only Track</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="border-t pt-3">
+                <div id="sectionEditFees" class="border-t pt-3">
                     <div class="flex justify-between items-center mb-2">
-                        <h5 class="font-black text-slate-600">Intake Financial Balances</h5>
+                        <h5 class="font-black text-slate-600">Financial Allocations Matrix</h5>
                         <span id="editDiscountBadge" class="bg-indigo-50 text-indigo-700 font-extrabold px-2 py-0.5 rounded text-[11px]">₹0 Offered Discount</span>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div>
+                        <div id="editRowAnnualTuition">
                             <label class="block mb-1 text-slate-400">Agreed Annual Tuition (₹)</label>
                             <input type="number" id="editCustomFee" name="CustomFee" oninput="calculateEditDiscount()" class="w-full p-2 border rounded-xl bg-slate-50">
                         </div>
-                        <div>
+                        <div id="editRowAdmissionFee">
                             <label class="block mb-1 text-slate-400">Admission Fee (₹)</label>
                             <input type="number" id="editAdmissionFee" name="AdmissionFee" class="w-full p-2 border rounded-xl bg-slate-50">
                         </div>
-                        <div>
+                        <div id="editRowKitFee">
                             <label class="block mb-1 text-slate-400">Student Kit Fee (₹)</label>
                             <input type="number" id="editStudentKitFee" name="StudentKitFee" class="w-full p-2 border rounded-xl bg-slate-50">
                         </div>
-                        <div>
+                        <div id="editRowUniformFee">
                             <label class="block mb-1 text-slate-400">Spare Uniform Fee (₹)</label>
                             <input type="number" id="editSpareUniformFee" name="SpareUniformFee" class="w-full p-2 border rounded-xl bg-slate-50">
                         </div>
                     </div>
                 </div>
 
-                <div class="border-t pt-3">
+                <div id="sectionEditServices" class="border-t pt-3">
                     <h5 class="font-black text-slate-600 mb-2">Active Monthly Services Parameters</h5>
                     <div class="grid grid-cols-3 gap-3">
-                        <div>
+                        <div id="editBoxVan">
                             <label class="block mb-1 text-slate-400">🚌 Van Service Fee (₹)</label>
                             <input type="number" id="editVanFee" name="VanFee" class="w-full p-2 border rounded-xl bg-slate-50">
                         </div>
-                        <div>
+                        <div id="editBoxDayCare">
                             <label class="block mb-1 text-slate-400">☀️ Day Care Facility Fee (₹)</label>
                             <input type="number" id="editDayCareFee" name="DayCareFee" class="w-full p-2 border rounded-xl bg-slate-50">
                         </div>
-                        <div>
+                        <div id="editBoxOptMonthly">
                             <label class="block mb-1 text-slate-400">🗓️ Custom Monthly Opt Fee (₹)</label>
                             <input type="number" id="editOptMonthlyFee" name="OptMonthlyFee" class="w-full p-2 border rounded-xl bg-slate-50">
                         </div>
@@ -490,26 +499,26 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-3 border-t pt-3">
                     <div>
                         <label class="block mb-1 text-slate-400">Primary Guardian Name</label>
-                        <input type="text" id="editGuardianName" name="GuardianName" required class="w-full p-2 border rounded-xl bg-slate-50 focus:bg-white">
+                        <input type="text" id="editGuardianName" name="GuardianName" required class="w-full p-2 border rounded-xl bg-slate-50">
                     </div>
                     <div>
                         <label class="block mb-1 text-slate-400">Contact Number</label>
-                        <input type="tel" id="editContact" name="Contact" required class="w-full p-2 border rounded-xl bg-slate-50 focus:bg-white">
+                        <input type="tel" id="editContact" name="Contact" required class="w-full p-2 border rounded-xl bg-slate-50">
                     </div>
                     <div>
                         <label class="block mb-1 text-slate-400">Alternative Contact</label>
-                        <input type="tel" id="editAltContact" name="AltContact" class="w-full p-2 border rounded-xl bg-slate-50 focus:bg-white">
+                        <input type="tel" id="editAltContact" name="AltContact" class="w-full p-2 border rounded-xl bg-slate-50">
                     </div>
                     <div>
                         <label class="block mb-1 text-slate-400">Address</label>
-                        <input type="text" id="editAddress" name="Address" class="w-full p-2 border rounded-xl bg-slate-50 focus:bg-white">
+                        <input type="text" id="editAddress" name="Address" class="w-full p-2 border rounded-xl bg-slate-50">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 border-t pt-3">
                     <div>
                         <label class="block mb-1 text-slate-400">Blood Group</label>
-                        <input type="text" id="editBloodGroup" name="BloodGroup" class="w-full p-2 border rounded-xl bg-slate-50 focus:bg-white">
+                        <input type="text" id="editBloodGroup" name="BloodGroup" class="w-full p-2 border rounded-xl bg-slate-50">
                     </div>
                     <div>
                         <label class="block mb-1 text-slate-400">Replace Profile Image</label>
@@ -522,7 +531,7 @@
                         <span>🗑️</span> <span>Delete Student Record</span>
                     </button>
                     <div class="flex space-x-2">
-                        <button type="button" onclick="closeStudentDetailModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl">Cancel</button>
+                        <button type="button" onclick="closeStudentDetailModal()" class="px-4 py-2 bg-slate-100 text-slate-600 font-bold rounded-xl">Cancel</button>
                         <button type="submit" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md">Commit Profile Changes</button>
                     </div>
                 </div>
@@ -543,105 +552,63 @@
     </div>
 
     <div id="paymentModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-[2rem] max-w-lg w-full p-6 shadow-2xl space-y-4 border-2 border-indigo-100 max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-[2rem] max-w-md w-full p-6 shadow-2xl space-y-4 border-2 border-indigo-100 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
                 <div>
-                    <h3 id="modalStudentTitleName" class="font-black text-indigo-950 text-base">Fee Management Deck</h3>
-                    <p id="modalStudentCohortSubtitle" class="text-[10px] font-bold text-amber-600 tracking-wider uppercase">Loading Context...</p>
+                    <h3 id="modalStudentTitleName" class="font-black text-indigo-950 text-base">Fee Particulars Deck</h3>
+                    <p id="modalStudentCohortSubtitle" class="text-[10px] font-bold text-amber-600 tracking-wider uppercase">Balance Monitoring Sheet</p>
                 </div>
                 <button onclick="closePaymentModal()" class="text-2xl text-slate-400 font-bold leading-none">&times;</button>
             </div>
             
-            <form id="modalFeeTrackingForm" onsubmit="commitModalFeeChanges(event)" class="text-xs font-semibold space-y-4">
+            <div class="bg-slate-50 p-4 rounded-2xl border space-y-2 text-xs font-bold text-slate-700">
+                <div class="flex justify-between"><span>Gross Total Billed Commitment:</span><span id="lblModalTotalBilled" class="text-indigo-950">₹0</span></div>
+                <div class="flex justify-between"><span>Cumulative Logged Collections:</span><span id="lblModalTotalPaid" class="text-emerald-600">₹0</span></div>
+                <div class="flex justify-between border-t pt-2 text-sm"><span>Outstanding Net Balance:</span><span id="lblModalOutstandingBalance" class="text-rose-600 font-black">₹0</span></div>
+            </div>
+
+            <form id="modalFeeParticularsForm" onsubmit="commitParticularsTransaction(event)" class="text-xs font-semibold space-y-3">
                 <input type="hidden" id="modalTargetStudentID">
-                
-                <div class="bg-slate-100 p-3 rounded-xl flex items-center justify-between">
+                <h4 class="font-black text-indigo-950 border-b pb-1 uppercase tracking-wider text-[10px] text-slate-400">Record New Payment Transaction</h4>
+                <div>
+                    <label class="block mb-1 text-slate-500">Payment Processing Amount (₹) *</label>
+                    <input type="number" id="txAmountPaid" required class="w-full p-2.5 rounded-xl border bg-slate-50 font-bold text-indigo-950 text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-[10px] uppercase font-bold text-slate-500">Active Billing Period</label>
-                        <select id="modalLedgerTargetMonth" onchange="loadStudentPaymentMonthContext()" class="bg-transparent text-sm font-black text-indigo-950 focus:outline-none mt-0.5">
-                            <option value="July-2026">July 2026</option>
-                            <option value="August-2026">August 2026</option>
-                            <option value="September-2026">September 2026</option>
+                        <label class="block mb-1 text-slate-500">Transaction Date *</label>
+                        <input type="date" id="txPaymentDate" required class="w-full p-2 rounded-xl border bg-slate-50">
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-slate-500">Payment Channel Mode *</label>
+                        <select id="txPaymentMode" required class="w-full p-2 rounded-xl border bg-slate-50">
+                            <option value="Cash">Cash Handover</option>
+                            <option value="UPI">UPI (GPay/PhonePe)</option>
+                            <option value="Netbanking">Netbanking Wire</option>
+                            <option value="Other">Other Mode Channel</option>
                         </select>
                     </div>
                 </div>
-
                 <div>
-                    <h5 class="font-black text-slate-600 uppercase tracking-wide text-[10px] mb-2">Tuition Installments (Core Term Milestones)</h5>
-                    <div class="grid grid-cols-5 gap-2 text-center">
-                        <label class="block bg-slate-50 p-2 rounded-xl border border-slate-200 pointer">
-                            <span class="block text-[9px] text-slate-400 font-bold">Term 1</span>
-                            <input type="checkbox" id="checkTerm1" class="mt-1">
-                        </label>
-                        <label class="block bg-slate-50 p-2 rounded-xl border border-slate-200 pointer">
-                            <span class="block text-[9px] text-slate-400 font-bold">Term 2</span>
-                            <input type="checkbox" id="checkTerm2" class="mt-1">
-                        </label>
-                        <label class="block bg-slate-50 p-2 rounded-xl border border-slate-200 pointer">
-                            <span class="block text-[9px] text-slate-400 font-bold">Term 3</span>
-                            <input type="checkbox" id="checkTerm3" class="mt-1">
-                        </label>
-                        <label class="block bg-slate-50 p-2 rounded-xl border border-slate-200 pointer">
-                            <span class="block text-[9px] text-slate-400 font-bold">Term 4</span>
-                            <input type="checkbox" id="checkTerm4" class="mt-1">
-                        </label>
-                        <label class="block bg-slate-50 p-2 rounded-xl border border-slate-200 pointer">
-                            <span class="block text-[9px] text-slate-400 font-bold">Term 5</span>
-                            <input type="checkbox" id="checkTerm5" class="mt-1">
-                        </label>
-                    </div>
+                    <label class="block mb-1 text-slate-500">Remarks / Verification Track Key</label>
+                    <input type="text" id="txRemarks" placeholder="Reference notes or bank transaction numbers" class="w-full p-2 rounded-xl border bg-slate-50">
                 </div>
-
-                <div>
-                    <h5 class="font-black text-slate-600 uppercase tracking-wide text-[10px] mb-2">Committed Monthly Services & Suspension Toggles</h5>
-                    <div class="space-y-3">
-                        <div class="p-3 bg-slate-50 rounded-2xl border flex items-center justify-between">
-                            <div>
-                                <span class="block text-slate-700">🚌 Transit Services (Van)</span>
-                                <input type="number" id="inputVanFee" class="w-24 px-1.5 py-0.5 border rounded text-xs mt-0.5 bg-slate-50">
-                            </div>
-                            <label class="flex items-center space-x-1 text-rose-600 cursor-pointer font-bold text-[11px]">
-                                <input type="checkbox" id="nullifyVan"> <span>Freeze Month</span>
-                            </label>
-                        </div>
-                        <div class="p-3 bg-slate-50 rounded-2xl border flex items-center justify-between">
-                            <div>
-                                <span class="block text-slate-700">☀️ Day Care Operations</span>
-                                <input type="number" id="inputDayCareFee" class="w-24 px-1.5 py-0.5 border rounded text-xs mt-0.5 bg-slate-50">
-                            </div>
-                            <label class="flex items-center space-x-1 text-rose-600 cursor-pointer font-bold text-[11px]">
-                                <input type="checkbox" id="nullifyDayCare"> <span>Freeze Month</span>
-                            </label>
-                        </div>
-                        <div class="p-3 bg-slate-50 rounded-2xl border flex items-center justify-between">
-                            <div>
-                                <span class="block text-slate-700">🗓️ Custom Monthly Committed Fee</span>
-                                <input type="number" id="inputOptMonthlyFee" class="w-24 px-1.5 py-0.5 border rounded text-xs mt-0.5 bg-slate-50">
-                            </div>
-                            <label class="flex items-center space-x-1 text-rose-600 cursor-pointer font-bold text-[11px]">
-                                <input type="checkbox" id="nullifyOptMonthly"> <span>Freeze Month</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="flex space-x-2 pt-2">
-                    <button type="button" onclick="closePaymentModal()" class="w-1/3 bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl">Cancel</button>
-                    <button type="submit" class="w-2/3 bg-indigo-600 text-white font-bold py-2.5 rounded-xl shadow">Save Ledger Changes</button>
+                    <button type="button" onclick="closePaymentModal()" class="w-1/3 bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl">Close</button>
+                    <button type="submit" class="w-2/3 bg-emerald-600 text-white font-bold py-2.5 rounded-xl shadow">Log Settle Transaction</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        // INSERT TARGET WEB APP LINK URL BELOW
-        const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzkPF0ZqbtqWBzud55OgC-VLFZuChrU5O8woAKZcCfahAxPpAU5WqYnCwk70B_351HOpg/exec";
+        const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwFQ7XxcSrYBWq8HJYocTnLE8fCVCqmD99vuZ_iLPjr788dTnC_dwAWrdNHaG2YlQRTJQ/exec";
         
         let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "ApexSullurpeta2026!";
         let globalAppState = { students: [], payments: [], expenses: [], events: [], standardFees: { "DR":41000, "EW":42000, "RTF1":43000, "RTF2":44000 } };
         let currentActiveCohortFilter = 'ALL';
-        let activeSystemMonthContext = "July-2026";
-        const AVATAR_COLORS = ['bg-indigo-500', 'bg-rose-500', 'bg-emerald-500', 'bg-amber-500', 'bg-purple-500', 'bg-sky-500', 'bg-cyan-500'];
+        let currentExpenseTimeframeContext = 'monthly';
+        const AVATAR_COLORS = ['bg-indigo-500', 'bg-rose-500', 'bg-emerald-500', 'bg-amber-500', 'bg-purple-500', 'bg-sky-500'];
 
         function attemptAuthentication() {
             if (document.getElementById('gateKey').value === CURRENT_GATE_PASSPHRASE) {
@@ -659,88 +626,116 @@
             document.getElementById('changePasswordModalOverlay').classList.remove('hidden');
         }
         function closeChangePasswordModal() { document.getElementById('changePasswordModalOverlay').classList.add('hidden'); }
-        
         function commitNewPasscodeKey() {
             const val = document.getElementById('newPasscodeInput').value.trim();
             if(val) {
-                CURRENT_GATE_PASSPHRASE = val;
-                localStorage.setItem("LM_PASSPHRASE", val);
-                alert("Passcode updated!");
-                closeChangePasswordModal();
+                CURRENT_GATE_PASSPHRASE = val; localStorage.setItem("LM_PASSPHRASE", val);
+                alert("Passcode updated!"); closeChangePasswordModal();
+            }
+        }
+
+        // Intake Interface Adaptive Display Toggle Engine
+        function handleFormBillingTypeChange(type) {
+            const rowAnnual = document.getElementById('rowAnnualTuition');
+            const rowAdmission = document.getElementById('rowAdmissionFee');
+            const rowKit = document.getElementById('rowKitFee');
+            const boxOpt = document.getElementById('boxFormOptMonthly');
+            const chkOpt = document.getElementById('chkOptMonthly');
+
+            if(type === 'Regular') {
+                rowAnnual.style.display = "block";
+                rowAdmission.style.display = "none"; document.getElementById('intakeAdmissionFee').value = "0";
+                rowKit.style.display = "none"; document.getElementById('intakeKitFee').value = "0";
+                boxOpt.style.display = "none"; chkOpt.checked = false;
+                document.getElementById('FormOptMonthlyFee').value = "0"; document.getElementById('FormOptMonthlyFee').disabled = true;
+                document.getElementById('intakeDiscountBadge').style.display = "inline-block";
+                updateIntakeClassFeeDefault();
+            } else {
+                rowAnnual.style.display = "none"; document.getElementById('intakeAnnualTuition').value = "0";
+                rowAdmission.style.display = "block";
+                rowKit.style.display = "block";
+                boxOpt.style.display = "block"; chkOpt.checked = true; chkOpt.disabled = false;
+                document.getElementById('FormOptMonthlyFee').disabled = false;
+                document.getElementById('intakeDiscountBadge').style.display = "none";
+            }
+        }
+
+        function handleEditFormBillingTypeChange(type) {
+            const rowAnnual = document.getElementById('editRowAnnualTuition');
+            const rowAdmission = document.getElementById('editRowAdmissionFee');
+            const rowKit = document.getElementById('editRowKitFee');
+            const boxOpt = document.getElementById('editBoxOptMonthly');
+
+            if(type === 'Regular') {
+                rowAnnual.style.display = "block";
+                rowAdmission.style.display = "none"; document.getElementById('editAdmissionFee').value = "0";
+                rowKit.style.display = "none"; document.getElementById('editStudentKitFee').value = "0";
+                boxOpt.style.display = "none"; document.getElementById('editOptMonthlyFee').value = "0";
+                document.getElementById('editDiscountBadge').style.display = "inline-block";
+                calculateEditDiscount();
+            } else {
+                rowAnnual.style.display = "none"; document.getElementById('editCustomFee').value = "0";
+                rowAdmission.style.display = "block";
+                rowKit.style.display = "block";
+                boxOpt.style.display = "block";
+                document.getElementById('editDiscountBadge').style.display = "none";
             }
         }
 
         function updateIntakeClassFeeDefault() {
             const cls = document.getElementById('intakeClassSelect').value;
-            const isRegular = document.querySelector('input[name="BillingModel"]:checked').value === 'Regular';
-            if(isRegular) { document.getElementById('intakeAnnualTuition').value = globalAppState.standardFees[cls] || 0; }
-            calculateIntakeDiscount();
-        }
-
-        function calculateIntakeDiscount() {
-            const cls = document.getElementById('intakeClassSelect').value;
-            const base = globalAppState.standardFees[cls] || 0;
-            const custom = Number(document.getElementById('intakeAnnualTuition').value) || 0;
-            const disc = base - custom;
-            document.getElementById('intakeDiscountBadge').innerText = `₹${disc > 0 ? disc : 0} Offered Discount`;
-        }
-
-        function updateEditClassFeeDefault() {
-            const cls = document.getElementById('editClass').value;
-            const isRegular = document.querySelector('input[name="EditBillingModel"]:checked').value === 'Regular';
-            if(isRegular) { document.getElementById('editCustomFee').value = globalAppState.standardFees[cls] || 0; }
-            calculateEditDiscount();
-        }
-
-        function calculateEditDiscount() {
-            const cls = document.getElementById('editClass').value;
-            const base = globalAppState.standardFees[cls] || 0;
-            const custom = Number(document.getElementById('editCustomFee').value) || 0;
-            const disc = base - custom;
-            document.getElementById('editDiscountBadge').innerText = `₹${disc > 0 ? disc : 0} Offered Discount`;
-        }
-
-        function handleFormBillingTypeChange(type) {
-            const annualTuition = document.getElementById('intakeAnnualTuition');
-            const admissionFee = document.getElementById('intakeAdmissionFee');
-            const kitFee = document.getElementById('intakeKitFee');
-            const chkOpt = document.getElementById('chkOptMonthly');
-
-            if (type === 'Regular') {
-                annualTuition.disabled = false; updateIntakeClassFeeDefault();
-                admissionFee.disabled = true; admissionFee.value = "0";
-                kitFee.disabled = true; kitFee.value = "0";
-                document.getElementById('boxFormOptMonthly').style.opacity = "0.4";
-                chkOpt.checked = false; chkOpt.disabled = true;
-                document.getElementById('FormOptMonthlyFee').disabled = true; document.getElementById('FormOptMonthlyFee').value = "0";
+            if(cls === 'DayCare') {
+                document.getElementById('editModelMonthly').checked = true;
+                document.getElementById('editModelRegular').checked = false;
+                document.querySelector('input[name="BillingModel"][value="Monthly"]').checked = true;
+                handleFormBillingTypeChange('Monthly');
+                document.getElementById('formModelWrapper').style.display = "none";
+                document.getElementById('rowAdmissionFee').style.display = "none";
+                document.getElementById('rowKitFee').style.display = "none";
+                document.getElementById('rowUniformFee').style.display = "none";
+                document.getElementById('boxFormVan').style.display = "none";
+                document.getElementById('boxFormDayCare').style.display = "none";
             } else {
-                annualTuition.disabled = true; annualTuition.value = "0";
-                admissionFee.disabled = false; kitFee.disabled = false;
-                document.getElementById('boxFormOptMonthly').style.opacity = "1";
-                chkOpt.disabled = false;
+                document.getElementById('formModelWrapper').style.display = "flex";
+                document.getElementById('rowUniformFee').style.display = "block";
+                document.getElementById('boxFormVan').style.display = "block";
+                document.getElementById('boxFormDayCare').style.display = "block";
+                const isRegular = document.querySelector('input[name="BillingModel"]:checked').value === 'Regular';
+                if(isRegular) {
+                    document.getElementById('intakeAnnualTuition').value = globalAppState.standardFees[cls] || 0;
+                    handleFormBillingTypeChange('Regular');
+                }
             }
             calculateIntakeDiscount();
         }
 
-        function handleEditFormBillingTypeChange(type) {
-            const annualTuition = document.getElementById('editCustomFee');
-            const admissionFee = document.getElementById('editAdmissionFee');
-            const kitFee = document.getElementById('editStudentKitFee');
-
-            if(type === 'Regular') {
-                annualTuition.disabled = false;
-                admissionFee.disabled = true; admissionFee.value = "0";
-                kitFee.disabled = true; kitFee.value = "0";
+        function updateEditClassFeeDefault() {
+            const cls = document.getElementById('editClass').value;
+            if(cls === 'DayCare') {
+                document.getElementById('editModelMonthly').checked = true;
+                handleEditFormBillingTypeChange('Monthly');
+                document.getElementById('editModelWrapper').style.display = "none";
+                document.getElementById('editRowAdmissionFee').style.display = "none";
+                document.getElementById('editRowKitFee').style.display = "none";
+                document.getElementById('editRowUniformFee').style.display = "none";
+                document.getElementById('editBoxVan').style.display = "none";
+                document.getElementById('editBoxDayCare').style.display = "none";
             } else {
-                annualTuition.disabled = true; annualTuition.value = "0";
-                admissionFee.disabled = false; kitFee.disabled = false;
+                document.getElementById('editModelWrapper').style.display = "flex";
+                document.getElementById('editRowUniformFee').style.display = "block";
+                document.getElementById('editBoxVan').style.display = "block";
+                document.getElementById('editBoxDayCare').style.display = "block";
+                const isRegular = document.querySelector('input[name="EditBillingModel"]:checked').value === 'Regular';
+                if(isRegular) {
+                    document.getElementById('editCustomFee').value = globalAppState.standardFees[cls] || 0;
+                    handleEditFormBillingTypeChange('Regular');
+                }
             }
             calculateEditDiscount();
         }
 
         function toggleFormFeeInput(checkbox, targetInputId) {
-            const inp = document.getElementById(targetInputId);
-            inp.disabled = !checkbox.checked;
+            const inp = document.getElementById(targetInputId); inp.disabled = !checkbox.checked;
             if(!checkbox.checked) inp.value = "0";
         }
 
@@ -751,8 +746,7 @@
                 btn.classList.add('text-slate-600', 'hover:bg-slate-300');
             });
             document.getElementById(tabId).classList.remove('hidden');
-            const b = document.getElementById('btn-' + tabId);
-            if(b) b.classList.add('bg-white', 'text-indigo-950', 'shadow-sm');
+            const b = document.getElementById('btn-' + tabId); if(b) b.classList.add('bg-white', 'text-indigo-950', 'shadow-sm');
         }
 
         async function refreshApplicationState() {
@@ -765,7 +759,7 @@
                     globalAppState.expenses = result.data.expenses || [];
                     globalAppState.events = result.data.events || [];
                     
-                    renderEnrollmentHeadcounts();
+                    renderCohortHeadcounts();
                     renderStudentCards();
                     renderBirthdayWidget();
                     renderCalendarAgenda();
@@ -773,31 +767,17 @@
                     renderInsightsPanel();
                     renderFrontPageReminders();
                 }
-            } catch (err) { console.error("Database connection fault:", err); }
+            } catch (err) { console.error("Cloud database communication lost:", err); }
         }
 
-        function renderEnrollmentHeadcounts() {
-            const activeStudents = globalAppState.students.filter(s => s.StudentName && s.StudentName !== "DELETED");
-            const dr = activeStudents.filter(s => s.Class === "DR").length;
-            const ew = activeStudents.filter(s => s.Class === "EW").length;
-            const rtf1 = activeStudents.filter(s => s.Class === "RTF1").length;
-            const rtf2 = activeStudents.filter(s => s.Class === "RTF2").length;
-
-            document.getElementById('countCohortDR').innerText = `${dr} Kids`;
-            document.getElementById('countCohortEW').innerText = `${ew} Kids`;
-            document.getElementById('countCohortRTF1').innerText = `${rtf1} Kids`;
-            document.getElementById('countCohortRTF2').innerText = `${rtf2} Kids`;
-            document.getElementById('countCohortTotal').innerText = `${activeStudents.length} Active`;
-        }
-
-        function calculateExactAge(dobString) {
-            if (!dobString) return "N/A";
-            const birth = new Date(dobString);
-            if (isNaN(birth.getTime())) return "N/A";
-            const today = new Date();
-            let age = today.getFullYear() - birth.getFullYear();
-            if (today.getMonth() < birth.getMonth() || (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) age--;
-            return age;
+        function renderCohortHeadcounts() {
+            const list = globalAppState.students.filter(s => s.StudentName && s.StudentName !== "DELETED");
+            document.getElementById('countCohortDR').innerText = `${list.filter(s=>s.Class==='DR').length} Kids`;
+            document.getElementById('countCohortEW').innerText = `${list.filter(s=>s.Class==='EW').length} Kids`;
+            document.getElementById('countCohortRTF1').innerText = `${list.filter(s=>s.Class==='RTF1').length} Kids`;
+            document.getElementById('countCohortRTF2').innerText = `${list.filter(s=>s.Class==='RTF2').length} Kids`;
+            document.getElementById('countCohortDC').innerText = `${list.filter(s=>s.Class==='DayCare').length} Kids`;
+            document.getElementById('countCohortTotal').innerText = `${list.length} Active`;
         }
 
         function renderStudentCards() {
@@ -827,14 +807,14 @@
                                 ${imageContent}
                             </div>
                             <div class="flex-1 min-w-0">
-                                <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded uppercase">${student.Class}</span>
+                                <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded uppercase">${student.Class === 'DayCare' ? 'DayCare Track' : student.Class}</span>
                                 <h4 class="font-black text-slate-900 text-sm truncate mt-1">${student.StudentName}</h4>
-                                <p class="text-[11px] text-slate-400 font-semibold">Guard: ${student.GuardianName || 'N/A'} | Contact: ${student.Contact || 'N/A'}</p>
+                                <p class="text-[11px] text-slate-400 font-semibold">Guard: ${student.GuardianName || 'N/A'}</p>
                             </div>
                         </div>
                         <div class="mt-4 pt-3 border-t flex justify-between items-center" onclick="event.stopPropagation();">
                             <div class="flex space-x-1 text-sm">${vanIcon}${dayIcon}${optIcon}</div>
-                            <button onclick="openPaymentModal('${student.StudentID}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-[11px]">💰 Installments</button>
+                            <button onclick="openPaymentModal('${student.StudentID}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-[11px]">💰 Fee Particulars</button>
                         </div>
                     </div>
                 `);
@@ -845,24 +825,32 @@
             const vanBox = document.getElementById('containerVanReminders'); vanBox.innerHTML = '';
             const dcBox = document.getElementById('containerDayCareReminders'); dcBox.innerHTML = '';
             const optBox = document.getElementById('containerOptReminders'); optBox.innerHTML = '';
-
             let vCount = 0, dCount = 0, oCount = 0;
 
             globalAppState.students.filter(s => s.StudentName && s.StudentName !== "DELETED").forEach(s => {
-                const p = globalAppState.payments.find(x => x.StudentID === s.StudentID && x.MonthYear === activeSystemMonthContext) || {};
-                const nulls = p.NullifiedServices ? p.NullifiedServices.split(',') : [];
+                const payments = globalAppState.payments.filter(x => x.StudentID === s.StudentID);
+                const currentMonthPayment = payments.find(x => x.MonthYear === activeSystemMonthContext) || {};
+                const nulls = currentMonthPayment.NullifiedServices ? currentMonthPayment.NullifiedServices.split(',') : [];
+                
+                let cumulativePaid = 0;
+                payments.forEach(p => cumulativePaid += (Number(p.AmountPaid) || 0));
+                
+                const totalBilledStructure = (Number(s.CustomFee)||0) + (Number(s.AdmissionFee)||0) + (Number(s.StudentKitFee)||0) + (Number(s.SpareUniformFee)||0) + (Number(s.VanFee)||0) + (Number(s.DayCareFee)||0) + (Number(s.OptMonthlyFee)||0);
+                const outstandingBalance = totalBilledStructure - cumulativePaid;
 
-                if(Number(s.VanFee) > 0 && !nulls.includes('Van') && p.Status !== "Settled") {
+                if (outstandingBalance <= 0) return;
+
+                if(Number(s.VanFee) > 0 && !nulls.includes('Van') && currentMonthPayment.Status !== "Settled") {
                     vCount++;
-                    vanBox.insertAdjacentHTML('beforeend', `<div class="flex justify-between items-center bg-white p-2 rounded-lg border mb-1"><span>${s.StudentName} (<strong class="text-rose-600">₹${s.VanFee}</strong>)</span><button onclick="quickSettleFee('${p.PaymentID || 'NEW-' + s.StudentID}')" class="bg-emerald-500 text-white px-2 py-0.5 rounded text-[10px]">Paid</button></div>`);
+                    vanBox.insertAdjacentHTML('beforeend', `<div class="flex justify-between items-center bg-white p-2 rounded-lg border mb-1"><span>${s.StudentName} (<strong class="text-rose-600">₹${s.VanFee}</strong>)</span><button onclick="openPaymentModal('${s.StudentID}')" class="bg-indigo-600 text-white px-2 py-0.5 rounded text-[10px]">Open Particulars</button></div>`);
                 }
-                if(Number(s.DayCareFee) > 0 && !nulls.includes('DayCare') && p.Status !== "Settled") {
+                if(Number(s.DayCareFee) > 0 && !nulls.includes('DayCare') && currentMonthPayment.Status !== "Settled") {
                     dCount++;
-                    dcBox.insertAdjacentHTML('beforeend', `<div class="flex justify-between items-center bg-white p-2 rounded-lg border mb-1"><span>${s.StudentName} (<strong class="text-rose-600">₹${s.DayCareFee}</strong>)</span><button onclick="quickSettleFee('${p.PaymentID || 'NEW-' + s.StudentID}')" class="bg-emerald-500 text-white px-2 py-0.5 rounded text-[10px]">Paid</button></div>`);
+                    dcBox.insertAdjacentHTML('beforeend', `<div class="flex justify-between items-center bg-white p-2 rounded-lg border mb-1"><span>${s.StudentName} (<strong class="text-rose-600">₹${s.DayCareFee}</strong>)</span><button onclick="openPaymentModal('${s.StudentID}')" class="bg-indigo-600 text-white px-2 py-0.5 rounded text-[10px]">Open Particulars</button></div>`);
                 }
-                if(Number(s.OptMonthlyFee) > 0 && !nulls.includes('OptMonthly') && p.Status !== "Settled") {
+                if(Number(s.OptMonthlyFee) > 0 && !nulls.includes('OptMonthly') && currentMonthPayment.Status !== "Settled") {
                     oCount++;
-                    optBox.insertAdjacentHTML('beforeend', `<div class="flex justify-between items-center bg-white p-2 rounded-lg border mb-1"><span>${s.StudentName} (<strong class="text-rose-600">₹${s.OptMonthlyFee}</strong>)</span><button onclick="quickSettleFee('${p.PaymentID || 'NEW-' + s.StudentID}')" class="bg-emerald-500 text-white px-2 py-0.5 rounded text-[10px]">Paid</button></div>`);
+                    optBox.insertAdjacentHTML('beforeend', `<div class="flex justify-between items-center bg-white p-2 rounded-lg border mb-1"><span>${s.StudentName} (<strong class="text-rose-600">₹${s.OptMonthlyFee}</strong>)</span><button onclick="openPaymentModal('${s.StudentID}')" class="bg-indigo-600 text-white px-2 py-0.5 rounded text-[10px]">Open Particulars</button></div>`);
                 }
             });
 
@@ -871,37 +859,54 @@
             document.getElementById('countOptDues').innerText = oCount;
         }
 
-        async function quickSettleFee(payId) {
-            let actualPayId = payId; let targetSid = "";
-            if(payId.startsWith('NEW-')) {
-                targetSid = payId.replace('NEW-', ''); actualPayId = "PAY-" + targetSid + "-" + activeSystemMonthContext;
-            } else {
-                const pMatch = globalAppState.payments.find(x => x.PaymentID === payId);
-                targetSid = pMatch ? pMatch.StudentID : "";
-            }
-
-            const pObj = globalAppState.payments.find(x => x.PaymentID === actualPayId) || {};
-            const sObj = globalAppState.students.find(x => x.StudentID === targetSid) || {};
-
-            const row = [
-                actualPayId, targetSid, activeSystemMonthContext, 
-                pObj.Term1 === true || pObj.Term1 === "TRUE", false, false, false, false, 
-                sObj.VanFee || 0, sObj.DayCareFee || 0, sObj.OptMonthlyFee || 0, sObj.SpareUniformFee || 0, 
-                "Settled", pObj.NullifiedServices || ""
-            ];
+        function openPaymentModal(sid) {
+            const s = globalAppState.students.find(x => x.StudentID === sid);
+            if(!s) return;
+            document.getElementById('modalTargetStudentID').value = sid;
+            document.getElementById('modalStudentTitleName').innerText = s.StudentName;
+            document.getElementById('modalStudentCohortSubtitle').innerText = `${s.Class} Fee Particulars Matrix`;
             
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Fee_Payments", rowId: actualPayId, rowData: row })});
-            alert("Payment Logged!"); refreshApplicationState();
+            const payments = globalAppState.payments.filter(x => x.StudentID === sid);
+            let cumulativePaid = 0;
+            payments.forEach(p => cumulativePaid += (Number(p.AmountPaid) || 0));
+
+            const totalBilledStructure = (Number(s.CustomFee)||0) + (Number(s.AdmissionFee)||0) + (Number(s.StudentKitFee)||0) + (Number(s.SpareUniformFee)||0) + (Number(s.VanFee)||0) + (Number(s.DayCareFee)||0) + (Number(s.OptMonthlyFee)||0);
+            
+            document.getElementById('lblModalTotalBilled').innerText = `₹${totalBilledStructure}`;
+            document.getElementById('lblModalTotalPaid').innerText = `₹${cumulativePaid}`;
+            document.getElementById('lblModalOutstandingBalance').innerText = `₹${totalBilledStructure - cumulativePaid}`;
+            
+            document.getElementById('txAmountPaid').value = totalBilledStructure - cumulativePaid;
+            document.getElementById('txPaymentDate').value = new Date().toISOString().substring(0,10);
+
+            loadStudentPaymentMonthContext();
+            document.getElementById('paymentModalOverlay').classList.remove('hidden');
+        }
+
+        async function commitParticularsTransaction(e) {
+            e.preventDefault();
+            const sid = document.getElementById('modalTargetStudentID').value;
+            const m = document.getElementById('modalLedgerTargetMonth').value;
+            const sObj = globalAppState.students.find(x => x.StudentID === sid) || {};
+
+            const txId = "TX-" + Date.now();
+            const row = [
+                txId, sid, m, Number(document.getElementById('txAmountPaid').value)||0,
+                document.getElementById('txPaymentDate').value, document.getElementById('txPaymentMode').value,
+                document.getElementById('txRemarks').value, sObj.VanFee||0, sObj.DayCareFee||0, sObj.OptMonthlyFee||0,
+                sObj.SpareUniformFee||0, "Settled", ""
+            ];
+
+            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })});
+            alert("Payment Settled & Balance Calculated!"); closePaymentModal(); refreshApplicationState();
         }
 
         function openStudentDetailModal(sid) {
             const s = globalAppState.students.find(x => x.StudentID === sid);
             if(!s) return;
-
             document.getElementById('detailStudentID').value = s.StudentID;
             document.getElementById('detailStudentNameHeader').innerText = s.StudentName;
-            document.getElementById('detailStudentClassHeader').innerText = `${s.Class} Enrollment Profile`;
-            
+            document.getElementById('detailStudentClassHeader').innerText = `${s.Class} Master Record`;
             document.getElementById('editStudentName').value = s.StudentName;
             document.getElementById('editDOB').value = s.DOB ? s.DOB.substring(0,10) : "";
             document.getElementById('editGender').value = s.Gender || "Boy";
@@ -913,13 +918,17 @@
             document.getElementById('editBloodGroup').value = s.BloodGroup || "";
             document.getElementById('detailPhotoBase64').value = s.PhotoBase64 || "N/A";
 
+            updateEditClassFeeDashboardDisplay(s);
+            document.getElementById('studentDetailModalOverlay').classList.remove('hidden');
+        }
+
+        function updateEditClassFeeDashboardDisplay(s) {
             const bModel = s.BillingModel || "Regular";
             if(bModel === "Regular") {
                 document.getElementById('editModelRegular').checked = true; handleEditFormBillingTypeChange('Regular');
             } else {
                 document.getElementById('editModelMonthly').checked = true; handleEditFormBillingTypeChange('Monthly');
             }
-
             document.getElementById('editCustomFee').value = s.CustomFee || 0;
             document.getElementById('editAdmissionFee').value = s.AdmissionFee || 0;
             document.getElementById('editStudentKitFee').value = s.StudentKitFee || 0;
@@ -927,209 +936,137 @@
             document.getElementById('editVanFee').value = s.VanFee || 0;
             document.getElementById('editDayCareFee').value = s.DayCareFee || 0;
             document.getElementById('editOptMonthlyFee').value = s.OptMonthlyFee || 0;
-
+            if(s.Class === 'DayCare') { updateEditClassFeeDefault(); }
             calculateEditDiscount();
-
             const photoSlot = document.getElementById('detailProfilePhotoSlot');
-            if(s.PhotoBase64 && s.PhotoBase64 !== "N/A" && s.PhotoBase64.length > 50) {
-                photoSlot.innerHTML = `<img src="${s.PhotoBase64}" class="w-full h-full object-cover">`;
-            } else {
-                photoSlot.innerHTML = `<div class="w-full h-full bg-indigo-600 text-white font-black flex items-center justify-center text-sm uppercase">${s.StudentName.charAt(0)}</div>`;
-            }
-
-            document.getElementById('studentDetailModalOverlay').classList.remove('hidden');
-        }
-
-        function closeStudentDetailModal() { document.getElementById('studentDetailModalOverlay').classList.add('hidden'); }
-
-        async function triggerDeleteStudent() {
-            const sid = document.getElementById('detailStudentID').value;
-            if(confirm("Permanently drop student enrollment file record?")) {
-                await fetch(APP_SHEET_API_URL, {
-                    method: "POST", mode: "no-cors",
-                    body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: [sid, "DELETED", "", "", "", "", "", "", "", "N/A"] })
-                });
-                alert("Profile Terminated!"); closeStudentDetailModal(); refreshApplicationState();
-            }
-        }
-
-        function processEditImageUpload(input) {
-            const file = input.files[0];
-            if (!file) return;
-            const r = new FileReader();
-            r.onloadend = () => { document.getElementById('detailPhotoBase64').value = r.result; };
-            r.readAsDataURL(file);
+            photoSlot.innerHTML = (s.PhotoBase64 && s.PhotoBase64 !== "N/A" && s.PhotoBase64.length > 50) ? `<img src="${s.PhotoBase64}" class="w-full h-full object-cover">` : s.StudentName.charAt(0);
         }
 
         async function handleStudentDetailUpdate(e) {
-            e.preventDefault();
-            const f = new FormData(e.target);
-            const sid = document.getElementById('detailStudentID').value;
+            e.preventDefault(); const f = new FormData(e.target); const sid = document.getElementById('detailStudentID').value;
             const mModel = document.querySelector('input[name="EditBillingModel"]:checked').value;
-
-            const rowData = [
-                sid, f.get('StudentName'), f.get('DOB'), f.get('Gender'), f.get('Class'),
-                f.get('GuardianName'), f.get('Contact'), f.get('AltContact'), f.get('Address'),
-                document.getElementById('detailPhotoBase64').value || "N/A", mModel,
-                Number(f.get('CustomFee'))||0, Number(f.get('AdmissionFee'))||0, Number(f.get('StudentKitFee'))||0, Number(f.get('SpareUniformFee'))||0,
-                Number(f.get('VanFee'))||0, Number(f.get('DayCareFee'))||0, Number(f.get('OptMonthlyFee'))||0, f.get('BloodGroup')
-            ];
-
+            const rowData = [sid, f.get('StudentName'), f.get('DOB'), f.get('Gender'), f.get('Class'), f.get('GuardianName'), f.get('Contact'), f.get('AltContact'), f.get('Address'), document.getElementById('detailPhotoBase64').value || "N/A", mModel, Number(f.get('CustomFee'))||0, Number(f.get('AdmissionFee'))||0, Number(f.get('StudentKitFee'))||0, Number(f.get('SpareUniformFee'))||0, Number(f.get('VanFee'))||0, Number(f.get('DayCareFee'))||0, Number(f.get('OptMonthlyFee'))||0, f.get('BloodGroup')];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: rowData })});
-            alert("Database Record Synchronized Successfully!"); closeStudentDetailModal(); refreshApplicationState();
+            alert("Profile Synchronized!"); closeStudentDetailModal(); refreshApplicationState();
         }
 
-        function executeSearchFilter() { renderStudentCards(); }
-        function processImageUpload(input) {
-            const file = input.files[0];
-            if (!file) return;
-            const r = new FileReader();
-            r.onloadend = () => document.getElementById('base64PayloadCache').value = r.result;
-            r.readAsDataURL(file);
-        }
-
-        async function handleStudentSubmission(e) {
-            e.preventDefault();
-            const f = new FormData(e.target);
-            const sid = "STU-" + Date.now();
-            const photo = document.getElementById('base64PayloadCache').value || "N/A";
-            const bModel = document.querySelector('input[name="BillingModel"]:checked').value;
-
-            const studentRow = [
-                sid, f.get('StudentName'), f.get('DOB'), f.get('Gender'), f.get('Class'),
-                f.get('GuardianName'), f.get('Contact'), f.get('AltContact'), f.get('Address'), photo,
-                bModel, Number(f.get('CustomFee'))||0, Number(f.get('AdmissionFee'))||0, Number(f.get('StudentKitFee'))||0, Number(f.get('SpareUniformFee'))||0,
-                Number(f.get('VanFee'))||0, Number(f.get('DayCareFee'))||0, Number(f.get('OptMonthlyFee'))||0, f.get('BloodGroup')
-            ];
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Students", rowData: studentRow })});
-
-            const pRow = ["PAY-"+sid+"-"+activeSystemMonthContext, sid, activeSystemMonthContext, false, false, false, false, false, Number(f.get('VanFee'))||0, Number(f.get('DayCareFee'))||0, Number(f.get('OptMonthlyFee'))||0, 0, "Active", ""];
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: pRow })});
-
-            alert("Admissions Profile Created!"); e.target.reset(); document.getElementById('base64PayloadCache').value = ""; refreshApplicationState();
-        }
-
-        function openPaymentModal(sid) {
-            const s = globalAppState.students.find(x => x.StudentID === sid);
-            document.getElementById('modalTargetStudentID').value = sid;
-            document.getElementById('modalStudentTitleName').innerText = s.StudentName;
-            loadStudentPaymentMonthContext();
-            document.getElementById('paymentModalOverlay').classList.remove('hidden');
-        }
-
-        function loadStudentPaymentMonthContext() {
-            const sid = document.getElementById('modalTargetStudentID').value;
-            const m = document.getElementById('modalLedgerTargetMonth').value;
-            const p = globalAppState.payments.find(x => x.StudentID === sid && x.MonthYear === m) || {};
-
-            document.getElementById('checkTerm1').checked = p.Term1 === true || p.Term1 === "TRUE";
-            document.getElementById('checkTerm2').checked = p.Term2 === true || p.Term2 === "TRUE";
-            document.getElementById('checkTerm3').checked = p.Term3 === true || p.Term3 === "TRUE";
-            document.getElementById('checkTerm4').checked = p.Term4 === true || p.Term4 === "TRUE";
-            document.getElementById('checkTerm5').checked = p.Term5 === true || p.Term5 === "TRUE";
-
-            document.getElementById('inputVanFee').value = p.VanFee || 0;
-            document.getElementById('inputDayCareFee').value = p.DayCareFee || 0;
-            document.getElementById('inputOptMonthlyFee').value = p.OptMonthlyFee || 0;
-
-            const nulls = p.NullifiedServices ? p.NullifiedServices.split(',') : [];
-            document.getElementById('nullifyVan').checked = nulls.includes('Van');
-            document.getElementById('nullifyDayCare').checked = nulls.includes('DayCare');
-            document.getElementById('nullifyOptMonthly').checked = nulls.includes('OptMonthly');
-        }
-
-        async function commitModalFeeChanges(e) {
-            e.preventDefault();
-            const sid = document.getElementById('modalTargetStudentID').value;
-            const m = document.getElementById('modalLedgerTargetMonth').value;
-            const nulls = [];
-            if (document.getElementById('nullifyVan').checked) nulls.push('Van');
-            if (document.getElementById('nullifyDayCare').checked) nulls.push('DayCare');
-            if (document.getElementById('nullifyOptMonthly').checked) nulls.push('OptMonthly');
-
-            const row = ["PAY-"+sid+"-"+m, sid, m, document.getElementById('checkTerm1').checked, document.getElementById('checkTerm2').checked, document.getElementById('checkTerm3').checked, document.getElementById('checkTerm4').checked, document.getElementById('checkTerm5').checked, Number(document.getElementById('inputVanFee').value)||0, Number(document.getElementById('inputDayCareFee').value)||0, Number(document.getElementById('inputOptMonthlyFee').value)||0, 0, "Active", nulls.join(',')];
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Fee_Payments", rowId: "PAY-"+sid+"-"+m, rowData: row })});
-            alert("Balances Saved!"); closePaymentModal(); refreshApplicationState();
-        }
-
-        function closePaymentModal() { document.getElementById('paymentModalOverlay').classList.add('hidden'); }
-
-        function renderBirthdayWidget() {
-            const c = document.getElementById('birthdayRosterContainer');
-            document.getElementById('birthdayTitleMonth').innerText = `Active July Birthday Desk`;
-            const bdays = [];
-            globalAppState.students.filter(s => s.StudentName && s.StudentName !== "DELETED").forEach(s => {
-                if(!s.DOB) return;
-                const dateClean = s.DOB.toString().substring(0,10);
-                const parts = dateClean.split('-');
-                if(parts.length < 3) return;
-                const dayNum = parseInt(parts[2], 10);
-                bdays.push(`🎂 <strong>${s.StudentName}</strong> - Date: July ${dayNum} (Turning ${calculateExactAge(s.DOB)} Years Old)`);
-            });
-            c.innerHTML = bdays.length ? bdays.join('<br>') : "✨ No birthday parameters logged for July.";
-        }
-
-        function renderCalendarAgenda() {
-            const stream = document.getElementById('calendarAgendaStream'); stream.innerHTML = '';
-            if(!globalAppState.events.length) { stream.innerHTML = '<p class="text-xs text-slate-400">No events posted for July 2026.</p>'; return; }
-            globalAppState.events.forEach(e => {
-                stream.insertAdjacentHTML('beforeend', `<div class="p-3 border-l-4 border-indigo-500 bg-indigo-50 text-slate-900 text-xs font-semibold flex justify-between"><div><h5 class="font-black">${e.Title}</h5><span>🗓️ ${e.Date ? e.Date.substring(0,10) : ''}</span></div></div>`);
-            });
-        }
-
-        async function handleExpenseSubmission(e) {
-            e.preventDefault();
-            const f = new FormData(e.target);
-            const row = ["EXP-"+Date.now(), f.get('Date'), f.get('Category'), Number(f.get('Amount')), f.get('Description'), f.get('Type')];
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Expenses", rowData: row })});
-            alert("Expense Logged!"); e.target.reset(); refreshApplicationState();
-        }
-
-        async function handleEventSubmission(e) {
-            e.preventDefault();
-            const f = new FormData(e.target);
-            const row = ["EVT-"+Date.now(), f.get('Title'), f.get('Date'), f.get('Time'), f.get('Category')];
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Events", rowData: row })});
-            alert("Event Logged!"); e.target.reset(); refreshApplicationState();
+        function setExpenseGraphTimeframe(frame) {
+            currentExpenseTimeframeContext = frame;
+            document.querySelectorAll('[id^="btnExpTime-"]').forEach(btn => btn.classList.replace('bg-white', 'text-slate-600'));
+            document.getElementById('btnExpTime-' + frame).classList.add('bg-white', 'text-indigo-950', 'shadow-sm');
+            renderFinanceLedger();
         }
 
         function renderFinanceLedger() {
             let totalReceivables = 0, totalCollected = 0, totalExpenses = 0; const cats = {};
-            
+            const expenseStreamBox = document.getElementById('containerRunningExpensesList'); expenseStreamBox.innerHTML = '';
+
+            // Compute dynamic aggregations based on timezone filters
+            const now = new Date();
             globalAppState.payments.forEach(p => {
-                const nulls = p.NullifiedServices ? p.NullifiedServices.split(',') : [];
-                const rowBilled = (nulls.includes('Van')?0:Number(p.VanFee)||0) + (nulls.includes('DayCare')?0:Number(p.DayCareFee)||0) + (nulls.includes('OptMonthly')?0:Number(p.OptMonthlyFee)||0) + (Number(p.UniformFee)||0);
-                totalReceivables += rowBilled;
-                if(p.Status === "Settled") totalCollected += rowBilled;
+                totalReceivables += (Number(p.VanFee)||0) + (Number(p.DayCareFee)||0) + (Number(p.OptMonthlyFee)||0) + (Number(p.UniformFee)||0);
+                totalCollected += (Number(p.AmountPaid) || 0);
             });
-            
-            globalAppState.expenses.forEach(e => { const a = Number(e.Amount)||0; totalExpenses += a; cats[e.Category] = (cats[e.Category]||0) + a; });
-            const outstanding = totalReceivables - totalCollected;
+
+            let filteredExpenses = globalAppState.expenses;
+            if (currentExpenseTimeframeContext === 'monthly') {
+                filteredExpenses = globalAppState.expenses.filter(e => {
+                    const d = new Date(e.Date);
+                    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                });
+            } else if (currentExpenseTimeframeContext === 'currentYear') {
+                filteredExpenses = globalAppState.expenses.filter(e => {
+                    const d = new Date(e.Date);
+                    const year = d.getFullYear();
+                    return (year === 2026 && d.getMonth() >= 5) || (year === 2017 && d.getMonth() < 5); // Financial Year June 2026 Engine Rule
+                });
+            }
+
+            filteredExpenses.forEach(e => {
+                const a = Number(e.Amount)||0; totalExpenses += a; cats[e.Category] = (cats[e.Category]||0) + a;
+                expenseStreamBox.insertAdjacentHTML('beforeend', `<div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border"><div><strong>${e.Category}</strong> - <span class="text-slate-400">${e.Date.substring(0,10)}</span><p class="text-[10px] text-slate-400 font-medium">${e.Description || 'No description comments'}</p></div><div class="flex items-center space-x-2"><span class="font-bold text-rose-600">₹${a}</span><button onclick="loadExpenseToEditForm('${e.ExpenseID}')" class="text-indigo-600 hover:underline">Edit</button></div></div>`);
+            });
 
             document.getElementById('kpiGrossRevenue').innerText = `₹${totalReceivables}`;
             document.getElementById('kpiCollectedRevenue').innerText = `₹${totalCollected}`;
-            document.getElementById('kpiDuesPending').innerText = `₹${outstanding}`;
+            document.getElementById('kpiDuesPending').innerText = `₹${totalReceivables - totalCollected}`;
             document.getElementById('kpiTotalExpenses').innerText = `₹${totalExpenses}`;
 
             const ctx1 = document.getElementById('collectionsBalanceChart').getContext('2d');
             if (window.myCollectionChart) window.myCollectionChart.destroy();
-            window.myCollectionChart = new Chart(ctx1, { type: 'bar', data: { labels: ['Receivables', 'Collected', 'Pending Dues'], datasets: [{ data: [totalReceivables, totalCollected, outstanding], backgroundColor: ['#4f46e5', '#10b981', '#f59e0b'] }] }, options: { responsive: true, plugins: { legend: { display: false } } } });
+            window.myCollectionChart = new Chart(ctx1, { type: 'bar', data: { labels: ['Receivables', 'Collected', 'Outstanding Dues'], datasets: [{ data: [totalReceivables, totalCollected, totalReceivables - totalCollected], backgroundColor: ['#4f46e5', '#10b981', '#f59e0b'] }] }, options: { responsive: true, plugins: { legend: { display: false } } } });
 
             const ctx2 = document.getElementById('expenseCategoryChart').getContext('2d');
             if (window.myExpenseChart) window.myExpenseChart.destroy();
             window.myExpenseChart = new Chart(ctx2, { type: 'doughnut', data: { labels: Object.keys(cats), datasets: [{ data: Object.values(cats), backgroundColor: ['#4f46e5','#f43f5e','#eab308','#10b981','#a855f7'] }] }, options: { responsive: true } });
         }
 
-        function renderInsightsPanel() {
-            let vanRev = 0, dcRev = 0;
-            globalAppState.payments.forEach(p => { vanRev += Number(p.VanFee)||0; dcRev += Number(p.DayCareFee)||0; });
+        function loadExpenseToEditForm(expId) {
+            const e = globalAppState.expenses.find(x => x.ExpenseID === expId);
+            if(!e) return;
+            document.getElementById('expenseFormID').value = e.ExpenseID;
+            document.getElementById('expenseInputDate').value = e.Date ? e.Date.substring(0,10) : '';
+            document.getElementById('expenseInputCategory').value = e.Category;
+            document.getElementById('expenseInputAmount').value = e.Amount;
+            document.getElementById('expenseInputType').value = e.Type;
+            document.getElementById('expenseInputDescription').value = e.Description || '';
             
-            const lines = [`<li>🟢 Database synced cleanly across standard relational rows.</li>`];
-            if(vanRev > 0) lines.push(`<li>🚌 Active Van routes generating active collections for July.</li>`);
-            if(dcRev > 0) lines.push(`<li>☀️ Day Care billing schedules successfully calculated.</li>`);
-            
-            document.getElementById('insightsBox').innerHTML = `<ul class="list-disc pl-4 space-y-0.5">${lines.join('')}</ul>`;
+            document.getElementById('expenseFormHeader').innerText = "Modify Existing Outflow Record Entry";
+            document.getElementById('expenseFormActions').innerHTML = `
+                <button type="submit" class="w-2/3 bg-indigo-600 text-white font-bold py-2 rounded-xl">Save Changes</button>
+                <button type="button" onclick="triggerDeleteExpense('${e.ExpenseID}')" class="w-1/3 bg-rose-100 text-rose-600 font-bold py-2 rounded-xl">Delete</button>
+            `;
         }
+
+        function resetExpenseForm() {
+            document.getElementById('expenseForm').reset();
+            document.getElementById('expenseFormID').value = "";
+            document.getElementById('expenseFormHeader').innerText = "Commit Operational Expenditure Row";
+            document.getElementById('expenseFormActions').innerHTML = `<button type="submit" class="w-full bg-rose-600 text-white font-bold py-2.5 rounded-xl shadow hover:bg-rose-700 transition">Save Ledger Entry</button>`;
+        }
+
+        async function handleExpenseSubmission(e) {
+            e.preventDefault();
+            const f = new FormData(e.target);
+            const expId = document.getElementById('expenseFormID').value;
+            const actionType = expId ? "updateRow" : "addRow";
+            const id = expId || "EXP-" + Date.now();
+
+            const row = [id, f.get('Date'), f.get('Category'), Number(f.get('Amount')), f.get('Description'), f.get('Type')];
+            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: actionType, targetSheet: "Expenses", rowId: id, rowData: row })});
+            alert("Ledger Matrix Table Processed!"); resetExpenseForm(); refreshApplicationState();
+        }
+
+        async function triggerDeleteExpense(expId) {
+            if(confirm("Permanently wipe this outflow row out from the database ledgers?")) {
+                await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Expenses", rowId: expId, rowData: [expId, "DELETED", "Rent", 0, "", "Fixed"] })});
+                alert("Row Purged!"); resetExpenseForm(); refreshApplicationState();
+            }
+        }
+
+        function renderBirthdayWidget() {
+            const c = document.getElementById('birthdayRosterContainer'); const bdays = [];
+            globalAppState.students.filter(s => s.StudentName && s.StudentName !== "DELETED").forEach(s => {
+                if(!s.DOB) return; const p = s.DOB.substring(0,10).split('-');
+                if(p.length >= 3) bdays.push(`🎂 <strong>${s.StudentName}</strong> - Celebration Date: July ${parseInt(p[2],10)}`);
+            });
+            c.innerHTML = bdays.length ? bdays.join('<br>') : "✨ No parameters logged.";
+        }
+
+        function renderCalendarAgenda() {
+            const stream = document.getElementById('calendarAgendaStream'); stream.innerHTML = '';
+            globalAppState.events.forEach(e => stream.insertAdjacentHTML('beforeend', `<div class="p-3 border-l-4 border-indigo-500 bg-indigo-50 text-slate-900 text-xs font-semibold flex justify-between"><div><h5 class="font-black">${e.Title}</h5><span>🗓️ ${e.Date.substring(0,10)}</span></div></div>`));
+        }
+
+        function renderInsightsPanel() { document.getElementById('insightsBox').innerHTML = `<ul class="list-disc pl-4 space-y-0.5"><li>🟢 System synchronized perfectly with live cloud layers.</li></ul>`; }
+        function calculateIntakeDiscount() { const c = document.getElementById('intakeClassSelect').value; const base = globalAppState.standardFees[c] || 0; const custom = Number(document.getElementById('intakeAnnualTuition').value) || 0; const disc = base - custom; document.getElementById('intakeDiscountBadge').innerText = `₹${disc > 0 ? disc : 0} Offered Discount`; }
+        function calculateEditDiscount() { const c = document.getElementById('editClass').value; const base = globalAppState.standardFees[c] || 0; const custom = Number(document.getElementById('editCustomFee').value) || 0; const disc = base - custom; document.getElementById('editDiscountBadge').innerText = `₹${disc > 0 ? disc : 0} Offered Discount`; }
+        function executeSearchFilter() { renderStudentCards(); }
+        function filterCohort(type) { currentActiveCohortFilter = type; document.querySelectorAll('.cohort-filter-btn').forEach(b => b.classList.replace('bg-indigo-600', 'bg-slate-100')); event.target.classList.replace('bg-slate-100', 'bg-indigo-600'); renderStudentCards(); }
+        function closePaymentModal() { document.getElementById('paymentModalOverlay').classList.add('hidden'); }
+        function loadStudentPaymentMonthContext() {}
+        function processImageUpload(input) { const file = input.files[0]; if (!file) return; const r = new FileReader(); r.onloadend = () => document.getElementById('base64PayloadCache').value = r.result; r.readAsDataURL(file); }
+        async function handleEventSubmission(e) { e.preventDefault(); const f = new FormData(e.target); const row = ["EVT-"+Date.now(), f.get('Title'), f.get('Date'), f.get('Time'), f.get('Category')]; await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Events", rowData: row })}); alert("Event Logged!"); e.target.reset(); refreshApplicationState(); }
 
         handleFormBillingTypeChange('Regular');
     </script>
