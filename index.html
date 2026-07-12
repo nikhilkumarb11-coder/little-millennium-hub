@@ -13,7 +13,7 @@
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-16">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-16 selection:bg-indigo-500 selection:text-white">
 
     <div id="authShield" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-4">
         <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border-4 border-amber-400">
@@ -37,8 +37,8 @@
             <div class="flex items-center space-x-2">
                 <button onclick="goToHome()" class="bg-indigo-900 hover:bg-indigo-800 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">🏠 Home</button>
                 <button onclick="openChangePasswordModal()" class="bg-indigo-900 hover:bg-indigo-800 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">🔑 Security</button>
-                <button onclick="refreshApplicationState()" class="bg-indigo-800 hover:bg-indigo-700 p-1.5 rounded-lg text-xs font-bold transition">🔄 Sync</button>
-                <button onclick="triggerSystemLogout()" class="bg-rose-700 hover:bg-rose-600 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">UI Logout 🚪</button>
+                <button onclick="refreshApplicationState(true)" class="bg-indigo-800 hover:bg-indigo-700 p-1.5 rounded-lg text-xs font-bold transition">🔄 Sync</button>
+                <button onclick="triggerSystemLogout()" class="bg-rose-700 hover:bg-rose-600 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">🚪 Logout</button>
             </div>
         </div>
     </header>
@@ -613,7 +613,7 @@
     </div>
 
     <script>
-        // INSERT TARGET WEB APP LINK URL BELOW
+        // PASTE YOUR EXTENSIONS APPS SCRIPT LINK BELOW EXACTLY INSIDE THE DOUBLE QUOTES
         const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyuyIo28b72WwAu9_UmnSWLaWBWn6xJYZ1X5BoX_OfXPjv_rxiZ9-MXKVwxFpUZK62yGQ/exec";
         
         let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "ApexSullurpeta2026!";
@@ -626,7 +626,7 @@
             if (document.getElementById('gateKey').value === CURRENT_GATE_PASSPHRASE) {
                 document.getElementById('authShield').classList.add('hidden');
                 document.getElementById('appWorkspace').classList.remove('hidden');
-                refreshApplicationState();
+                refreshApplicationState(false);
             } else {
                 document.getElementById('authError').classList.remove('hidden');
             }
@@ -636,6 +636,7 @@
             document.getElementById('authShield').classList.remove('hidden');
             document.getElementById('appWorkspace').classList.add('hidden');
             document.getElementById('gateKey').value = "";
+            window.scrollTo(0,0);
         }
 
         function goToHome() { switchTab('studentsTab'); }
@@ -648,7 +649,7 @@
             const val = document.getElementById('newPasscodeInput').value.trim();
             if(val) {
                 CURRENT_GATE_PASSPHRASE = val; localStorage.setItem("LM_PASSPHRASE", val);
-                alert("Passcode updated!"); closeChangePasswordModal();
+                alert("Passcode key variable configuration saved!"); closeChangePasswordModal();
             }
         }
 
@@ -762,9 +763,10 @@
             });
             document.getElementById(tabId).classList.remove('hidden');
             const b = document.getElementById('btn-' + tabId); if(b) b.classList.add('bg-white', 'text-indigo-950', 'shadow-sm');
+            window.scrollTo(0,0);
         }
 
-        async function refreshApplicationState() {
+        async function refreshApplicationState(showUserAlert) {
             try {
                 const response = await fetch(`${APP_SHEET_API_URL}?action=getData&password=${encodeURIComponent(CURRENT_GATE_PASSPHRASE)}`);
                 const result = await response.json();
@@ -781,8 +783,10 @@
                     renderFinanceLedger();
                     renderInsightsPanel();
                     renderFrontPageReminders();
+                    
+                    if(showUserAlert) { alert("🔄 Cloud database sheets synchronized successfully!"); }
                 }
-            } catch (err) { console.error("Database connection fault:", err); }
+            } catch (err) { console.error("Database connection failure:", err); }
         }
 
         function renderCohortHeadcounts() {
@@ -822,7 +826,8 @@
                             <div class="flex-1 min-w-0">
                                 <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded uppercase">${student.Class === 'DayCare' ? 'DayCare Track' : student.Class}</span>
                                 <h4 class="font-black text-slate-900 text-sm truncate mt-1">${student.StudentName}</h4>
-                                <p class="text-[11px] text-slate-400 font-semibold">Guard: ${student.GuardianName || 'N/A'}</p>
+                                <p class="text-[11px] text-slate-600 font-bold mt-1">👤 Guard: ${student.GuardianName || 'N/A'}</p>
+                                <p class="text-[11px] text-indigo-700 font-mono font-bold">📞 Phone: ${student.Contact || 'N/A'}</p>
                             </div>
                         </div>
                         <div class="mt-4 pt-3 border-t flex justify-between items-center" onclick="event.stopPropagation();">
@@ -947,7 +952,7 @@
                 0, 0, 0, 0, "Active", currentNulls.join(',')
             ];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Fee_Payments", rowId: pId, rowData: row })});
-            refreshApplicationState();
+            await refreshApplicationState(false);
         }
 
         async function commitReminderSettlement(sid, serviceKey, feeValue) {
@@ -963,8 +968,8 @@
                 `Settledfront-end monthly service reminder: ${serviceKey}`, 0, 0, 0, 0, "Settled", ""
             ];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Fee_Payments", rowId: pId, rowData: row })});
-            alert("Payment processed and synchronized!");
-            refreshApplicationState();
+            alert("✅ Monthly service payment accepted and cleared successfully!");
+            await refreshApplicationState(false);
         }
 
         function openPaymentModal(sid) {
@@ -1003,7 +1008,7 @@
             ];
 
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })});
-            alert("Payment logged into history records successfully!"); closePaymentModal(); refreshApplicationState();
+            alert("✅ Tuition transaction entry added successfully!"); closePaymentModal(); await refreshApplicationState(false);
         }
 
         function openStudentDetailModal(sid) {
@@ -1055,14 +1060,14 @@
             const mModel = document.querySelector('input[name="EditBillingModel"]:checked').value;
             const rowData = [sid, f.get('StudentName'), f.get('DOB'), f.get('Gender'), f.get('Class'), f.get('GuardianName'), f.get('Contact'), f.get('AltContact'), f.get('Address'), document.getElementById('detailPhotoBase64').value || "N/A", mModel, Number(f.get('CustomFee'))||0, Number(f.get('AdmissionFee'))||0, Number(f.get('StudentKitFee'))||0, Number(f.get('SpareUniformFee'))||0, Number(f.get('VanFee'))||0, Number(f.get('DayCareFee'))||0, Number(f.get('OptMonthlyFee'))||0, f.get('BloodGroup')];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: rowData })});
-            alert("Master Profile File Record Saved Successfully!"); closeStudentDetailModal(); refreshApplicationState();
+            alert("✅ Student master profile configuration files modified successfully!"); closeStudentDetailModal(); await refreshApplicationState(false);
         }
 
         async function triggerDeleteStudent() {
             const sid = document.getElementById('detailStudentID').value;
             if(confirm("Permanently wipe out student enrollment data row?")) {
                 await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: [sid, "DELETED", "", "", "", "", "", "", "", "N/A"] })});
-                alert("Profile Terminated!"); closeStudentDetailModal(); refreshApplicationState();
+                alert("Profile Terminated!"); closeStudentDetailModal(); await refreshApplicationState(false);
             }
         }
 
@@ -1143,13 +1148,13 @@
             const actionType = expId ? "updateRow" : "addRow"; const id = expId || "EXP-" + Date.now();
             const row = [id, f.get('Date'), f.get('Category'), Number(f.get('Amount')), f.get('Description'), f.get('Type')];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: actionType, targetSheet: "Expenses", rowId: id, rowData: row })});
-            alert("Ledger Matrix Table Processed!"); resetExpenseForm(); refreshApplicationState();
+            alert("✅ Outflow ledger record submitted!"); resetExpenseForm(); await refreshApplicationState(false);
         }
 
         async function triggerDeleteExpense(expId) {
-            if(confirm("Permanently wipe this outflow row out?")) {
+            if(confirm("Permanently wipe this outflow row out from the database ledgers?")) {
                 await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Expenses", rowId: expId, rowData: [expId, "DELETED", "Rent", 0, "", "Fixed"] })});
-                alert("Row Purged!"); resetExpenseForm(); refreshApplicationState();
+                alert("Row Purged!"); resetExpenseForm(); await refreshApplicationState(false);
             }
         }
 
@@ -1164,10 +1169,18 @@
 
         function renderCalendarAgenda() {
             const stream = document.getElementById('calendarAgendaStream'); stream.innerHTML = '';
+            if(!globalAppState.events.length) { stream.innerHTML = '<p class="text-xs text-slate-400">No events found.</p>'; return; }
             globalAppState.events.forEach(e => stream.insertAdjacentHTML('beforeend', `<div class="p-3 border-l-4 border-indigo-500 bg-indigo-50 text-slate-900 text-xs font-semibold flex justify-between"><div><h5 class="font-black">${e.Title}</h5><span>🗓️ ${e.Date ? e.Date.substring(0,10) : ''}</span></div></div>`));
         }
 
-        function renderInsightsPanel() { document.getElementById('insightsBox').innerHTML = `<ul class="list-disc pl-4 space-y-0.5"><li>🟢 System operation indicators aligned. Front page reminder pipelines loaded.</li></ul>`; }
+        function renderInsightsPanel() { 
+            let vanRev = 0;
+            globalAppState.payments.forEach(p => vanRev += (Number(p.AmountPaid) || 0));
+            const hints = [`<li>🟢 System synchronized perfectly with core spreadsheet tables.</li>`];
+            if(vanRev > 0) hints.push(`<li>📈 Active programmatic inflows discovered. Balanced analytics models populated cleanly.</li>`);
+            document.getElementById('insightsBox').innerHTML = `<ul class="list-disc pl-4 space-y-0.5">${hints.join('')}</ul>`; 
+        }
+        
         function calculateIntakeDiscount() { const c = document.getElementById('intakeClassSelect').value; const base = globalAppState.standardFees[c] || 0; const custom = Number(document.getElementById('intakeAnnualTuition').value) || 0; const disc = base - custom; document.getElementById('intakeDiscountBadge').innerText = `₹${disc > 0 ? disc : 0} Offered Discount`; }
         function calculateEditDiscount() { const c = document.getElementById('editClass').value; const base = globalAppState.standardFees[c] || 0; const custom = Number(document.getElementById('editCustomFee').value) || 0; const disc = base - custom; document.getElementById('editDiscountBadge').innerText = `₹${disc > 0 ? disc : 0} Offered Discount`; }
         function executeSearchFilter() { renderStudentCards(); }
@@ -1191,17 +1204,17 @@
 
             try {
                 await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Students", rowData: studentRow })});
-                const pRow = ["PAY-"+sid+"-"+activeSystemMonthContext, sid, activeSystemMonthContext, 0, "", "Cash", "Intake Provisining", 0, 0, 0, 0, "Active", ""];
+                const pRow = ["PAY-"+sid+"-"+activeSystemMonthContext, sid, activeSystemMonthContext, 0, "", "Cash", "Intake Allocation Provisining", 0, 0, 0, 0, "Active", ""];
                 await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: pRow })});
                 
-                alert("Comprehensive Admissions Registry Logged Successfully!");
+                alert("🎉 Admissions Intake Logged & Saved Safely!");
                 event.target.reset();
                 document.getElementById('base64PayloadCache').value = "";
-                await refreshApplicationState();
+                await refreshApplicationState(false);
             } catch(e) { console.error(e); }
         }
 
-        async function handleEventSubmission(e) { e.preventDefault(); const f = new FormData(e.target); const row = ["EVT-"+Date.now(), f.get('Title'), f.get('Date'), f.get('Time'), f.get('Category')]; await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Events", rowData: row })}); alert("Event Logged!"); e.target.reset(); refreshApplicationState(); }
+        async function handleEventSubmission(e) { e.preventDefault(); const f = new FormData(e.target); const row = ["EVT-"+Date.now(), f.get('Title'), f.get('Date'), f.get('Time'), f.get('Category')]; await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Events", rowData: row })}); alert("✅ Calendar Event Pinned!"); e.target.reset(); await refreshApplicationState(false); }
 
         handleFormBillingTypeChange('Regular');
     </script>
