@@ -3,267 +3,415 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Little Millennium Sullurpeta Mini-ERP</title>
+    <title>Little Millennium Sullurpeta Core-ERP</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .gamified-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .gamified-card:hover { transform: translateY(-4px) scale(1.01); }
+        .gamified-card { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        .gamified-card:hover { transform: translateY(-4px); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen pb-16">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-16 selection:bg-indigo-500 selection:text-white">
 
-    <div id="authShield" class="fixed inset-0 bg-slate-900 z-50 flex flex-col items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center border-4 border-amber-400">
-            <div class="text-4xl mb-2">🎉</div>
+    <!-- Auth Shield Screen with Official Integrated Logo -->
+    <div id="authShield" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border-4 border-amber-400">
+            <div class="flex justify-center mb-4">
+                <img src="data:image/jpeg;base64,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" alt="Little Millennium Sullurpeta Logo" class="w-full max-h-28 object-contain">
+            </div>
             <h1 class="text-2xl font-black text-indigo-950 mb-1">Little Millennium</h1>
-            <p class="text-xs font-bold uppercase tracking-widest text-amber-600 mb-6">Sullurpeta Campus</p>
+            <p class="text-[10px] font-bold uppercase tracking-widest text-amber-600 mb-6">Sullurpeta Campus Management</p>
             <input type="password" id="gateKey" placeholder="Enter Management Passcode" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-center text-lg font-mono focus:outline-none focus:border-indigo-600 mb-4">
-            <button onclick="attemptAuthentication()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition duration-200">Unlock Dashboard</button>
-            <p id="authError" class="text-rose-600 text-sm mt-3 hidden font-semibold">❌ Invalid passcode key entry.</p>
+            <button onclick="attemptAuthentication()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition duration-200">Unlock Master ERP</button>
+            <p id="authError" class="text-rose-600 text-sm mt-3 hidden font-semibold">❌ Access Key Verification Failed.</p>
         </div>
     </div>
 
+    <!-- Main Navigation Bar -->
     <header class="bg-indigo-950 text-white shadow-xl sticky top-0 z-40 px-4 py-3">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="goToHome()">
                 <div class="bg-amber-400 p-2 rounded-xl text-indigo-950 text-xl font-black shadow-inner">LM</div>
                 <div>
                     <h2 class="text-base font-black leading-none tracking-tight">Little Millennium</h2>
-                    <span class="text-[10px] text-amber-300 font-bold uppercase tracking-wider">Sullurpeta Management Hub</span>
+                    <span class="text-[10px] text-amber-300 font-bold uppercase tracking-wider">Sullurpeta Hub</span>
                 </div>
             </div>
-            <button onclick="refreshApplicationState()" class="bg-indigo-800 hover:bg-indigo-700 p-2 rounded-lg text-xs font-bold transition flex items-center space-x-1">
-                <span>🔄</span> <span class="hidden md:inline">Sync Live Sheets</span>
-            </button>
+            <div class="flex items-center space-x-2">
+                <button onclick="goToHome()" class="bg-indigo-900 hover:bg-indigo-800 px-3 py-2 rounded-lg text-xs font-bold transition">🏠 Home</button>
+                <button onclick="openChangePasswordModal()" class="bg-indigo-900 hover:bg-indigo-800 px-3 py-2 rounded-lg text-xs font-bold transition">🔑 Security</button>
+                <button onclick="refreshApplicationState()" class="bg-indigo-800 hover:bg-indigo-700 p-2 rounded-lg text-xs font-bold transition flex items-center space-x-1">
+                    <span>🔄</span> <span>Sync Database</span>
+                </button>
+            </div>
         </div>
     </header>
 
+    <!-- Main Workspace Container -->
     <main id="appWorkspace" class="max-w-7xl mx-auto p-4 space-y-6 hidden">
         
+        <!-- Birthday & Live Reminders Banner Panel -->
         <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="bg-gradient-to-br from-amber-400 to-orange-500 rounded-3xl p-5 text-white shadow-lg relative overflow-hidden">
                 <div class="absolute -right-6 -bottom-6 text-8xl opacity-10">🎂</div>
-                <h3 class="font-black text-lg flex items-center space-x-2"><span>🎈</span> <span>Celebration & Birthday Desk</span></h3>
-                <div id="birthdayRosterContainer" class="mt-3 space-y-2 text-sm font-medium">
-                    <p class="opacity-90">Checking milestone calendars...</p>
+                <h3 class="font-black text-lg flex items-center space-x-2"><span>🎈</span> <span id="birthdayTitleMonth">Monthly Birthday Desk</span></h3>
+                <div id="birthdayRosterContainer" class="mt-3 space-y-2 text-sm font-medium max-h-28 overflow-y-auto pr-1">
+                    <p class="opacity-90">Scanning birthday timelines...</p>
                 </div>
             </div>
             <div class="bg-gradient-to-br from-indigo-900 to-slate-900 rounded-3xl p-5 text-indigo-100 shadow-lg relative overflow-hidden">
                 <div class="absolute -right-6 -bottom-6 text-8xl opacity-10">💡</div>
-                <h3 class="font-black text-lg flex items-center space-x-2 text-amber-300"><span>🧠</span> <span>AI Operational Recommendations</span></h3>
+                <h3 class="font-black text-lg flex items-center space-x-2 text-amber-300"><span>🧠</span> <span>AI Recommendations</span></h3>
                 <div id="insightsBox" class="mt-2 text-xs leading-relaxed space-y-1 opacity-90">
-                    <p>Evaluating real-time programmatic metrics...</p>
+                    <p>Evaluating financial indicators...</p>
                 </div>
             </div>
         </section>
 
+        <!-- Quick Tabs Navigation Bar -->
         <nav class="flex space-x-2 bg-slate-200 p-1.5 rounded-xl overflow-x-auto hide-scrollbar">
-            <button onclick="switchTab('studentsTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap bg-white text-indigo-950 shadow-sm flex-1 md:flex-none text-center">👶 Students Engine</button>
-            <button onclick="switchTab('financeTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap text-slate-600 hover:bg-slate-300 flex-1 md:flex-none text-center">📊 Finance & Ledger</button>
-            <button onclick="switchTab('calendarTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap text-slate-600 hover:bg-slate-300 flex-1 md:flex-none text-center">🗓️ Event Calendar</button>
+            <button id="btn-studentsTab" onclick="switchTab('studentsTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap bg-white text-indigo-950 shadow-sm flex-1 text-center">👶 Student Registry</button>
+            <button id="btn-financeTab" onclick="switchTab('financeTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap text-slate-600 hover:bg-slate-300 flex-1 text-center">📊 Financial Ledger & Metrics</button>
+            <button id="btn-calendarTab" onclick="switchTab('calendarTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap text-slate-600 hover:bg-slate-300 flex-1 text-center">🗓️ Academic Calendar</button>
         </nav>
 
+        <!-- Tab Content Viewport 1: Student Roster and Entry -->
         <div id="studentsTab" class="tab-pane space-y-6">
+            <!-- Consolidated Comprehensive Enrollment Form -->
             <details class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden group">
                 <summary class="p-5 font-black text-sm tracking-wide text-indigo-950 cursor-pointer hover:bg-slate-50 list-none flex justify-between items-center">
-                    <span class="flex items-center space-x-2"><span>➕</span> <span>Enroll New Student (Rapid Registration Form)</span></span>
-                    <span class="text-xs text-indigo-600 font-bold group-open:hidden">Expand Form ↓</span>
-                    <span class="text-xs text-indigo-600 font-bold hidden group-open:inline">Collapse Form ↑</span>
+                    <span class="flex items-center space-x-2"><span>➕</span> <span>New Complete Admissions Intake Form</span></span>
+                    <span class="text-xs text-indigo-600 font-bold group-open:hidden">Open Intake Sheet ↓</span>
+                    <span class="text-xs text-indigo-600 font-bold hidden group-open:inline">Close Intake Sheet ↑</span>
                 </summary>
-                <form id="studentEnrollmentForm" onsubmit="handleStudentSubmission(event)" class="p-5 border-t border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-semibold">
-                    <div>
-                        <label class="block mb-1 text-slate-500">Student Full Name *</label>
-                        <input type="text" name="StudentName" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-600">
+                <form id="studentEnrollmentForm" onsubmit="handleStudentSubmission(event)" class="p-5 border-t border-slate-100 space-y-4 text-xs font-semibold">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block mb-1 text-slate-500">Student Name *</label>
+                            <input type="text" name="StudentName" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-600">
+                        </div>
+                        <div>
+                            <label class="block mb-1 text-slate-500">Date of Birth *</label>
+                            <input type="date" name="DOB" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-600">
+                        </div>
+                        <div>
+                            <label class="block mb-1 text-slate-500">Cohort Class Assignment *</label>
+                            <select name="Class" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-600">
+                                <option value="DR">DR (Developing Roots)</option>
+                                <option value="EW">EW (Emerging Wings)</option>
+                                <option value="RTF1">RTF1 (Ready to Fly 1)</option>
+                                <option value="RTF2">RTF2 (Ready to Fly 2)</option>
+                            </select>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block mb-1 text-slate-500">Date of Birth *</label>
-                        <input type="date" name="DOB" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-600">
+
+                    <div class="border-t pt-3">
+                        <h4 class="text-indigo-950 font-black mb-2 text-sm">Admissions Fee Breakdown Configuration</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block mb-1 text-slate-500">Agreed Annual Base Tuition (₹) *</label>
+                                <input type="number" name="CustomFee" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block mb-1 text-slate-500">Admission Processing Fees (₹) *</label>
+                                <input type="number" name="AdmissionFee" value="0" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block mb-1 text-slate-500">Student Welcome Kit Cost (₹) *</label>
+                                <input type="number" name="StudentKitFee" value="0" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block mb-1 text-slate-500">Spare Uniform Outlay (₹) *</label>
+                                <input type="number" name="SpareUniformFee" value="0" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block mb-1 text-slate-500">Gender *</label>
-                        <select name="Gender" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-600">
-                            <option value="Boy">Boy</option>
-                            <option value="Girl">Girl</option>
-                        </select>
+
+                    <div class="border-t pt-3">
+                        <h4 class="text-indigo-950 font-black mb-2 text-sm">Monthly Ancillary Services Activation</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-slate-50 p-3 rounded-xl border">
+                                <label class="flex items-center space-x-2 font-bold text-slate-700">
+                                    <input type="checkbox" name="VanOpted" onchange="toggleFormFeeInput(this, 'FormVanFee')" class="rounded">
+                                    <span>🚌 Activate Van Commute Service</span>
+                                </label>
+                                <input type="number" id="FormVanFee" name="VanFee" placeholder="Committed Monthly Amount" disabled class="w-full mt-2 px-3 py-1.5 rounded-lg border bg-white focus:outline-none">
+                            </div>
+                            <div class="bg-slate-50 p-3 rounded-xl border">
+                                <label class="flex items-center space-x-2 font-bold text-slate-700">
+                                    <input type="checkbox" name="DayCareOpted" onchange="toggleFormFeeInput(this, 'FormDayCareFee')" class="rounded">
+                                    <span>☀️ Activate Day Care Management</span>
+                                </label>
+                                <input type="number" id="FormDayCareFee" name="DayCareFee" placeholder="Committed Monthly Amount" disabled class="w-full mt-2 px-3 py-1.5 rounded-lg border bg-white focus:outline-none">
+                            </div>
+                            <div class="bg-slate-50 p-3 rounded-xl border">
+                                <label class="flex items-center space-x-2 font-bold text-slate-700">
+                                    <input type="checkbox" name="OptMonthlyActive" onchange="toggleFormFeeInput(this, 'FormOptMonthlyFee')" class="rounded">
+                                    <span>🗓️ Custom Monthly Billing (Opt)</span>
+                                </label>
+                                <input type="number" id="FormOptMonthlyFee" name="OptMonthlyFee" placeholder="Committed Monthly Amount" disabled class="w-full mt-2 px-3 py-1.5 rounded-lg border bg-white focus:outline-none">
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block mb-1 text-slate-500">Blood Group</label>
-                        <input type="text" name="BloodGroup" placeholder="e.g. O+" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-600">
+
+                    <div class="border-t pt-3">
+                        <h4 class="text-indigo-950 font-black mb-2 text-sm">Initial Collections Intake Record</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block mb-1 text-slate-500">Initial Down-Payment Amount Accepted (₹) *</label>
+                                <input type="number" name="InitialPaid" value="0" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block mb-1 text-slate-500">Billing Cycle Settlement Month *</label>
+                                <select name="InitialMonthYear" class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                                    <option value="July-2026">July 2026</option>
+                                    <option value="August-2026">August 2026</option>
+                                    <option value="September-2026">September 2026</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block mb-1 text-slate-500">Assign Program Cohort *</label>
-                        <select name="Class" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-600">
-                            <option value="DR">DR (Developing Roots)</option>
-                            <option value="EW">EW (Emerging Wings)</option>
-                            <option value="RTF1">RTF1 (Ready to Fly 1)</option>
-                            <option value="RTF2">RTF2 (Ready to Fly 2)</option>
-                        </select>
+
+                    <div class="border-t pt-3 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block mb-1 text-slate-500">Primary Guardian Name *</label>
+                            <input type="text" name="GuardianName" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block mb-1 text-slate-500">Mobile Contact Number *</label>
+                            <input type="tel" name="Contact" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block mb-1 text-slate-500">Profile Image Attachment</label>
+                            <input type="file" accept="image/*" onchange="processImageUpload(this)" class="w-full file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700">
+                            <input type="hidden" id="base64PayloadCache">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block mb-1 text-slate-500">Custom Agreed Annual Program Fee (₹) *</label>
-                        <input type="number" name="CustomFee" required placeholder="Standard comparison will auto-calculate" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-600">
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-slate-500">Primary Guardian Name *</label>
-                        <input type="text" name="GuardianName" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-600">
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-slate-500">Primary Mobile Contact *</label>
-                        <input type="tel" name="Contact" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-600">
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-slate-500">Alternative Mobile Contact</label>
-                        <input type="tel" name="AltContact" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-600">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block mb-1 text-slate-500">Residential Address Details</label>
-                        <input type="text" name="Address" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-600">
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-slate-500">Profile Image Attachment</label>
-                        <input type="file" accept="image/*" onchange="processImageUpload(this)" class="w-full file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-150">
-                        <input type="hidden" id="base64PayloadCache">
-                    </div>
-                    <div class="md:col-span-3 flex justify-end pt-2">
-                        <button type="submit" class="bg-indigo-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-md hover:bg-indigo-700 transition">Save Record</button>
+
+                    <div class="flex justify-end pt-2">
+                        <button type="submit" class="bg-indigo-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-md hover:bg-indigo-700 transition">Transmit Admission Entry</button>
                     </div>
                 </form>
             </details>
 
+            <!-- Search Filters Menu bar -->
             <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
                 <div class="flex flex-wrap gap-1.5" id="classFiltersPanel">
-                    <button onclick="filterCohort('ALL')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white">All Active</button>
+                    <button onclick="filterCohort('ALL')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white">All Rosters</button>
                     <button onclick="filterCohort('DR')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">DR</button>
                     <button onclick="filterCohort('EW')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">EW</button>
                     <button onclick="filterCohort('RTF1')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">RTF1</button>
                     <button onclick="filterCohort('RTF2')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">RTF2</button>
                 </div>
-                <input type="text" id="rosterSearch" oninput="executeSearchFilter()" placeholder="🔍 Quick-search student name..." class="px-3 py-2 rounded-xl text-xs font-medium border bg-slate-50 focus:bg-white focus:outline-none w-full md:w-64">
+                <input type="text" id="rosterSearch" oninput="executeSearchFilter()" placeholder="🔍 Search student name..." class="px-3 py-2 rounded-xl text-xs font-medium border bg-slate-50 focus:bg-white focus:outline-none w-full md:w-64">
             </div>
 
             <div id="studentCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
+        <!-- Tab Content Viewport 2: Finance Metrics Dashboard -->
         <div id="financeTab" class="tab-pane hidden space-y-6">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-                    <span class="text-[10px] uppercase font-bold text-slate-400">Gross Expected Income</span>
+                    <span class="text-[10px] uppercase font-bold text-slate-400">Total Billed Receivables</span>
                     <h4 class="text-xl font-black text-indigo-950 mt-1" id="kpiGrossRevenue">₹0</h4>
                 </div>
                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-                    <span class="text-[10px] uppercase font-bold text-slate-400">Total Outflows Logged</span>
-                    <h4 class="text-xl font-black text-rose-600 mt-1" id="kpiTotalExpenses">₹0</h4>
+                    <span class="text-[10px] uppercase font-bold text-slate-400">Total Revenue Collected</span>
+                    <h4 class="text-xl font-black text-emerald-600 mt-1" id="kpiCollectedRevenue">₹0</h4>
                 </div>
                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-                    <span class="text-[10px] uppercase font-bold text-slate-400">Net Retained Margin</span>
-                    <h4 class="text-xl font-black text-emerald-600 mt-1" id="kpiNetMargin">₹0</h4>
-                </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-                    <span class="text-[10px] uppercase font-bold text-slate-400">Pending Collection Dues</span>
+                    <span class="text-[10px] uppercase font-bold text-slate-400">Outstanding Pending Dues</span>
                     <h4 class="text-xl font-black text-amber-600 mt-1" id="kpiDuesPending">₹0</h4>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                    <span class="text-[10px] uppercase font-bold text-slate-400">Operational Outflows Logged</span>
+                    <h4 class="text-xl font-black text-rose-600 mt-1" id="kpiTotalExpenses">₹0</h4>
                 </div>
             </div>
 
+            <!-- Double Graphics Analytical Layout Display Panel -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
-                    <h4 class="font-black text-sm text-slate-700 mb-4">Expense Distribution Mapping</h4>
-                    <div class="max-h-64 flex justify-center"><canvas id="expenseCategoryChart"></canvas></div>
+                    <h4 class="font-black text-sm text-slate-700 mb-4">Total Collections vs Outstanding Balance</h4>
+                    <div class="max-h-64 flex justify-center"><canvas id="collectionsBalanceChart"></canvas></div>
                 </div>
                 <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
-                    <h4 class="font-black text-sm text-slate-700 mb-3">Log Operational Expense Outflow</h4>
-                    <form id="expenseForm" onsubmit="handleExpenseSubmission(event)" class="space-y-3 text-xs font-semibold">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block mb-1 text-slate-500">Date *</label>
-                                <input type="date" name="Date" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block mb-1 text-slate-500">Category *</label>
-                                <select name="Category" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
-                                    <option value="Salaries">Staff Salaries</option>
-                                    <option value="Rent">Infrastructure Rent</option>
-                                    <option value="Utilities">Utilities & Power</option>
-                                    <option value="Marketing">Marketing & Banners</option>
-                                    <option value="Events">Events & Summer Camps</option>
-                                    <option value="Maintenance">General Maintenance</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block mb-1 text-slate-500">Amount (₹) *</label>
-                                <input type="number" name="Amount" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block mb-1 text-slate-500">Outflow Type *</label>
-                                <select name="Type" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
-                                    <option value="Fixed">Fixed Cost Commitment</option>
-                                    <option value="Variable">Variable Asset Cost</option>
-                                </select>
-                            </div>
+                    <h4 class="font-black text-sm text-slate-700 mb-4">Expense Distribution Categories</h4>
+                    <div class="max-h-64 flex justify-center"><canvas id="expenseCategoryChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Operational Expense Entry Ledger -->
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 max-w-xl mx-auto">
+                <h4 class="font-black text-sm text-slate-700 mb-3">Commit Operational Expenditure Row</h4>
+                <form id="expenseForm" onsubmit="handleExpenseSubmission(event)" class="space-y-3 text-xs font-semibold">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block mb-1 text-slate-500">Outflow Date *</label>
+                            <input type="date" name="Date" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
                         </div>
                         <div>
-                            <label class="block mb-1 text-slate-500">Description Summary</label>
-                            <input type="text" name="Description" placeholder="e.g. Purchased items" class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                            <label class="block mb-1 text-slate-500">Category Bucket *</label>
+                            <select name="Category" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                                <option value="Salaries">Staff Salaries</option>
+                                <option value="Rent">Infrastructure Rent</option>
+                                <option value="Utilities">Utilities & Power</option>
+                                <option value="Marketing">Marketing & Banners</option>
+                                <option value="Events">Summer Camps & Celebrations</option>
+                                <option value="Maintenance">General Asset Repairs</option>
+                            </select>
                         </div>
-                        <button type="submit" class="w-full bg-rose-600 text-white font-bold py-2.5 rounded-xl shadow hover:bg-rose-700 transition">Commit Expense Record</button>
-                    </form>
-                </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block mb-1 text-slate-500">Debit Outflow Value (₹) *</label>
+                            <input type="number" name="Amount" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block mb-1 text-slate-500">Commitment Character *</label>
+                            <select name="Type" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                                <option value="Fixed">Fixed Operational Commitment</option>
+                                <option value="Variable">Variable Running Cost</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-slate-500">Ledger Entry Description</label>
+                        <input type="text" name="Description" placeholder="Provide contextual verification comments" class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                    </div>
+                    <button type="submit" class="w-full bg-rose-600 text-white font-bold py-2.5 rounded-xl shadow hover:bg-rose-700 transition">Save Ledger Entry</button>
+                </form>
             </div>
         </div>
 
+        <!-- Tab Content Viewport 3: Events Stream Engine -->
         <div id="calendarTab" class="tab-pane hidden space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 text-xs font-semibold">
-                    <h4 class="font-black text-sm text-slate-700 mb-3">Add Calendar Event</h4>
+                    <h4 class="font-black text-sm text-slate-700 mb-3">Log Calendar Event Entry</h4>
                     <form id="eventForm" onsubmit="handleEventSubmission(event)" class="space-y-3">
                         <div>
-                            <label class="block mb-1 text-slate-500">Event Title Name *</label>
-                            <input type="text" name="Title" required placeholder="e.g. Parent Meeting" class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                            <label class="block mb-1 text-slate-500">Event Title Summary *</label>
+                            <input type="text" name="Title" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block mb-1 text-slate-500">Date *</label>
+                                <label class="block mb-1 text-slate-500">Execution Date *</label>
                                 <input type="date" name="Date" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
                             </div>
                             <div>
-                                <label class="block mb-1 text-slate-500">Time</label>
+                                <label class="block mb-1 text-slate-500">Scheduled Time</label>
                                 <input type="time" name="Time" class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
                             </div>
                         </div>
                         <div>
-                            <label class="block mb-1 text-slate-500">Category Tag *</label>
+                            <label class="block mb-1 text-slate-500">Calendar Classification Group *</label>
                             <select name="Category" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
                                 <option value="Holiday">Official Academic Holiday</option>
-                                <option value="Meeting">Management/Parent Meeting</option>
+                                <option value="Meeting">Parent-Teacher Conference</option>
                                 <option value="Celebration">Theme Party/Celebration</option>
                             </select>
                         </div>
-                        <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-xl shadow hover:bg-indigo-700 transition">Pin Event to Dashboard</button>
+                        <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-xl shadow transition">Pin to Shared Calendar</button>
                     </form>
                 </div>
 
                 <div class="md:col-span-2 bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
-                    <h4 class="font-black text-sm text-slate-700 mb-4">Academic Agenda Pipeline</h4>
+                    <h4 class="font-black text-sm text-slate-700 mb-4" id="calendarAgendaHeader">Active Event Agenda Timeline</h4>
                     <div id="calendarAgendaStream" class="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-                        <p class="text-xs text-slate-400 font-medium">No schedule events posted.</p>
+                        <p class="text-xs text-slate-400 font-medium">No events posted on the schedule matching current context filters.</p>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Detailed Student Profile Pop-up Modal with Live Inline Update Ability -->
+    <div id="studentDetailModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-[2rem] max-w-2xl w-full p-6 shadow-2xl space-y-4 border-2 border-indigo-100 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-start border-b pb-3">
+                <div class="flex items-center space-x-3">
+                    <div id="detailProfilePhotoSlot" class="w-14 h-14 rounded-xl bg-indigo-50 flex-shrink-0 flex items-center justify-center overflow-hidden font-black text-indigo-600 text-xl"></div>
+                    <div>
+                        <h3 id="detailStudentNameHeader" class="font-black text-indigo-950 text-base">Loading...</h3>
+                        <p id="detailStudentClassHeader" class="text-[10px] font-bold text-amber-600 tracking-wider uppercase">Loading...</p>
+                    </div>
+                </div>
+                <button onclick="closeStudentDetailModal()" class="text-2xl text-slate-400 hover:text-slate-600 font-bold leading-none">&times;</button>
+            </div>
+
+            <form id="studentDetailUpdateForm" onsubmit="handleStudentDetailUpdate(event)" class="text-xs font-semibold space-y-4">
+                <input type="hidden" id="detailStudentID" name="StudentID">
+                <input type="hidden" id="detailPhotoBase64" name="PhotoBase64">
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block mb-1 text-slate-400">Student Name</label>
+                        <input type="text" id="editStudentName" name="StudentName" required class="w-full p-2 border rounded-xl bg-slate-50 focus:bg-white">
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-slate-400">Date of Birth</label>
+                        <input type="date" id="editDOB" name="DOB" required class="w-full p-2 border rounded-xl bg-slate-50 focus:bg-white">
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-slate-400">Class Assigned</label>
+                        <select id="editClass" name="Class" required class="w-full p-2 border rounded-xl bg-slate-50 focus:bg-white">
+                            <option value="DR">DR</option>
+                            <option value="EW">EW</option>
+                            <option value="RTF1">RTF1</option>
+                            <option value="RTF2">RTF2</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 border-t pt-3">
+                    <div>
+                        <label class="block mb-1 text-slate-400">Primary Guardian Name</label>
+                        <input type="text" id="editGuardianName" name="GuardianName" required class="w-full p-2 border rounded-xl bg-slate-50 focus:bg-white">
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-slate-400">Contact Number</label>
+                        <input type="tel" id="editContact" name="Contact" required class="w-full p-2 border rounded-xl bg-slate-50 focus:bg-white">
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-slate-400">Blood Group</label>
+                        <input type="text" id="editBloodGroup" name="BloodGroup" class="w-full p-2 border rounded-xl bg-slate-50 focus:bg-white">
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-2 border-t">
+                    <button type="button" onclick="closeStudentDetailModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl">Cancel</button>
+                    <button type="submit" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md">Commit Profile Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Security Configuration Management Modal -->
+    <div id="changePasswordModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-amber-400 text-center space-y-4">
+            <h3 class="font-black text-indigo-950 text-lg">System Security Hub</h3>
+            <p class="text-xs text-slate-400 font-medium">Update the front-end validation access security password key below.</p>
+            <input type="text" id="newPasscodeInput" placeholder="Enter New Management Passcode" class="w-full px-3 py-2 border rounded-xl text-center font-mono focus:outline-none">
+            <div class="flex space-x-2">
+                <button onclick="closeChangePasswordModal()" class="w-1/3 bg-slate-100 py-2 rounded-xl text-xs font-bold">Cancel</button>
+                <button onclick="commitNewPasscodeKey()" class="w-2/3 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold shadow hover:bg-indigo-700">Save Passcode</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Floating Fee Transaction Ledger Processing Modal -->
     <div id="paymentModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 border-2 border-indigo-100 max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-[2rem] max-w-lg w-full p-6 shadow-2xl space-y-4 border-2 border-indigo-100 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
                 <div>
-                    <h3 id="modalStudentTitleName" class="font-black text-indigo-950 text-base">Student Fee Engine</h3>
+                    <h3 id="modalStudentTitleName" class="font-black text-indigo-950 text-base">Fee Management Deck</h3>
                     <p id="modalStudentCohortSubtitle" class="text-[10px] font-bold text-amber-600 tracking-wider uppercase">Loading Context...</p>
                 </div>
-                <button onclick="closePaymentModal()" class="text-xl text-slate-400 font-bold">&times;</button>
+                <button onclick="closePaymentModal()" class="text-2xl text-slate-400 font-bold leading-none">&times;</button>
             </div>
             
             <form id="modalFeeTrackingForm" onsubmit="commitModalFeeChanges(event)" class="text-xs font-semibold space-y-4">
@@ -271,29 +419,17 @@
                 
                 <div class="bg-slate-100 p-3 rounded-xl flex items-center justify-between">
                     <div>
-                        <label class="block text-[10px] uppercase font-bold text-slate-500">Active Billing Month</label>
+                        <label class="block text-[10px] uppercase font-bold text-slate-500">Active Billing Period</label>
                         <select id="modalLedgerTargetMonth" onchange="loadStudentPaymentMonthContext()" class="bg-transparent text-sm font-black text-indigo-950 focus:outline-none mt-0.5">
                             <option value="July-2026">July 2026</option>
                             <option value="August-2026">August 2026</option>
                             <option value="September-2026">September 2026</option>
-                            <option value="October-2026">October 2026</option>
-                            <option value="November-2026">November 2026</option>
-                            <option value="December-2026">December 2026</option>
-                            <option value="January-2027">January 2027</option>
-                            <option value="February-2027">February 2027</option>
-                            <option value="March-2027">March 2027</option>
-                            <option value="April-2027">April 2027</option>
-                            <option value="May-2027">May 2027</option>
-                            <option value="June-2027">June 2027</option>
                         </select>
-                    </div>
-                    <div class="text-right">
-                        <span id="modalDiscountReadoutBadge" class="inline-block bg-indigo-50 text-indigo-700 font-extrabold px-2 py-0.5 rounded text-[11px]">₹0 Base Cut</span>
                     </div>
                 </div>
 
                 <div>
-                    <h5 class="font-black text-slate-600 uppercase tracking-wide text-[10px] mb-2">Core Tuition Milestones (Max 5 Terms)</h5>
+                    <h5 class="font-black text-slate-600 uppercase tracking-wide text-[10px] mb-2">Tuition Installments (Core Term Milestones)</h5>
                     <div class="grid grid-cols-5 gap-2 text-center">
                         <label class="block bg-slate-50 p-2 rounded-xl border border-slate-200 cursor-pointer">
                             <span class="block text-[9px] text-slate-400 font-bold">Term 1</span>
@@ -319,12 +455,12 @@
                 </div>
 
                 <div>
-                    <h5 class="font-black text-slate-600 uppercase tracking-wide text-[10px] mb-2">Flexible Services (Customized Entry)</h5>
+                    <h5 class="font-black text-slate-600 uppercase tracking-wide text-[10px] mb-2">Committed Monthly Services & Suspension Toggles</h5>
                     <div class="space-y-3">
                         <div class="p-3 bg-slate-50 rounded-2xl border flex items-center justify-between">
                             <div>
-                                <span class="block text-slate-700">🚌 Van Fee (Monthly)</span>
-                                <input type="number" id="inputVanFee" placeholder="₹ Value" class="w-24 px-1.5 py-0.5 border rounded text-xs mt-0.5">
+                                <span class="block text-slate-700">🚌 Transit Services (Van)</span>
+                                <input type="number" id="inputVanFee" class="w-24 px-1.5 py-0.5 border rounded text-xs mt-0.5 bg-slate-100" readonly>
                             </div>
                             <label class="flex items-center space-x-1 text-rose-600 cursor-pointer font-bold text-[11px]">
                                 <input type="checkbox" id="nullifyVan"> <span>Freeze Month</span>
@@ -332,8 +468,8 @@
                         </div>
                         <div class="p-3 bg-slate-50 rounded-2xl border flex items-center justify-between">
                             <div>
-                                <span class="block text-slate-700">☀️ Day Care Fee (Monthly)</span>
-                                <input type="number" id="inputDayCareFee" placeholder="₹ Value" class="w-24 px-1.5 py-0.5 border rounded text-xs mt-0.5">
+                                <span class="block text-slate-700">☀️ Day Care Operations</span>
+                                <input type="number" id="inputDayCareFee" class="w-24 px-1.5 py-0.5 border rounded text-xs mt-0.5 bg-slate-100" readonly>
                             </div>
                             <label class="flex items-center space-x-1 text-rose-600 cursor-pointer font-bold text-[11px]">
                                 <input type="checkbox" id="nullifyDayCare"> <span>Freeze Month</span>
@@ -341,40 +477,40 @@
                         </div>
                         <div class="p-3 bg-slate-50 rounded-2xl border flex items-center justify-between">
                             <div>
-                                <span class="block text-slate-700">🗓️ Custom Monthly Opt-Fee</span>
-                                <input type="number" id="inputOptMonthlyFee" placeholder="₹ Value" class="w-24 px-1.5 py-0.5 border rounded text-xs mt-0.5">
+                                <span class="block text-slate-700">🗓️ Custom Monthly Committed Fee</span>
+                                <input type="number" id="inputOptMonthlyFee" class="w-24 px-1.5 py-0.5 border rounded text-xs mt-0.5 bg-slate-100" readonly>
                             </div>
                             <label class="flex items-center space-x-1 text-rose-600 cursor-pointer font-bold text-[11px]">
                                 <input type="checkbox" id="nullifyOptMonthly"> <span>Freeze Month</span>
                             </label>
-                        </div>
-                        <div class="p-3 bg-slate-50 rounded-2xl border flex items-center justify-between">
-                            <div>
-                                <span class="block text-slate-700">👕 Additional Uniform Inventory Fee</span>
-                                <input type="number" id="inputUniformFee" placeholder="₹ Value" class="w-24 px-1.5 py-0.5 border rounded text-xs mt-0.5">
-                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="flex space-x-2 pt-2">
                     <button type="button" onclick="closePaymentModal()" class="w-1/3 bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl">Cancel</button>
-                    <button type="submit" class="w-2/3 bg-indigo-600 text-white font-bold py-2.5 rounded-xl shadow">Save Operational Balances</button>
+                    <button type="submit" class="w-2/3 bg-indigo-600 text-white font-bold py-2.5 rounded-xl shadow">Save Dynamic Ledger Changes</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Application Engine Architecture Execution Logic Script -->
     <script>
-        // INSERT TARGET WEB APP LINK URL BELOW
+        // REPLACE THIS STRING EXPLICITLY WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP LINK URL
         const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbz0tXVU7ZV7tn6suSGmKR7VjEEPQshY-6j2jeSaeCAG56-MytzNA3rzcpAcpuvJA3DQmA/exec";
-        const GATE_PASSPHRASE = "ApexSullurpeta2026!"; 
+        
+        // System Access Master Token
+        let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "ApexSullurpeta2026!";
 
-        let globalAppState = { students: [], payments: [], expenses: [], events: [], standardFees: {} };
+        // System Core State Array Structures
+        let globalAppState = { students: [], payments: [], expenses: [], events: [], standardFees: { "DR":41000, "EW":42000, "RTF1":43000, "RTF2":44000 } };
         let currentActiveCohortFilter = 'ALL';
+        let activeSystemMonthContext = "July-2026";
 
         function attemptAuthentication() {
-            if (document.getElementById('gateKey').value === GATE_PASSPHRASE) {
+            const val = document.getElementById('gateKey').value;
+            if (val === CURRENT_GATE_PASSPHRASE) {
                 document.getElementById('authShield').classList.add('hidden');
                 document.getElementById('appWorkspace').classList.remove('hidden');
                 refreshApplicationState();
@@ -383,29 +519,66 @@
             }
         }
 
-        function switchTab(targetTabId) {
+        function goToHome() {
+            switchTab('studentsTab');
+        }
+
+        function openChangePasswordModal() {
+            document.getElementById('newPasscodeInput').value = CURRENT_GATE_PASSPHRASE;
+            document.getElementById('changePasswordModalOverlay').classList.remove('hidden');
+        }
+
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModalOverlay').classList.add('hidden');
+        }
+
+        function commitNewPasscodeKey() {
+            const newKey = document.getElementById('newPasscodeInput').value.trim();
+            if(newKey) {
+                CURRENT_GATE_PASSPHRASE = newKey;
+                localStorage.setItem("LM_PASSPHRASE", newKey);
+                alert("Front-end system passcode key variable updated!");
+                closeChangePasswordModal();
+            }
+        }
+
+        function toggleFormFeeInput(checkbox, targetInputId) {
+            const inp = document.getElementById(targetInputId);
+            inp.disabled = !checkbox.checked;
+            if (checkbox.checked) { inp.focus(); inp.value = ""; } else { inp.value = "0"; }
+        }
+
+        function switchTab(tabId) {
             document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(el => {
-                el.classList.remove('bg-white', 'text-indigo-950', 'shadow-sm');
-                el.classList.add('text-slate-600', 'hover:bg-slate-300');
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-indigo-950', 'shadow-sm');
+                btn.classList.add('text-slate-600', 'hover:bg-slate-300');
             });
-            document.getElementById(targetTabId).classList.remove('hidden');
-            event.target.classList.add('bg-white', 'text-indigo-950', 'shadow-sm');
+            document.getElementById(tabId).classList.remove('hidden');
+            const targetBtn = document.getElementById('btn-' + tabId);
+            if(targetBtn) {
+                targetBtn.classList.add('bg-white', 'text-indigo-950', 'shadow-sm');
+                targetBtn.classList.remove('text-slate-600', 'hover:bg-slate-300');
+            }
         }
 
         async function refreshApplicationState() {
             try {
-                const response = await fetch(`${APP_SHEET_API_URL}?action=getData&password=${encodeURIComponent(GATE_PASSPHRASE)}`);
+                const response = await fetch(`${APP_SHEET_API_URL}?action=getData&password=${encodeURIComponent(CURRENT_GATE_PASSPHRASE)}`);
                 const result = await response.json();
                 if (result.success) {
-                    globalAppState = result.data;
+                    globalAppState.students = result.data.students || [];
+                    globalAppState.payments = result.data.payments || [];
+                    globalAppState.expenses = result.data.expenses || [];
+                    globalAppState.events = result.data.events || [];
+                    
                     renderStudentCards();
                     renderBirthdayWidget();
-                    renderInsightsPanel();
-                    renderFinanceLedger();
                     renderCalendarAgenda();
-                } else { alert("Sync Error: " + result.error); }
-            } catch (err) { console.error("Database connection fault:", err); }
+                    renderFinanceLedger();
+                    renderInsightsPanel();
+                }
+            } catch (err) { console.error("Database connection failure:", err); }
         }
 
         function calculateExactAge(dobString) {
@@ -426,8 +599,7 @@
             if (search) list = list.filter(s => s.StudentName.toLowerCase().includes(search));
 
             list.forEach(student => {
-                const curMonth = document.getElementById('modalLedgerTargetMonth').value;
-                const pay = globalAppState.payments.find(p => p.StudentID === student.StudentID && p.MonthYear === curMonth) || {};
+                const pay = globalAppState.payments.find(p => p.StudentID === student.StudentID && p.MonthYear === activeSystemMonthContext) || {};
                 const nulls = pay.NullifiedServices ? pay.NullifiedServices.split(',') : [];
 
                 const vanIcon = (Number(pay.VanFee) > 0 && !nulls.includes('Van')) ? '🚌' : '';
@@ -435,7 +607,7 @@
                 const optIcon = (Number(pay.OptMonthlyFee) > 0 && !nulls.includes('OptMonthly')) ? '🗓️' : '';
 
                 grid.insertAdjacentHTML('beforeend', `
-                    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm gamified-card flex flex-col justify-between">
+                    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm gamified-card flex flex-col justify-between cursor-pointer" onclick="openStudentDetailModal('${student.StudentID}')">
                         <div class="flex items-start space-x-4">
                             <div class="w-16 h-16 rounded-2xl bg-indigo-50 border flex-shrink-0 flex items-center justify-center overflow-hidden font-black text-xl text-indigo-500">
                                 ${student.PhotoBase64 ? `<img src="${student.PhotoBase64}" class="w-full h-full object-cover">` : student.StudentName.charAt(0)}
@@ -443,12 +615,12 @@
                             <div class="flex-1 min-w-0">
                                 <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded uppercase">${student.Class}</span>
                                 <h4 class="font-black text-slate-900 text-sm truncate mt-1">${student.StudentName}</h4>
-                                <p class="text-[11px] text-slate-400 font-semibold">Age: ${calculateExactAge(student.DOB)} | Blood: ${student.BloodGroup || 'N/A'}</p>
+                                <p class="text-[11px] text-slate-400 font-semibold">Age: ${calculateExactAge(student.DOB)} | Guard: ${student.GuardianName || 'N/A'}</p>
                             </div>
                         </div>
-                        <div class="mt-4 pt-3 border-t flex justify-between items-center">
+                        <div class="mt-4 pt-3 border-t flex justify-between items-center" onclick="event.stopPropagation();">
                             <div class="flex space-x-1 text-sm">${vanIcon}${dayIcon}${optIcon}</div>
-                            <button onclick="openPaymentModal('${student.StudentID}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-[11px]">💰 Track Fees</button>
+                            <button onclick="openPaymentModal('${student.StudentID}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-[11px]">💰 Manage Fees</button>
                         </div>
                     </div>
                 `);
@@ -463,6 +635,7 @@
         }
 
         function executeSearchFilter() { renderStudentCards(); }
+
         function processImageUpload(input) {
             const file = input.files[0];
             if (!file) return;
@@ -474,35 +647,108 @@
         async function handleStudentSubmission(e) {
             e.preventDefault();
             const f = new FormData(e.target);
-            const id = "STU-" + Date.now();
-            const row = [id, f.get('StudentName'), f.get('DOB'), f.get('Gender'), f.get('BloodGroup'), f.get('Class'), f.get('GuardianName'), f.get('Contact'), f.get('AltContact'), f.get('Address'), document.getElementById('base64PayloadCache').value || ""];
+            const sid = "STU-" + Date.now();
+            const photo = document.getElementById('base64PayloadCache').value || "";
+
+            const studentRow = [sid, f.get('StudentName'), f.get('DOB'), 'N/A', 'N/A', f.get('Class'), f.get('GuardianName'), f.get('Contact'), 'N/A', 'N/A', photo];
             
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: GATE_PASSPHRASE, action: "addRow", targetSheet: "Students", rowData: row })});
-            alert("Record Transmitted!"); e.target.reset(); refreshApplicationState();
+            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Students", rowData: studentRow })});
+
+            const m = f.get('InitialMonthYear');
+            const termPaid = Number(f.get('InitialPaid')) || 0;
+            const customFee = Number(f.get('CustomFee')) || 0;
+            const admissionFee = Number(f.get('AdmissionFee')) || 0;
+            const kitFee = Number(f.get('StudentKitFee')) || 0;
+            const uniformFee = Number(f.get('SpareUniformFee')) || 0;
+
+            const vanFee = Number(f.get('VanFee')) || 0;
+            const daycareFee = Number(f.get('DayCareFee')) || 0;
+            const optFee = Number(f.get('OptMonthlyFee')) || 0;
+
+            const paymentRow = [
+                "PAY-" + sid + "-" + m, sid, m,
+                termPaid > 0, false, false, false, false,
+                vanFee, daycareFee, optFee, (admissionFee + kitFee + uniformFee),
+                "Settled", ""
+            ];
+
+            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: paymentRow })});
+
+            alert("Comprehensive Intake Admission Posted Successfully!");
+            e.target.reset();
+            document.getElementById('base64PayloadCache').value = "";
+            refreshApplicationState();
         }
 
-        async function handleExpenseSubmission(e) {
-            e.preventDefault();
-            const f = new FormData(e.target);
-            const row = ["EXP-"+Date.now(), f.get('Date'), f.get('Category'), Number(f.get('Amount')), f.get('Description'), f.get('Type')];
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: GATE_PASSPHRASE, action: "addRow", targetSheet: "Expenses", rowData: row })});
-            alert("Expense Logged!"); e.target.reset(); refreshApplicationState();
+        function openStudentDetailModal(sid) {
+            const s = globalAppState.students.find(x => x.StudentID === sid);
+            if(!s) return;
+
+            document.getElementById('detailStudentID').value = s.StudentID;
+            document.getElementById('detailStudentNameHeader').innerText = s.StudentName;
+            document.getElementById('detailStudentClassHeader').innerText = `${s.Class} Roster Profile`;
+            
+            document.getElementById('editStudentName').value = s.StudentName;
+            document.getElementById('editDOB').value = s.DOB ? s.DOB.substring(0,10) : "";
+            document.getElementById('editClass').value = s.Class;
+            document.getElementById('editGuardianName').value = s.GuardianName || "";
+            document.getElementById('editContact').value = s.Contact || "";
+            document.getElementById('editBloodGroup').value = s.BloodGroup || "N/A";
+            document.getElementById('detailPhotoBase64').value = s.PhotoBase64 || "";
+
+            const photoSlot = document.getElementById('detailProfilePhotoSlot');
+            if(s.PhotoBase64) {
+                photoSlot.innerHTML = `<img src="${s.PhotoBase64}" class="w-full h-full object-cover">`;
+            } else {
+                photoSlot.innerText = s.StudentName.charAt(0);
+            }
+
+            document.getElementById('studentDetailModalOverlay').classList.remove('hidden');
         }
 
-        async function handleEventSubmission(e) {
+        function closeStudentDetailModal() {
+            document.getElementById('studentDetailModalOverlay').classList.add('hidden');
+        }
+
+        async function handleStudentDetailUpdate(e) {
             e.preventDefault();
             const f = new FormData(e.target);
-            const row = ["EVT-"+Date.now(), f.get('Title'), f.get('Date'), f.get('Time'), f.get('Category')];
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: GATE_PASSPHRASE, action: "addRow", targetSheet: "Events", rowData: row })});
-            alert("Event Logged!"); e.target.reset(); refreshApplicationState();
+            const sid = document.getElementById('detailStudentID').value;
+
+            const targetStudent = globalAppState.students.find(x => x.StudentID === sid);
+            const agreedFee = targetStudent ? targetStudent.CustomFee : 0;
+
+            const rowData = [
+                sid,
+                f.get('StudentName'),
+                f.get('DOB'),
+                'N/A',
+                f.get('BloodGroup'),
+                f.get('Class'),
+                f.get('GuardianName'),
+                f.get('Contact'),
+                'N/A',
+                'N/A',
+                document.getElementById('detailPhotoBase64').value || ""
+            ];
+
+            await fetch(APP_SHEET_API_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: rowData })
+            });
+
+            alert("Student Profile Modified and Synchronized Successfully!");
+            closeStudentDetailModal();
+            refreshApplicationState();
         }
 
         function openPaymentModal(sid) {
             const s = globalAppState.students.find(x => x.StudentID === sid);
             document.getElementById('modalTargetStudentID').value = sid;
             document.getElementById('modalStudentTitleName').innerText = s.StudentName;
-            document.getElementById('modalStudentCohortSubtitle').innerText = `${s.Class} Financial Matrix`;
-            document.getElementById('modalDiscountReadoutBadge').innerText = `₹${(globalAppState.standardFees[s.Class]||0) - (s.CustomFee||0)} Discount Dynamic`;
+            document.getElementById('modalStudentCohortSubtitle').innerText = `${s.Class} Financial Allocation Settings`;
             loadStudentPaymentMonthContext();
             document.getElementById('paymentModalOverlay').classList.remove('hidden');
         }
@@ -518,10 +764,9 @@
             document.getElementById('checkTerm4').checked = p.Term4 === true || p.Term4 === "TRUE";
             document.getElementById('checkTerm5').checked = p.Term5 === true || p.Term5 === "TRUE";
 
-            document.getElementById('inputVanFee').value = p.VanFee || "";
-            document.getElementById('inputDayCareFee').value = p.DayCareFee || "";
-            document.getElementById('inputOptMonthlyFee').value = p.OptMonthlyFee || "";
-            document.getElementById('inputUniformFee').value = p.UniformFee || "";
+            document.getElementById('inputVanFee').value = p.VanFee || 0;
+            document.getElementById('inputDayCareFee').value = p.DayCareFee || 0;
+            document.getElementById('inputOptMonthlyFee').value = p.OptMonthlyFee || 0;
 
             const nulls = p.NullifiedServices ? p.NullifiedServices.split(',') : [];
             document.getElementById('nullifyVan').checked = nulls.includes('Van');
@@ -538,9 +783,9 @@
             if (document.getElementById('nullifyDayCare').checked) nulls.push('DayCare');
             if (document.getElementById('nullifyOptMonthly').checked) nulls.push('OptMonthly');
 
-            const row = ["PAY-"+sid+"-"+m, sid, m, document.getElementById('checkTerm1').checked, document.getElementById('checkTerm2').checked, document.getElementById('checkTerm3').checked, document.getElementById('checkTerm4').checked, document.getElementById('checkTerm5').checked, Number(document.getElementById('inputVanFee').value)||0, Number(document.getElementById('inputDayCareFee').value)||0, Number(document.getElementById('inputOptMonthlyFee').value)||0, Number(document.getElementById('inputUniformFee').value)||0, "Active", nulls.join(',')];
+            const row = ["PAY-"+sid+"-"+m, sid, m, document.getElementById('checkTerm1').checked, document.getElementById('checkTerm2').checked, document.getElementById('checkTerm3').checked, document.getElementById('checkTerm4').checked, document.getElementById('checkTerm5').checked, Number(document.getElementById('inputVanFee').value)||0, Number(document.getElementById('inputDayCareFee').value)||0, Number(document.getElementById('inputOptMonthlyFee').value)||0, 0, "Active", nulls.join(',')];
 
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: GATE_PASSPHRASE, action: "updateRow", targetSheet: "Fee_Payments", rowId: "PAY-"+sid+"-"+m, rowData: row })});
+            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Fee_Payments", rowId: "PAY-"+sid+"-"+m, rowData: row })});
             alert("Balances Saved!"); closePaymentModal(); refreshApplicationState();
         }
 
@@ -548,45 +793,111 @@
 
         function renderBirthdayWidget() {
             const c = document.getElementById('birthdayRosterContainer');
-            const today = new Date(); const bdays = [];
+            const targetMonthStr = "July"; 
+            document.getElementById('birthdayTitleMonth').innerText = `Month of ${targetMonthStr} Birthday Roster`;
+            
+            const bdays = [];
             globalAppState.students.forEach(s => {
-                if(!s.DOB) return; const d = new Date(s.DOB);
-                if(d.getDate() === today.getDate() && d.getMonth() === today.getMonth()) bdays.push(`🎂 <strong>${s.StudentName}</strong> turning ${calculateExactAge(s.DOB)} today!`);
+                if(!s.DOB) return;
+                const d = new Date(s.DOB);
+                bdays.push(`🎂 <strong>${s.StudentName}</strong> - Celebrating on July ${d.getDate()} (Turning ${calculateExactAge(s.DOB)})`);
             });
-            c.innerHTML = bdays.length ? bdays.join('<br>') : "✨ No birthday milestones today.";
+            c.innerHTML = bdays.length ? bdays.join('<br>') : "✨ No birthday milestones recorded for this active period context.";
         }
 
         function renderCalendarAgenda() {
             const stream = document.getElementById('calendarAgendaStream'); stream.innerHTML = '';
+            document.getElementById('calendarAgendaHeader').innerText = "Active July 2026 Event Agenda";
+            
             if(!globalAppState.events.length) { stream.innerHTML = '<p class="text-xs text-slate-400">No events posted.</p>'; return; }
             globalAppState.events.forEach(e => {
                 stream.insertAdjacentHTML('beforeend', `<div class="p-3 border-l-4 border-indigo-500 bg-indigo-50 text-slate-900 rounded-r-xl text-xs font-semibold flex justify-between"><div><h5 class="font-black">${e.Title}</h5><span>🗓️ ${new Date(e.Date).toLocaleDateString()} @ ${e.Time||'All Day'}</span></div><span class="text-[9px] uppercase px-1.5 bg-white/80 rounded h-fit font-bold">${e.Category}</span></div>`);
             });
         }
 
+        async function handleExpenseSubmission(e) {
+            e.preventDefault();
+            const f = new FormData(e.target);
+            const row = ["EXP-"+Date.now(), f.get('Date'), f.get('Category'), Number(f.get('Amount')), f.get('Description'), f.get('Type')];
+            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Expenses", rowData: row })});
+            alert("Expense Logged!"); e.target.reset(); refreshApplicationState();
+        }
+
+        async function handleEventSubmission(e) {
+            e.preventDefault();
+            const f = new FormData(e.target);
+            const row = ["EVT-"+Date.now(), f.get('Title'), f.get('Date'), f.get('Time'), f.get('Category')];
+            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Events", rowData: row })});
+            alert("Event Logged!"); e.target.reset(); refreshApplicationState();
+        }
+
         function renderFinanceLedger() {
-            let rev = 0, exp = 0; const cats = {};
+            let totalReceivables = 0, totalCollected = 0, totalExpenses = 0;
+            const cats = {};
+
             globalAppState.payments.forEach(p => {
                 const nulls = p.NullifiedServices ? p.NullifiedServices.split(',') : [];
-                rev += (nulls.includes('Van') ? 0 : Number(p.VanFee)||0) + (nulls.includes('DayCare') ? 0 : Number(p.DayCareFee)||0) + (nulls.includes('OptMonthly') ? 0 : Number(p.OptMonthlyFee)||0) + (Number(p.UniformFee)||0);
-            });
-            globalAppState.expenses.forEach(e => { const a = Number(e.Amount)||0; exp += a; cats[e.Category] = (cats[e.Category]||0) + a; });
-            
-            document.getElementById('kpiGrossRevenue').innerText = `₹${rev}`;
-            document.getElementById('kpiTotalExpenses').innerText = `₹${exp}`;
-            document.getElementById('kpiNetMargin').innerText = `₹${rev - exp}`;
+                
+                const van = nulls.includes('Van') ? 0 : (Number(p.VanFee) || 0);
+                const dc = nulls.includes('DayCare') ? 0 : (Number(p.DayCareFee) || 0);
+                const opt = nulls.includes('OptMonthly') ? 0 : (Number(p.OptMonthlyFee) || 0);
+                const uniform = Number(p.UniformFee) || 0;
 
-            const ctx = document.getElementById('expenseCategoryChart').getContext('2d');
+                const rowBilled = van + dc + opt + uniform;
+                totalReceivables += rowBilled;
+
+                if(p.Status === "Settled" || p.Status === "Active" || p.Status === "Updated") {
+                    totalCollected += rowBilled;
+                }
+            });
+
+            globalAppState.expenses.forEach(e => { 
+                const a = Number(e.Amount) || 0; 
+                totalExpenses += a; 
+                cats[e.Category] = (cats[e.Category] || 0) + a; 
+            });
+
+            const outstandingDues = totalReceivables - totalCollected;
+
+            document.getElementById('kpiGrossRevenue').innerText = `₹${totalReceivables}`;
+            document.getElementById('kpiCollectedRevenue').innerText = `₹${totalCollected}`;
+            document.getElementById('kpiDuesPending').innerText = `₹${outstandingDues}`;
+            document.getElementById('kpiTotalExpenses').innerText = `₹${totalExpenses}`;
+
+            // Chart 1: Revenue vs Outstanding Balance
+            const ctx1 = document.getElementById('collectionsBalanceChart').getContext('2d');
+            if (window.myCollectionChart) window.myCollectionChart.destroy();
+            window.myCollectionChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['Gross Billed', 'Collected', 'Outstanding Dues'],
+                    datasets: [{
+                        label: 'Amount (₹)',
+                        data: [totalReceivables, totalCollected, outstandingDues],
+                        backgroundColor: ['#4f46e5', '#10b981', '#f59e0b']
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { display: false } } }
+            });
+
+            // Chart 2: Expense Distribution Mapping
+            const ctx2 = document.getElementById('expenseCategoryChart').getContext('2d');
             if (window.myExpenseChart) window.myExpenseChart.destroy();
-            window.myExpenseChart = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(cats), datasets: [{ data: Object.values(cats), backgroundColor: ['#4f46e5','#f43f5e','#eab308','#10b981','#a855f7'] }] }, options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9 } } } } } });
+            window.myExpenseChart = new Chart(ctx2, { 
+                type: 'doughnut', 
+                data: { 
+                    labels: Object.keys(cats), 
+                    datasets: [{ data: Object.values(cats), backgroundColor: ['#4f46e5','#f43f5e','#eab308','#10b981','#a855f7'] }] 
+                }, 
+                options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9 } } } } } 
+            });
         }
 
         function renderInsightsPanel() {
-            let vanRev = 0, dcRev = 0;
-            globalAppState.payments.forEach(p => { vanRev += Number(p.VanFee)||0; dcRev += Number(p.DayCareFee)||0; });
-            const ins = [`<li>🟢 System synchronized perfectly with Little Millennium Sullurpeta database sheets.</li>`];
-            if(vanRev === 0) ins.push(`<li>💡 Note: No active Van Fees have been transacted in the current selection yet.</li>`);
-            if(dcRev > 0) ins.push(`<li>📈 Day Care tracking utilization detected. Verify active staffing limits for afternoon operations.</li>`);
+            const ins = [
+                `<li>🟢 Core Application Engines initialized for Little Millennium Sullurpeta.</li>`,
+                `<li>🧠 Operations: Upfront student kit & uniform variables map inside student admission sheets automatically.</li>`
+            ];
             document.getElementById('insightsBox').innerHTML = `<ul class="list-disc pl-4 space-y-0.5">${ins.join('')}</ul>`;
         }
     </script>
