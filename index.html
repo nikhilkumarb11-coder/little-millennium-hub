@@ -15,6 +15,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-16 selection:bg-indigo-500 selection:text-white">
 
+    <!-- Auth Shield Screen -->
     <div id="authShield" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-4">
         <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border-4 border-amber-400">
             <h1 class="text-2xl font-black text-indigo-950 mb-1">Little Millennium</h1>
@@ -25,6 +26,7 @@
         </div>
     </div>
 
+    <!-- Main Navigation Bar -->
     <header class="bg-indigo-950 text-white shadow-xl sticky top-0 z-40 px-4 py-3">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-3 cursor-pointer" onclick="goToHome()">
@@ -35,17 +37,18 @@
                 </div>
             </div>
             <div class="flex items-center space-x-2">
-                <button onclick="goToHome()" class="bg-indigo-900 hover:bg-indigo-800 px-3 py-2 rounded-lg text-xs font-bold transition">🏠 Home</button>
-                <button onclick="openChangePasswordModal()" class="bg-indigo-900 hover:bg-indigo-800 px-3 py-2 rounded-lg text-xs font-bold transition">🔑 Security</button>
-                <button onclick="refreshApplicationState()" class="bg-indigo-800 hover:bg-indigo-700 p-2 rounded-lg text-xs font-bold transition flex items-center space-x-1">
-                    <span>🔄</span> <span>Sync Database</span>
-                </button>
+                <button onclick="goToHome()" class="bg-indigo-900 hover:bg-indigo-800 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">🏠 Home</button>
+                <button onclick="openChangePasswordModal()" class="bg-indigo-900 hover:bg-indigo-800 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">🔑 Security</button>
+                <button onclick="refreshApplicationState()" class="bg-indigo-800 hover:bg-indigo-700 p-1.5 rounded-lg text-xs font-bold transition">🔄 Sync</button>
+                <button onclick="triggerSystemLogout()" class="bg-rose-700 hover:bg-rose-600 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">🚪 Logout</button>
             </div>
         </div>
     </header>
 
+    <!-- Main Workspace Container -->
     <main id="appWorkspace" class="max-w-7xl mx-auto p-4 space-y-6 hidden">
         
+        <!-- Cohort Headcount Tracking Grid -->
         <section class="grid grid-cols-2 md:grid-cols-6 gap-4">
             <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-indigo-600">
                 <span class="text-[10px] uppercase font-bold text-slate-400">DR Count</span>
@@ -73,58 +76,66 @@
             </div>
         </section>
 
+        <!-- Live Outstanding Monthly Reminders Panel -->
         <section class="bg-white p-5 rounded-3xl shadow-sm border border-indigo-100 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
                 <h3 class="font-black text-sm text-indigo-950 uppercase tracking-wider flex items-center space-x-2">
                     <span>⏰</span> <span>Live Outstanding Monthly Reminders</span>
                 </h3>
+                <span class="bg-indigo-100 text-indigo-800 text-[10px] font-black px-2.5 py-0.5 rounded-full">July Context Cycle</span>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Van Reminders -->
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
                         <span>Transit (Van)</span>
                         <span id="countVanDues" class="bg-rose-100 text-rose-700 rounded-full px-2 text-[10px]">0</span>
                     </h4>
-                    <div id="containerVanReminders" class="space-y-1.5 max-h-40 overflow-y-auto text-[11px] font-semibold"></div>
+                    <div id="containerVanReminders" class="space-y-2 max-h-48 overflow-y-auto text-[11px] font-semibold pr-1"></div>
                 </div>
+                <!-- Day Care Reminders -->
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
                         <span>Day Care Operations</span>
                         <span id="countDayCareDues" class="bg-rose-100 text-rose-700 rounded-full px-2 text-[10px]">0</span>
                     </h4>
-                    <div id="containerDayCareReminders" class="space-y-1.5 max-h-40 overflow-y-auto text-[11px] font-semibold"></div>
+                    <div id="containerDayCareReminders" class="space-y-2 max-h-48 overflow-y-auto text-[11px] font-semibold pr-1"></div>
                 </div>
+                <!-- Custom Monthly Reminders -->
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
                         <span>Custom Monthly Opt</span>
                         <span id="countOptDues" class="bg-rose-100 text-rose-700 rounded-full px-2 text-[10px]">0</span>
                     </h4>
-                    <div id="containerOptReminders" class="space-y-1.5 max-h-40 overflow-y-auto text-[11px] font-semibold"></div>
+                    <div id="containerOptReminders" class="space-y-2 max-h-48 overflow-y-auto text-[11px] font-semibold pr-1"></div>
                 </div>
             </div>
         </section>
 
+        <!-- Birthday Calendar Panel -->
         <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="bg-gradient-to-br from-amber-400 to-orange-500 rounded-3xl p-5 text-white shadow-lg relative overflow-hidden">
                 <div class="absolute -right-6 -bottom-6 text-8xl opacity-10">🎂</div>
-                <h3 class="font-black text-lg flex items-center space-x-2"><span>🎈</span> <span id="birthdayTitleMonth">Monthly Birthday Desk</span></h3>
+                <h3 class="font-black text-lg flex items-center space-x-2"><span>🎈</span> <span id="birthdayTitleMonth">Active July Birthday Desk</span></h3>
                 <div id="birthdayRosterContainer" class="mt-3 space-y-2 text-sm font-bold max-h-36 overflow-y-auto pr-1"></div>
             </div>
             <div class="bg-gradient-to-br from-indigo-900 to-slate-900 rounded-3xl p-5 text-indigo-100 shadow-lg relative overflow-hidden">
                 <div class="absolute -right-6 -bottom-6 text-8xl opacity-10">💡</div>
                 <h3 class="font-black text-lg flex items-center space-x-2 text-amber-300"><span>🧠</span> <span>System Operations Guidance</span></h3>
-                <div id="insightsBox" class="mt-2 text-xs leading-relaxed space-y-1 font-semibold">
+                <div id="insightsBox" class="mt-2 text-xs leading-relaxed space-y-1 opacity-90 font-semibold">
                     <p>Evaluating financial indicators...</p>
                 </div>
             </div>
         </section>
 
+        <!-- Navigation Tabs -->
         <nav class="flex space-x-2 bg-slate-200 p-1.5 rounded-xl overflow-x-auto hide-scrollbar">
             <button id="btn-studentsTab" onclick="switchTab('studentsTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold bg-white text-indigo-950 shadow-sm flex-1 text-center">👶 Student Registry</button>
             <button id="btn-financeTab" onclick="switchTab('financeTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-300 flex-1 text-center">📊 Financial Ledger & Metrics</button>
             <button id="btn-calendarTab" onclick="switchTab('calendarTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-300 flex-1 text-center">🗓️ Academic Calendar</button>
         </nav>
 
+        <!-- Tab Content Viewport 1: Student Roster and Entry -->
         <div id="studentsTab" class="tab-pane space-y-6">
             <details class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden group">
                 <summary class="p-5 font-black text-sm tracking-wide text-indigo-950 cursor-pointer hover:bg-slate-50 list-none flex justify-between items-center">
@@ -235,6 +246,17 @@
                             <input type="tel" name="Contact" required class="w-full px-3 py-2 rounded-xl border bg-slate-50">
                         </div>
                         <div>
+                            <label class="block mb-1 text-slate-500">Alternative Contact</label>
+                            <input type="tel" name="AltContact" value="N/A" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                        </div>
+                        <div>
+                            <label class="block mb-1 text-slate-500">Residential Address</label>
+                            <input type="text" name="Address" value="N/A" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-3">
+                        <div>
                             <label class="block mb-1 text-slate-500">Blood Group</label>
                             <input type="text" name="BloodGroup" placeholder="e.g. O+" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
                         </div>
@@ -251,6 +273,7 @@
                 </form>
             </details>
 
+            <!-- Filters Dashboard bar -->
             <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
                 <div class="flex flex-wrap gap-1.5">
                     <button onclick="filterCohort('ALL')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white">All Rosters</button>
@@ -266,6 +289,7 @@
             <div id="studentCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
+        <!-- Tab Content Viewport 2: Finance Metrics Ledger -->
         <div id="financeTab" class="tab-pane hidden space-y-6">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
@@ -302,6 +326,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Log Expense Form -->
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
                     <h4 class="font-black text-sm text-slate-700 mb-3" id="expenseFormHeader">Commit Operational Expenditure Row</h4>
                     <form id="expenseForm" onsubmit="handleExpenseSubmission(event)" class="space-y-3 text-xs font-semibold">
@@ -346,6 +371,7 @@
                     </form>
                 </div>
 
+                <!-- Categorized Expenditure Itemization Streams -->
                 <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 flex flex-col justify-between">
                     <div>
                         <h4 class="font-black text-sm text-slate-700 mb-3">Itemized Operational Expenditure Stream</h4>
@@ -355,6 +381,7 @@
             </div>
         </div>
 
+        <!-- Tab Content Viewport 3: Events Agenda -->
         <div id="calendarTab" class="tab-pane hidden space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 text-xs font-semibold">
@@ -396,6 +423,7 @@
         </div>
     </main>
 
+    <!-- Student Profile Detailed View & Edit Modal -->
     <div id="studentDetailModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-[2rem] max-w-2xl w-full p-6 shadow-2xl space-y-4 border-2 border-indigo-100 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-start border-b pb-3">
@@ -410,9 +438,6 @@
             </div>
 
             <form id="studentDetailUpdateForm" onsubmit="handleStudentDetailUpdate(event)" class="text-xs font-semibold space-y-4">
-                <input type="hidden" id="detailStudentID" name="StudentID">
-                <input type="hidden" id="detailPhotoBase64" name="PhotoBase64">
-                
                 <div id="editModelWrapper" class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 flex items-center space-x-6">
                     <span class="font-black text-indigo-950">Billing Pipeline Model:</span>
                     <label class="flex items-center space-x-1 cursor-pointer">
@@ -531,7 +556,7 @@
                         <span>🗑️</span> <span>Delete Student Record</span>
                     </button>
                     <div class="flex space-x-2">
-                        <button type="button" onclick="closeStudentDetailModal()" class="px-4 py-2 bg-slate-100 text-slate-600 font-bold rounded-xl">Cancel</button>
+                        <button type="button" onclick="closeStudentDetailModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl">Cancel</button>
                         <button type="submit" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md">Commit Profile Changes</button>
                     </div>
                 </div>
@@ -539,6 +564,7 @@
         </div>
     </div>
 
+    <!-- Security Settings Modal -->
     <div id="changePasswordModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-amber-400 text-center space-y-4">
             <h3 class="font-black text-indigo-950 text-lg">System Security Hub</h3>
@@ -551,6 +577,7 @@
         </div>
     </div>
 
+    <!-- Redesigned Fee Particulars Modal -->
     <div id="paymentModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-[2rem] max-w-md w-full p-6 shadow-2xl space-y-4 border-2 border-indigo-100 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
@@ -558,18 +585,18 @@
                     <h3 id="modalStudentTitleName" class="font-black text-indigo-950 text-base">Fee Particulars Deck</h3>
                     <p id="modalStudentCohortSubtitle" class="text-[10px] font-bold text-amber-600 tracking-wider uppercase">Balance Monitoring Sheet</p>
                 </div>
-                <button onclick="closePaymentModal()" class="text-2xl text-slate-400 font-bold leading-none">&times;</button>
+                <button type="button" onclick="closePaymentModal()" class="text-2xl text-slate-400 font-bold leading-none">&times;</button>
             </div>
             
             <div class="bg-slate-50 p-4 rounded-2xl border space-y-2 text-xs font-bold text-slate-700">
-                <div class="flex justify-between"><span>Gross Total Billed Commitment:</span><span id="lblModalTotalBilled" class="text-indigo-950">₹0</span></div>
-                <div class="flex justify-between"><span>Cumulative Logged Collections:</span><span id="lblModalTotalPaid" class="text-emerald-600">₹0</span></div>
-                <div class="flex justify-between border-t pt-2 text-sm"><span>Outstanding Net Balance:</span><span id="lblModalOutstandingBalance" class="text-rose-600 font-black">₹0</span></div>
+                <div class="flex justify-between"><span>Gross Total Billed Tuition:</span><span id="lblModalTotalBilled" class="text-indigo-950">₹0</span></div>
+                <div class="flex justify-between"><span>Cumulative Logged Payments:</span><span id="lblModalTotalPaid" class="text-emerald-600">₹0</span></div>
+                <div class="flex justify-between border-t pt-2 text-sm"><span>Outstanding Balance:</span><span id="lblModalOutstandingBalance" class="text-rose-600 font-black">₹0</span></div>
             </div>
 
             <form id="modalFeeParticularsForm" onsubmit="commitParticularsTransaction(event)" class="text-xs font-semibold space-y-3">
                 <input type="hidden" id="modalTargetStudentID">
-                <h4 class="font-black text-indigo-950 border-b pb-1 uppercase tracking-wider text-[10px] text-slate-400">Record New Payment Transaction</h4>
+                <h4 class="font-black text-indigo-950 border-b pb-1 uppercase tracking-wider text-[10px] text-slate-400">Record New Tuition Installment</h4>
                 <div>
                     <label class="block mb-1 text-slate-500">Payment Processing Amount (₹) *</label>
                     <input type="number" id="txAmountPaid" required class="w-full p-2.5 rounded-xl border bg-slate-50 font-bold text-indigo-950 text-sm">
@@ -591,7 +618,7 @@
                 </div>
                 <div>
                     <label class="block mb-1 text-slate-500">Remarks / Verification Track Key</label>
-                    <input type="text" id="txRemarks" placeholder="Reference notes or bank transaction numbers" class="w-full p-2 rounded-xl border bg-slate-50">
+                    <input type="text" id="txRemarks" placeholder="Reference notes or reference remarks" class="w-full p-2 rounded-xl border bg-slate-50">
                 </div>
                 <div class="flex space-x-2 pt-2">
                     <button type="button" onclick="closePaymentModal()" class="w-1/3 bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl">Close</button>
@@ -601,6 +628,7 @@
         </div>
     </div>
 
+    <!-- Javascript Engine Hub Logic Block -->
     <script>
         const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwFQ7XxcSrYBWq8HJYocTnLE8fCVCqmD99vuZ_iLPjr788dTnC_dwAWrdNHaG2YlQRTJQ/exec";
         
@@ -620,12 +648,19 @@
             }
         }
 
+        function triggerSystemLogout() {
+            document.getElementById('authShield').classList.remove('hidden');
+            document.getElementById('appWorkspace').classList.add('hidden');
+            document.getElementById('gateKey').value = "";
+        }
+
         function goToHome() { switchTab('studentsTab'); }
         function openChangePasswordModal() {
             document.getElementById('newPasscodeInput').value = CURRENT_GATE_PASSPHRASE;
             document.getElementById('changePasswordModalOverlay').classList.remove('hidden');
         }
         function closeChangePasswordModal() { document.getElementById('changePasswordModalOverlay').classList.add('hidden'); }
+        
         function commitNewPasscodeKey() {
             const val = document.getElementById('newPasscodeInput').value.trim();
             if(val) {
@@ -634,7 +669,6 @@
             }
         }
 
-        // Intake Interface Adaptive Display Toggle Engine
         function handleFormBillingTypeChange(type) {
             const rowAnnual = document.getElementById('rowAnnualTuition');
             const rowAdmission = document.getElementById('rowAdmissionFee');
@@ -685,8 +719,6 @@
         function updateIntakeClassFeeDefault() {
             const cls = document.getElementById('intakeClassSelect').value;
             if(cls === 'DayCare') {
-                document.getElementById('editModelMonthly').checked = true;
-                document.getElementById('editModelRegular').checked = false;
                 document.querySelector('input[name="BillingModel"][value="Monthly"]').checked = true;
                 handleFormBillingTypeChange('Monthly');
                 document.getElementById('formModelWrapper').style.display = "none";
@@ -767,7 +799,7 @@
                     renderInsightsPanel();
                     renderFrontPageReminders();
                 }
-            } catch (err) { console.error("Cloud database communication lost:", err); }
+            } catch (err) { console.error("Database connectivity fault:", err); }
         }
 
         function renderCohortHeadcounts() {
@@ -788,17 +820,16 @@
             if (search) list = list.filter(s => s.StudentName.toLowerCase().includes(search));
 
             list.forEach((student, index) => {
-                const pay = globalAppState.payments.find(p => p.StudentID === student.StudentID && p.MonthYear === activeSystemMonthContext) || {};
-                const nulls = pay.NullifiedServices ? pay.NullifiedServices.split(',') : [];
-
-                const vanIcon = (Number(student.VanFee) > 0 && !nulls.includes('Van')) ? '🚌' : '';
-                const dayIcon = (Number(student.DayCareFee) > 0 && !nulls.includes('DayCare')) ? '☀️' : '';
-                const optIcon = (Number(student.OptMonthlyFee) > 0 && !nulls.includes('OptMonthly')) ? '🗓️' : '';
-
+                const isRegularModel = (student.BillingModel === "Regular");
                 const colorClass = AVATAR_COLORS[index % AVATAR_COLORS.length];
                 const imageContent = (student.PhotoBase64 && student.PhotoBase64 !== "N/A" && student.PhotoBase64.length > 50) 
                     ? `<img src="${student.PhotoBase64}" class="w-full h-full object-cover">` 
                     : `<div class="w-full h-full ${colorClass} text-white font-black flex items-center justify-center text-xl shadow-inner uppercase">${student.StudentName.charAt(0)}</div>`;
+
+                // Dynamic Action Button Allocation Config: Regular Accounts Only get Balance Ledger Modals
+                const trackingActionBtn = isRegularModel 
+                    ? `<button onclick="openPaymentModal('${student.StudentID}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-[11px]">💰 Fee Particulars</button>`
+                    : `<span class="text-[10px] bg-slate-100 px-2 py-1 rounded text-slate-400 font-bold">Monthly Account</span>`;
 
                 grid.insertAdjacentHTML('beforeend', `
                     <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm gamified-card flex flex-col justify-between cursor-pointer" onclick="openStudentDetailModal('${student.StudentID}')">
@@ -813,8 +844,8 @@
                             </div>
                         </div>
                         <div class="mt-4 pt-3 border-t flex justify-between items-center" onclick="event.stopPropagation();">
-                            <div class="flex space-x-1 text-sm">${vanIcon}${dayIcon}${optIcon}</div>
-                            <button onclick="openPaymentModal('${student.StudentID}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-[11px]">💰 Fee Particulars</button>
+                            <div class="flex space-x-1 text-sm"></div>
+                            ${trackingActionBtn}
                         </div>
                     </div>
                 `);
@@ -832,25 +863,99 @@
                 const currentMonthPayment = payments.find(x => x.MonthYear === activeSystemMonthContext) || {};
                 const nulls = currentMonthPayment.NullifiedServices ? currentMonthPayment.NullifiedServices.split(',') : [];
                 
-                let cumulativePaid = 0;
-                payments.forEach(p => cumulativePaid += (Number(p.AmountPaid) || 0));
-                
-                const totalBilledStructure = (Number(s.CustomFee)||0) + (Number(s.AdmissionFee)||0) + (Number(s.StudentKitFee)||0) + (Number(s.SpareUniformFee)||0) + (Number(s.VanFee)||0) + (Number(s.DayCareFee)||0) + (Number(s.OptMonthlyFee)||0);
-                const outstandingBalance = totalBilledStructure - cumulativePaid;
+                const isVanActive = Number(s.VanFee) > 0;
+                const isDcActive = Number(s.DayCareFee) > 0 || s.Class === "DayCare";
+                const isOptActive = Number(s.OptMonthlyFee) > 0;
 
-                if (outstandingBalance <= 0) return;
+                // 1. Transit Van Reminders Stream Config Layout Block
+                if(isVanActive) {
+                    const isNullified = nulls.includes('Van');
+                    const isSettled = currentMonthPayment.Status === "Settled";
+                    
+                    if(!isSettled) {
+                        vCount++;
+                        vanBox.insertAdjacentHTML('beforeend', `
+                            <div class="bg-white p-3 rounded-xl border mb-2 shadow-sm space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-slate-800">${s.StudentName}</span>
+                                    <span class="text-rose-600 font-black">${isNullified ? '₹0 (Frozen)' : '₹' + s.VanFee}</span>
+                                </div>
+                                <div class="flex items-center justify-between gap-1 pt-1 border-t">
+                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
+                                        <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID}','Van',this.checked)" ${isNullified?'checked':''} class="rounded">
+                                        <span>Freeze</span>
+                                    </label>
+                                    <div class="flex items-center space-x-1 ${isNullified?'hidden':''}">
+                                        <select id="mode-van-${s.StudentID}" class="text-[10px] bg-slate-50 border rounded p-1">
+                                            <option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Netbanking">Bank</option>
+                                        </select>
+                                        <button onclick="commitReminderSettlement('${s.StudentID}','Van',${s.VanFee})" class="bg-emerald-500 text-white font-bold px-2.5 py-1 rounded text-[10px]">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+                    }
+                }
 
-                if(Number(s.VanFee) > 0 && !nulls.includes('Van') && currentMonthPayment.Status !== "Settled") {
-                    vCount++;
-                    vanBox.insertAdjacentHTML('beforeend', `<div class="flex justify-between items-center bg-white p-2 rounded-lg border mb-1"><span>${s.StudentName} (<strong class="text-rose-600">₹${s.VanFee}</strong>)</span><button onclick="openPaymentModal('${s.StudentID}')" class="bg-indigo-600 text-white px-2 py-0.5 rounded text-[10px]">Open Particulars</button></div>`);
+                // 2. Day Care Management Reminders Stream Config Layout Block
+                if(isDcActive) {
+                    const isNullified = nulls.includes('DayCare');
+                    const isSettled = currentMonthPayment.Status === "Settled";
+                    const fallbackFee = s.Class === "DayCare" ? (s.OptMonthlyFee || 0) : s.DayCareFee;
+                    
+                    if(!isSettled) {
+                        dCount++;
+                        dcBox.insertAdjacentHTML('beforeend', `
+                            <div class="bg-white p-3 rounded-xl border mb-2 shadow-sm space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-slate-800">${s.StudentName}</span>
+                                    <span class="text-rose-600 font-black">${isNullified ? '₹0 (Frozen)' : '₹' + fallbackFee}</span>
+                                </div>
+                                <div class="flex items-center justify-between gap-1 pt-1 border-t">
+                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
+                                        <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID}','DayCare',this.checked)" ${isNullified?'checked':''} class="rounded">
+                                        <span>Freeze</span>
+                                    </label>
+                                    <div class="flex items-center space-x-1 ${isNullified?'hidden':''}">
+                                        <select id="mode-dc-${s.StudentID}" class="text-[10px] bg-slate-50 border rounded p-1">
+                                            <option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Netbanking">Bank</option>
+                                        </select>
+                                        <button onclick="commitReminderSettlement('${s.StudentID}','DayCare',${fallbackFee})" class="bg-emerald-500 text-white font-bold px-2.5 py-1 rounded text-[10px]">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+                    }
                 }
-                if(Number(s.DayCareFee) > 0 && !nulls.includes('DayCare') && currentMonthPayment.Status !== "Settled") {
-                    dCount++;
-                    dcBox.insertAdjacentHTML('beforeend', `<div class="flex justify-between items-center bg-white p-2 rounded-lg border mb-1"><span>${s.StudentName} (<strong class="text-rose-600">₹${s.DayCareFee}</strong>)</span><button onclick="openPaymentModal('${s.StudentID}')" class="bg-indigo-600 text-white px-2 py-0.5 rounded text-[10px]">Open Particulars</button></div>`);
-                }
-                if(Number(s.OptMonthlyFee) > 0 && !nulls.includes('OptMonthly') && currentMonthPayment.Status !== "Settled") {
-                    oCount++;
-                    optBox.insertAdjacentHTML('beforeend', `<div class="flex justify-between items-center bg-white p-2 rounded-lg border mb-1"><span>${s.StudentName} (<strong class="text-rose-600">₹${s.OptMonthlyFee}</strong>)</span><button onclick="openPaymentModal('${s.StudentID}')" class="bg-indigo-600 text-white px-2 py-0.5 rounded text-[10px]">Open Particulars</button></div>`);
+
+                // 3. Custom Monthly Opt Parametric Reminders Stream Config Layout Block
+                if(isOptActive && s.Class !== "DayCare") {
+                    const isNullified = nulls.includes('OptMonthly');
+                    const isSettled = currentMonthPayment.Status === "Settled";
+                    
+                    if(!isSettled) {
+                        oCount++;
+                        optBox.insertAdjacentHTML('beforeend', `
+                            <div class="bg-white p-3 rounded-xl border mb-2 shadow-sm space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-slate-800">${s.StudentName}</span>
+                                    <span class="text-rose-600 font-black">${isNullified ? '₹0 (Frozen)' : '₹' + s.OptMonthlyFee}</span>
+                                </div>
+                                <div class="flex items-center justify-between gap-1 pt-1 border-t">
+                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
+                                        <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID}','OptMonthly',this.checked)" ${isNullified?'checked':''} class="rounded">
+                                        <span>Freeze</span>
+                                    </label>
+                                    <div class="flex items-center space-x-1 ${isNullified?'hidden':''}">
+                                        <select id="mode-opt-${s.StudentID}" class="text-[10px] bg-slate-50 border rounded p-1">
+                                            <option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Netbanking">Bank</option>
+                                        </select>
+                                        <button onclick="commitReminderSettlement('${s.StudentID}','OptMonthly',${s.OptMonthlyFee})" class="bg-emerald-500 text-white font-bold px-2.5 py-1 rounded text-[10px]">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+                    }
                 }
             });
 
@@ -859,18 +964,53 @@
             document.getElementById('countOptDues').innerText = oCount;
         }
 
+        async function toggleReminderNullify(sid, serviceKey, isChecked) {
+            const pId = "PAY-" + sid + "-" + activeSystemMonthContext;
+            const pObj = globalAppState.payments.find(x => x.PaymentID === pId) || {};
+            
+            let currentNulls = pObj.NullifiedServices ? pObj.NullifiedServices.split(',') : [];
+            if(isChecked) {
+                if(!currentNulls.includes(serviceKey)) currentNulls.push(serviceKey);
+            } else {
+                currentNulls = currentNulls.filter(x => x !== serviceKey);
+            }
+
+            const row = [
+                pId, sid, activeSystemMonthContext, false, false, false, false, false, 
+                0, 0, 0, 0, "Active", currentNulls.join(',')
+            ];
+            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Fee_Payments", rowId: pId, rowData: row })});
+            refreshApplicationState();
+        }
+
+        async function commitReminderSettlement(sid, serviceKey, feeValue) {
+            const pId = "PAY-" + sid + "-" + activeSystemMonthContext;
+            let channelMode = "Cash";
+            if(serviceKey === 'Van') channelMode = document.getElementById(`mode-van-${sid}`).value;
+            if(serviceKey === 'DayCare') channelMode = document.getElementById(`mode-dc-${sid}`).value;
+            if(serviceKey === 'OptMonthly') channelMode = document.getElementById(`mode-opt-${sid}`).value;
+
+            const row = [
+                pId, sid, activeSystemMonthContext, Number(feeValue),
+                new Date().toISOString().substring(0,10), channelMode,
+                `Settled front-end monthly service reminder: ${serviceKey}`, 0, 0, 0, 0, "Settled", ""
+            ];
+            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Fee_Payments", rowId: pId, rowData: row })});
+            alert("Payment processed and synchronized!");
+            refreshApplicationState();
+        }
+
         function openPaymentModal(sid) {
             const s = globalAppState.students.find(x => x.StudentID === sid);
             if(!s) return;
             document.getElementById('modalTargetStudentID').value = sid;
             document.getElementById('modalStudentTitleName').innerText = s.StudentName;
-            document.getElementById('modalStudentCohortSubtitle').innerText = `${s.Class} Fee Particulars Matrix`;
             
             const payments = globalAppState.payments.filter(x => x.StudentID === sid);
             let cumulativePaid = 0;
             payments.forEach(p => cumulativePaid += (Number(p.AmountPaid) || 0));
 
-            const totalBilledStructure = (Number(s.CustomFee)||0) + (Number(s.AdmissionFee)||0) + (Number(s.StudentKitFee)||0) + (Number(s.SpareUniformFee)||0) + (Number(s.VanFee)||0) + (Number(s.DayCareFee)||0) + (Number(s.OptMonthlyFee)||0);
+            const totalBilledStructure = Number(s.CustomFee) || 0;
             
             document.getElementById('lblModalTotalBilled').innerText = `₹${totalBilledStructure}`;
             document.getElementById('lblModalTotalPaid').innerText = `₹${cumulativePaid}`;
@@ -879,26 +1019,24 @@
             document.getElementById('txAmountPaid').value = totalBilledStructure - cumulativePaid;
             document.getElementById('txPaymentDate').value = new Date().toISOString().substring(0,10);
 
-            loadStudentPaymentMonthContext();
             document.getElementById('paymentModalOverlay').classList.remove('hidden');
         }
+
+        function closePaymentModal() { document.getElementById('paymentModalOverlay').classList.add('hidden'); }
 
         async function commitParticularsTransaction(e) {
             e.preventDefault();
             const sid = document.getElementById('modalTargetStudentID').value;
-            const m = document.getElementById('modalLedgerTargetMonth').value;
-            const sObj = globalAppState.students.find(x => x.StudentID === sid) || {};
-
             const txId = "TX-" + Date.now();
+            
             const row = [
-                txId, sid, m, Number(document.getElementById('txAmountPaid').value)||0,
+                txId, sid, activeSystemMonthContext, Number(document.getElementById('txAmountPaid').value)||0,
                 document.getElementById('txPaymentDate').value, document.getElementById('txPaymentMode').value,
-                document.getElementById('txRemarks').value, sObj.VanFee||0, sObj.DayCareFee||0, sObj.OptMonthlyFee||0,
-                sObj.SpareUniformFee||0, "Settled", ""
+                document.getElementById('txRemarks').value, 0, 0, 0, 0, "Settled", ""
             ];
 
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })});
-            alert("Payment Settled & Balance Calculated!"); closePaymentModal(); refreshApplicationState();
+            alert("Payment logged into history records successfully!"); closePaymentModal(); refreshApplicationState();
         }
 
         function openStudentDetailModal(sid) {
@@ -906,7 +1044,8 @@
             if(!s) return;
             document.getElementById('detailStudentID').value = s.StudentID;
             document.getElementById('detailStudentNameHeader').innerText = s.StudentName;
-            document.getElementById('detailStudentClassHeader').innerText = `${s.Class} Master Record`;
+            document.getElementById('detailStudentClassHeader').innerText = `${s.Class} Profile Database Record`;
+            
             document.getElementById('editStudentName').value = s.StudentName;
             document.getElementById('editDOB').value = s.DOB ? s.DOB.substring(0,10) : "";
             document.getElementById('editGender').value = s.Gender || "Boy";
@@ -921,6 +1060,8 @@
             updateEditClassFeeDashboardDisplay(s);
             document.getElementById('studentDetailModalOverlay').classList.remove('hidden');
         }
+
+        function closeStudentDetailModal() { document.getElementById('studentDetailModalOverlay').classList.add('hidden'); }
 
         function updateEditClassFeeDashboardDisplay(s) {
             const bModel = s.BillingModel || "Regular";
@@ -947,7 +1088,15 @@
             const mModel = document.querySelector('input[name="EditBillingModel"]:checked').value;
             const rowData = [sid, f.get('StudentName'), f.get('DOB'), f.get('Gender'), f.get('Class'), f.get('GuardianName'), f.get('Contact'), f.get('AltContact'), f.get('Address'), document.getElementById('detailPhotoBase64').value || "N/A", mModel, Number(f.get('CustomFee'))||0, Number(f.get('AdmissionFee'))||0, Number(f.get('StudentKitFee'))||0, Number(f.get('SpareUniformFee'))||0, Number(f.get('VanFee'))||0, Number(f.get('DayCareFee'))||0, Number(f.get('OptMonthlyFee'))||0, f.get('BloodGroup')];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: rowData })});
-            alert("Profile Synchronized!"); closeStudentDetailModal(); refreshApplicationState();
+            alert("Master Profile File Record Saved Successfully!"); closeStudentDetailModal(); refreshApplicationState();
+        }
+
+        async function triggerDeleteStudent() {
+            const sid = document.getElementById('detailStudentID').value;
+            if(confirm("Permanently wipe out student enrollment data row from the servers?")) {
+                await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: [sid, "DELETED", "", "", "", "", "", "", "", "N/A"] })});
+                alert("Profile Terminated!"); closeStudentDetailModal(); refreshApplicationState();
+            }
         }
 
         function setExpenseGraphTimeframe(frame) {
@@ -960,31 +1109,29 @@
         function renderFinanceLedger() {
             let totalReceivables = 0, totalCollected = 0, totalExpenses = 0; const cats = {};
             const expenseStreamBox = document.getElementById('containerRunningExpensesList'); expenseStreamBox.innerHTML = '';
-
-            // Compute dynamic aggregations based on timezone filters
             const now = new Date();
+
             globalAppState.payments.forEach(p => {
                 totalReceivables += (Number(p.VanFee)||0) + (Number(p.DayCareFee)||0) + (Number(p.OptMonthlyFee)||0) + (Number(p.UniformFee)||0);
                 totalCollected += (Number(p.AmountPaid) || 0);
             });
 
-            let filteredExpenses = globalAppState.expenses;
+            let filteredExpenses = globalAppState.expenses.filter(x => x.Date && x.Category !== "DELETED");
             if (currentExpenseTimeframeContext === 'monthly') {
-                filteredExpenses = globalAppState.expenses.filter(e => {
+                filteredExpenses = filteredExpenses.filter(e => {
                     const d = new Date(e.Date);
                     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
                 });
             } else if (currentExpenseTimeframeContext === 'currentYear') {
-                filteredExpenses = globalAppState.expenses.filter(e => {
+                filteredExpenses = filteredExpenses.filter(e => {
                     const d = new Date(e.Date);
-                    const year = d.getFullYear();
-                    return (year === 2026 && d.getMonth() >= 5) || (year === 2017 && d.getMonth() < 5); // Financial Year June 2026 Engine Rule
+                    return (d.getFullYear() === 2026 && d.getMonth() >= 5) || (d.getFullYear() === 2027 && d.getMonth() < 5);
                 });
             }
 
             filteredExpenses.forEach(e => {
                 const a = Number(e.Amount)||0; totalExpenses += a; cats[e.Category] = (cats[e.Category]||0) + a;
-                expenseStreamBox.insertAdjacentHTML('beforeend', `<div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border"><div><strong>${e.Category}</strong> - <span class="text-slate-400">${e.Date.substring(0,10)}</span><p class="text-[10px] text-slate-400 font-medium">${e.Description || 'No description comments'}</p></div><div class="flex items-center space-x-2"><span class="font-bold text-rose-600">₹${a}</span><button onclick="loadExpenseToEditForm('${e.ExpenseID}')" class="text-indigo-600 hover:underline">Edit</button></div></div>`);
+                expenseStreamBox.insertAdjacentHTML('beforeend', `<div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border"><div><strong>${e.Category}</strong> - <span class="text-slate-400">${e.Date.substring(0,10)}</span><p class="text-[10px] text-slate-400 font-medium">${e.Description || ''}</p></div><div class="flex items-center space-x-2"><span class="font-bold text-rose-600">₹${a}</span><button onclick="loadExpenseToEditForm('${e.ExpenseID}')" class="text-indigo-600 hover:underline">Edit</button></div></div>`);
             });
 
             document.getElementById('kpiGrossRevenue').innerText = `₹${totalReceivables}`;
@@ -994,7 +1141,7 @@
 
             const ctx1 = document.getElementById('collectionsBalanceChart').getContext('2d');
             if (window.myCollectionChart) window.myCollectionChart.destroy();
-            window.myCollectionChart = new Chart(ctx1, { type: 'bar', data: { labels: ['Receivables', 'Collected', 'Outstanding Dues'], datasets: [{ data: [totalReceivables, totalCollected, totalReceivables - totalCollected], backgroundColor: ['#4f46e5', '#10b981', '#f59e0b'] }] }, options: { responsive: true, plugins: { legend: { display: false } } } });
+            window.myCollectionChart = new Chart(ctx1, { type: 'bar', data: { labels: ['Receivables', 'Collected', 'Pending Dues'], datasets: [{ data: [totalReceivables, totalCollected, totalReceivables - totalCollected], backgroundColor: ['#4f46e5', '#10b981', '#f59e0b'] }] }, options: { responsive: true, plugins: { legend: { display: false } } } });
 
             const ctx2 = document.getElementById('expenseCategoryChart').getContext('2d');
             if (window.myExpenseChart) window.myExpenseChart.destroy();
@@ -1019,19 +1166,14 @@
         }
 
         function resetExpenseForm() {
-            document.getElementById('expenseForm').reset();
-            document.getElementById('expenseFormID').value = "";
+            document.getElementById('expenseForm').reset(); document.getElementById('expenseFormID').value = "";
             document.getElementById('expenseFormHeader').innerText = "Commit Operational Expenditure Row";
             document.getElementById('expenseFormActions').innerHTML = `<button type="submit" class="w-full bg-rose-600 text-white font-bold py-2.5 rounded-xl shadow hover:bg-rose-700 transition">Save Ledger Entry</button>`;
         }
 
         async function handleExpenseSubmission(e) {
-            e.preventDefault();
-            const f = new FormData(e.target);
-            const expId = document.getElementById('expenseFormID').value;
-            const actionType = expId ? "updateRow" : "addRow";
-            const id = expId || "EXP-" + Date.now();
-
+            e.preventDefault(); const f = new FormData(e.target); const expId = document.getElementById('expenseFormID').value;
+            const actionType = expId ? "updateRow" : "addRow"; const id = expId || "EXP-" + Date.now();
             const row = [id, f.get('Date'), f.get('Category'), Number(f.get('Amount')), f.get('Description'), f.get('Type')];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: actionType, targetSheet: "Expenses", rowId: id, rowData: row })});
             alert("Ledger Matrix Table Processed!"); resetExpenseForm(); refreshApplicationState();
@@ -1047,27 +1189,61 @@
         function renderBirthdayWidget() {
             const c = document.getElementById('birthdayRosterContainer'); const bdays = [];
             globalAppState.students.filter(s => s.StudentName && s.StudentName !== "DELETED").forEach(s => {
-                if(!s.DOB) return; const p = s.DOB.substring(0,10).split('-');
-                if(p.length >= 3) bdays.push(`🎂 <strong>${s.StudentName}</strong> - Celebration Date: July ${parseInt(p[2],10)}`);
+                if(!s.DOB) return;
+                const dateClean = s.DOB.toString().substring(0,10);
+                const parts = dateClean.split('-');
+                if(parts.length >= 3) bdays.push(`🎂 <strong>${s.StudentName}</strong> - Date: July ${parseInt(parts[2],10)} (Turning ${calculateExactAge(s.DOB)} Yrs)`);
             });
-            c.innerHTML = bdays.length ? bdays.join('<br>') : "✨ No parameters logged.";
+            c.innerHTML = bdays.length ? bdays.join('<br>') : "✨ No birthdays recorded for July.";
         }
 
         function renderCalendarAgenda() {
             const stream = document.getElementById('calendarAgendaStream'); stream.innerHTML = '';
-            globalAppState.events.forEach(e => stream.insertAdjacentHTML('beforeend', `<div class="p-3 border-l-4 border-indigo-500 bg-indigo-50 text-slate-900 text-xs font-semibold flex justify-between"><div><h5 class="font-black">${e.Title}</h5><span>🗓️ ${e.Date.substring(0,10)}</span></div></div>`));
+            globalAppState.events.forEach(e => stream.insertAdjacentHTML('beforeend', `<div class="p-3 border-l-4 border-indigo-500 bg-indigo-50 text-slate-900 text-xs font-semibold flex justify-between"><div><h5 class="font-black">${e.Title}</h5><span>🗓️ ${e.Date ? e.Date.substring(0,10) : ''}</span></div></div>`));
         }
 
-        function renderInsightsPanel() { document.getElementById('insightsBox').innerHTML = `<ul class="list-disc pl-4 space-y-0.5"><li>🟢 System synchronized perfectly with live cloud layers.</li></ul>`; }
+        function renderInsightsPanel() { document.getElementById('insightsBox').innerHTML = `<ul class="list-disc pl-4 space-y-0.5"><li>🟢 System operation indicators aligned. Front page reminder pipelines loaded.</li></ul>`; }
         function calculateIntakeDiscount() { const c = document.getElementById('intakeClassSelect').value; const base = globalAppState.standardFees[c] || 0; const custom = Number(document.getElementById('intakeAnnualTuition').value) || 0; const disc = base - custom; document.getElementById('intakeDiscountBadge').innerText = `₹${disc > 0 ? disc : 0} Offered Discount`; }
         function calculateEditDiscount() { const c = document.getElementById('editClass').value; const base = globalAppState.standardFees[c] || 0; const custom = Number(document.getElementById('editCustomFee').value) || 0; const disc = base - custom; document.getElementById('editDiscountBadge').innerText = `₹${disc > 0 ? disc : 0} Offered Discount`; }
         function executeSearchFilter() { renderStudentCards(); }
         function filterCohort(type) { currentActiveCohortFilter = type; document.querySelectorAll('.cohort-filter-btn').forEach(b => b.classList.replace('bg-indigo-600', 'bg-slate-100')); event.target.classList.replace('bg-slate-100', 'bg-indigo-600'); renderStudentCards(); }
-        function closePaymentModal() { document.getElementById('paymentModalOverlay').classList.add('hidden'); }
-        function loadStudentPaymentMonthContext() {}
         function processImageUpload(input) { const file = input.files[0]; if (!file) return; const r = new FileReader(); r.onloadend = () => document.getElementById('base64PayloadCache').value = r.result; r.readAsDataURL(file); }
+        function processEditImageUpload(input) { const file = input.files[0]; if (!file) return; const r = new FileReader(); r.onloadend = () => { document.getElementById('detailPhotoBase64').value = r.result; }; r.readAsDataURL(file); }
+        
+        async function handleStudentSubmission(event) {
+            event.preventDefault();
+            const f = new FormData(event.target);
+            const sid = "STU-" + Date.now();
+            const photo = document.getElementById('base64PayloadCache').value || "N/A";
+            const bModel = document.querySelector('input[name="BillingModel"]:checked').value;
+
+            const studentRow = [
+                sid, f.get('StudentName'), f.get('DOB'), f.get('Gender'), f.get('Class'),
+                f.get('GuardianName'), f.get('Contact'), f.get('AltContact'), f.get('Address'), photo,
+                bModel, Number(f.get('CustomFee'))||0, Number(f.get('AdmissionFee'))||0, Number(f.get('StudentKitFee'))||0, Number(f.get('SpareUniformFee'))||0,
+                Number(f.get('VanFee'))||0, Number(f.get('DayCareFee'))||0, Number(f.get('OptMonthlyFee'))||0, f.get('BloodGroup')
+            ];
+
+            try {
+                // Post to Student Profile Sheet Matrix
+                await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Students", rowData: studentRow })});
+                
+                // Initialize Payment Record Row context variables safely
+                const pRow = ["PAY-"+sid+"-"+activeSystemMonthContext, sid, activeSystemMonthContext, 0, "", "Cash", "Intake Account Provision", 0, 0, 0, 0, "Active", ""];
+                await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: pRow })});
+                
+                alert("Comprehensive Admissions Registry Logged Successfully!");
+                event.target.reset();
+                document.getElementById('base64PayloadCache').value = "";
+                await refreshApplicationState();
+            } catch(e) {
+                console.error("Intake stream crashed: ", e);
+            }
+        }
+
         async function handleEventSubmission(e) { e.preventDefault(); const f = new FormData(e.target); const row = ["EVT-"+Date.now(), f.get('Title'), f.get('Date'), f.get('Time'), f.get('Category')]; await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Events", rowData: row })}); alert("Event Logged!"); e.target.reset(); refreshApplicationState(); }
 
+        // Start Up Form Mechanics Hook initialization
         handleFormBillingTypeChange('Regular');
     </script>
 </body>
