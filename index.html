@@ -123,7 +123,7 @@
         </nav>
 
         <div id="studentsTab" class="tab-pane space-y-6">
-            <details class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden group">
+            <details id="intakeFormDetailsContainer" class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden group">
                 <summary class="p-5 font-black text-sm tracking-wide text-indigo-950 cursor-pointer hover:bg-slate-50 list-none flex justify-between items-center">
                     <span class="flex items-center space-x-2"><span>➕</span> <span>New Complete Admissions Intake Form</span></span>
                 </summary>
@@ -563,7 +563,7 @@
             <div class="flex justify-between items-center border-b pb-3">
                 <div>
                     <h3 id="modalStudentTitleName" class="font-black text-indigo-950 text-base">Fee Particulars Deck</h3>
-                    <p id="modalStudentCohortSubtitle" class="text-[10px] font-bold text-amber-600 tracking-wider uppercase">Balance Monitoring Sheet</p>
+                    <p id="modalStudentCohortSubtitle" class="text-[10px] font-bold text-amber-600 tracking-wider uppercase">Balance Sheet Context</p>
                 </div>
                 <button type="button" onclick="closePaymentModal()" class="text-2xl text-slate-400 font-bold leading-none">&times;</button>
             </div>
@@ -598,7 +598,7 @@
                 </div>
                 <div>
                     <label class="block mb-1 text-slate-500">Remarks</label>
-                    <input type="text" id="txRemarks" placeholder="Reference notes or bank tracking keys" class="w-full p-2 rounded-xl border bg-slate-50">
+                    <input type="text" id="txRemarks" placeholder="Reference remarks" class="w-full p-2 rounded-xl border bg-slate-50">
                 </div>
                 <div class="flex space-x-2 pt-2">
                     <button type="button" onclick="closePaymentModal()" class="w-1/3 bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl">Close</button>
@@ -609,7 +609,7 @@
     </div>
 
     <script>
-        // REPLACE THIS STRING WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP EXTENSION LINK URL
+        // PASTE YOUR DEPLOYED APPS SCRIPT WEB APP LINK URL DIRECTLY INSIDE THESE QUOTES
         const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzejxWGHXEQdyVSZ97fi4Aiqx3oZPJCVrYo5jGrxuhBh7o7QYE1z8y71WAThonTm4Yu/exec";
         
         let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "ApexSullurpeta2026!";
@@ -850,8 +850,8 @@
                 const activeNullifiedFlags = (activeMonthPaymentRow.NullifiedServices || "").toString().split(',');
 
                 let elapsedMonthsToBillCount = 1;
-                if(s.DOJ && s.DOJ !== "N/A") {
-                    const parts = s.DOJ.split('-');
+                if(s.DOJ && s.DOJ !== "N/A" && s.DOJ.toString().includes("-")) {
+                    const parts = s.DOJ.toString().split('-');
                     if(parts.length >= 2) {
                         const jYear = parseInt(parts[0],10);
                         const jMonth = parseInt(parts[1],10) - 1;
@@ -862,7 +862,7 @@
                     }
                 }
 
-                // 1. Van Reminders Engine
+                // 1. Van Reminders calculation loop
                 if (Number(s.VanFee) > 0) {
                     let totalBilledVan = elapsedMonthsToBillCount * Number(s.VanFee);
                     let totalPaidVan = 0;
@@ -900,7 +900,7 @@
                     }
                 }
 
-                // 2. Day Care Reminders Engine
+                // 2. Day Care Reminders calculation loop
                 const isDayCareTrackActive = Number(s.DayCareFee) > 0 || s.Class === "DayCare";
                 if (isDayCareTrackActive) {
                     const monthlyBaseRateValue = s.Class === "DayCare" ? (Number(s.OptMonthlyFee) || 0) : Number(s.DayCareFee);
@@ -940,7 +940,7 @@
                     }
                 }
 
-                // 3. Custom Monthly Opt Fee Reminders Engine (Excludes Kit & Admissions Fees Entirely)
+                // 3. Custom Monthly Opt Fee Reminders Engine (Strictly handles only recurring base rates)
                 if (Number(s.OptMonthlyFee) > 0 && s.Class !== "DayCare") {
                     let totalBilledOpt = elapsedMonthsToBillCount * Number(s.OptMonthlyFee);
                     let totalPaidOpt = 0;
@@ -1278,14 +1278,22 @@
                 alert("🎉 Admissions Intake Logged & Saved Safely!");
                 event.target.reset();
                 if(document.getElementById('base64PayloadCache')) { document.getElementById('base64PayloadCache').value = ""; }
+                
+                const detailsEl = document.getElementById('intakeFormDetailsContainer');
+                if(detailsEl) detailsEl.removeAttribute('open');
+                
                 await refreshApplicationState(false);
             } catch(e) { console.error(e); }
         }
 
         async function handleEventSubmission(e) { e.preventDefault(); const f = new FormData(e.target); const row = ["EVT-"+Date.now(), f.get('Title'), f.get('Date'), f.get('Time'), f.get('Category')]; await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Events", rowData: row })}); alert("✅ Calendar Event Pinned!"); e.target.reset(); await refreshApplicationState(false); }
 
-        document.getElementById('intakeDOJ').value = new Date().toISOString().substring(0,10);
-        handleFormBillingTypeChange('Regular');
+        // Secure Window Initializer Hook Placement block
+        window.addEventListener('DOMContentLoaded', () => {
+            const dojInp = document.getElementById('intakeDOJ');
+            if(dojInp) dojInp.value = new Date().toISOString().substring(0,10);
+            handleFormBillingTypeChange('Regular');
+        });
     </script>
 </body>
 </html>
