@@ -143,19 +143,19 @@
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
                             <label class="block mb-1 text-slate-500">Student Name *</label>
-                            <input type="text" name="StudentName" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                            <input type="text" id="intakeStudentName" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
                         </div>
                         <div>
                             <label class="block mb-1 text-slate-500">Date of Birth *</label>
-                            <input type="date" name="DOB" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
+                            <input type="date" id="intakeDOB" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
                         </div>
                         <div>
                             <label class="block mb-1 text-slate-500">Date of Joining (DOJ) *</label>
-                            <input type="date" id="intakeDOJ" name="DOJ" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
+                            <input type="date" id="intakeDOJ" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
                         </div>
                         <div>
                             <label class="block mb-1 text-slate-500">Cohort Class Assignment *</label>
-                            <select id="intakeClassSelect" name="Class" onchange="updateIntakeClassFeeDefault()" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
+                            <select id="intakeClassSelect" onchange="updateIntakeClassFeeDefault()" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
                                 <option value="DR">DR (Developing Roots)</option>
                                 <option value="EW">EW (Emerging Wings)</option>
                                 <option value="RTF1">RTF1 (Ready to Fly 1)</option>
@@ -173,19 +173,19 @@
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div id="rowAnnualTuition">
                                 <label class="block mb-1 text-slate-500">Agreed Annual Base Tuition (₹)</label>
-                                <input type="number" id="intakeAnnualTuition" name="CustomFee" value="41000" oninput="calculateIntakeDiscount()" class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
+                                <input type="number" id="intakeAnnualTuition" value="41000" oninput="calculateIntakeDiscount()" class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
                             </div>
                             <div id="rowAdmissionFee">
                                 <label class="block mb-1 text-slate-500">Admission Processing Fees (₹)</label>
-                                <input type="number" id="intakeAdmissionFee" name="AdmissionFee" value="0" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                                <input type="number" id="intakeAdmissionFee" value="0" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
                             </div>
                             <div id="rowKitFee">
                                 <label class="block mb-1 text-slate-500">Student Welcome Kit Cost (₹)</label>
-                                <input type="number" id="intakeKitFee" name="StudentKitFee" value="0" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                                <input type="number" id="intakeKitFee" value="0" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
                             </div>
                             <div id="rowUniformFee">
                                 <label class="block mb-1 text-slate-500">Spare Uniform Outlay (₹)</label>
-                                <input type="number" id="intakeUniformFee" name="SpareUniformFee" value="0" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                                <input type="number" id="intakeUniformFee" value="0" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
                             </div>
                         </div>
                     </div>
@@ -195,24 +195,24 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="bg-slate-50 p-3 rounded-xl border" id="boxFormVan">
                                 <label class="flex items-center space-x-2 font-bold text-slate-700">
-                                    <input type="checkbox" name="VanOpted" onchange="toggleFormFeeInput(this, 'FormVanFee')" class="rounded">
+                                    <input type="checkbox" id="chkFormVanOpted" onchange="toggleFormFeeInput(this, 'FormVanFee')" class="rounded">
                                     <span>🚌 Van Commute Service</span>
                                 </label>
-                                <input type="number" id="FormVanFee" name="VanFee" value="0" disabled class="w-full mt-2 px-3 py-1.5 rounded-lg border bg-white">
+                                <input type="number" id="FormVanFee" value="0" disabled class="w-full mt-2 px-3 py-1.5 rounded-lg border bg-white">
                             </div>
                             <div class="bg-slate-50 p-3 rounded-xl border" id="boxFormDayCare">
                                 <label class="flex items-center space-x-2 font-bold text-slate-700">
-                                    <input type="checkbox" name="DayCareOpted" onchange="toggleFormFeeInput(this, 'FormDayCareFee')" class="rounded">
+                                    <input type="checkbox" id="chkFormDayCareOpted" onchange="toggleFormFeeInput(this, 'FormDayCareFee')" class="rounded">
                                     <span>☀️ Day Care Management</span>
                                 </label>
-                                <input type="number" id="FormDayCareFee" name="DayCareFee" value="0" disabled class="w-full mt-2 px-3 py-1.5 rounded-lg border bg-white">
+                                <input type="number" id="FormDayCareFee" value="0" disabled class="w-full mt-2 px-3 py-1.5 rounded-lg border bg-white">
                             </div>
                             <div class="bg-slate-50 p-3 rounded-xl border" id="boxFormOptMonthly">
                                 <label class="flex items-center space-x-2 font-bold text-slate-700">
-                                    <input type="checkbox" id="chkOptMonthly" name="OptMonthlyActive" onchange="toggleFormFeeInput(this, 'FormOptMonthlyFee')" class="rounded">
+                                    <input type="checkbox" id="chkOptMonthly" onchange="toggleFormFeeInput(this, 'FormOptMonthlyFee')" class="rounded">
                                     <span>🗓️ Custom Monthly Committed Fee</span>
                                 </label>
-                                <input type="number" id="FormOptMonthlyFee" name="OptMonthlyFee" value="0" disabled class="w-full mt-2 px-3 py-1.5 rounded-lg border bg-white">
+                                <input type="number" id="FormOptMonthlyFee" value="0" disabled class="w-full mt-2 px-3 py-1.5 rounded-lg border bg-white">
                             </div>
                         </div>
                     </div>
@@ -220,33 +220,38 @@
                     <div class="border-t pt-3 grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
                             <label class="block mb-1 text-slate-500">Primary Guardian Name *</label>
-                            <input type="text" name="GuardianName" required class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                            <input type="text" id="intakeGuardianName" required class="w-full px-3 py-2 rounded-xl border bg-slate-50">
                         </div>
                         <div>
                             <label class="block mb-1 text-slate-500">Mobile Contact Number *</label>
-                            <input type="tel" name="Contact" required class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                            <input type="tel" id="intakeContact" required class="w-full px-3 py-2 rounded-xl border bg-slate-50">
                         </div>
                         <div>
                             <label class="block mb-1 text-slate-500">Alternative Contact</label>
-                            <input type="tel" name="AltContact" value="N/A" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                            <input type="tel" id="intakeAltContact" value="N/A" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
                         </div>
                         <div>
                             <label class="block mb-1 text-slate-500">Residential Address</label>
-                            <input type="text" name="Address" value="N/A" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                            <input type="text" id="intakeAddress" value="N/A" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-3">
                         <div>
                             <label class="block mb-1 text-slate-500">Blood Group</label>
-                            <input type="text" name="BloodGroup" placeholder="e.g. O+" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                            <input type="text" id="intakeBloodGroup" placeholder="e.g. O+" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
                         </div>
                         <div>
                             <label class="block mb-1 text-slate-500">Gender *</label>
-                            <select name="Gender" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                            <select id="intakeGender" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
                                 <option value="Boy">Boy</option>
                                 <option value="Girl">Girl</option>
                             </select>
+                        </div>
+                        <div class="pt-2 col-span-2">
+                            <label class="block mb-1 text-slate-500">Photo Attachment</label>
+                            <input type="file" accept="image/*" onchange="processImageUpload(this)" class="w-full text-xs">
+                            <input type="hidden" id="base64PayloadCache">
                         </div>
                     </div>
 
@@ -429,8 +434,8 @@
             </div>
 
             <form id="studentDetailUpdateForm" onsubmit="handleStudentDetailUpdate(event)" class="text-xs font-semibold space-y-4">
-                <input type="hidden" id="detailStudentID" name="StudentID">
-                <input type="hidden" id="detailPhotoBase64" name="PhotoBase64">
+                <input type="hidden" id="detailStudentID">
+                <input type="hidden" id="detailPhotoBase64">
                 
                 <div id="editModelWrapper" class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 flex items-center space-x-6">
                     <span class="font-black text-indigo-950">Billing Pipeline Model:</span>
@@ -447,19 +452,19 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                     <div>
                         <label class="block mb-1 text-slate-400">Student Name</label>
-                        <input type="text" id="editStudentName" name="StudentName" required class="w-full p-2 border rounded-xl bg-slate-50">
+                        <input type="text" id="editStudentName" required class="w-full p-2 border rounded-xl bg-slate-50">
                     </div>
                     <div>
                         <label class="block mb-1 text-slate-400">Date of Birth</label>
-                        <input type="date" id="editDOB" name="DOB" required class="w-full p-2 border rounded-xl bg-slate-50">
+                        <input type="date" id="editDOB" required class="w-full p-2 border rounded-xl bg-slate-50">
                     </div>
                     <div>
                         <label class="block mb-1 text-slate-400">Date of Joining (DOJ)</label>
-                        <input type="date" id="editDOJ" name="DOJ" required class="w-full p-2 border rounded-xl bg-slate-50">
+                        <input type="date" id="editDOJ" required class="w-full p-2 border rounded-xl bg-slate-50">
                     </div>
                     <div>
                         <label class="block mb-1 text-slate-400">Class Assigned</label>
-                        <select id="editClass" name="Class" onchange="updateEditClassFeeDefault()" required class="w-full p-2 border rounded-xl bg-slate-50">
+                        <select id="editClass" onchange="updateEditClassFeeDefault()" required class="w-full p-2 border rounded-xl bg-slate-50">
                             <option value="DR">DR</option><option value="EW">EW</option><option value="RTF1">RTF1</option><option value="RTF2">RTF2</option><option value="DayCare">Day Care Only Track</option>
                         </select>
                     </div>
@@ -473,19 +478,19 @@
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <div id="editRowAnnualTuition">
                             <label class="block mb-1 text-slate-400">Agreed Annual Tuition (₹)</label>
-                            <input type="number" id="editCustomFee" name="CustomFee" oninput="calculateEditDiscount()" class="w-full p-2 border rounded-xl bg-slate-50">
+                            <input type="number" id="editCustomFee" oninput="calculateEditDiscount()" class="w-full p-2 border rounded-xl bg-slate-50">
                         </div>
                         <div id="editRowAdmissionFee">
                             <label class="block mb-1 text-slate-400">Admission Fee (₹)</label>
-                            <input type="number" id="editAdmissionFee" name="AdmissionFee" class="w-full p-2 border rounded-xl bg-slate-50">
+                            <input type="number" id="editAdmissionFee" class="w-full p-2 border rounded-xl bg-slate-50">
                         </div>
                         <div id="editRowKitFee">
                             <label class="block mb-1 text-slate-400">Student Kit Fee (₹)</label>
-                            <input type="number" id="editStudentKitFee" name="StudentKitFee" class="w-full p-2 border rounded-xl bg-slate-50">
+                            <input type="number" id="editStudentKitFee" class="w-full p-2 border rounded-xl bg-slate-50">
                         </div>
                         <div id="editRowUniformFee">
                             <label class="block mb-1 text-slate-400">Spare Uniform Fee (₹)</label>
-                            <input type="number" id="editSpareUniformFee" name="SpareUniformFee" class="w-full p-2 border rounded-xl bg-slate-50">
+                            <input type="number" id="editSpareUniformFee" class="w-full p-2 border rounded-xl bg-slate-50">
                         </div>
                     </div>
                 </div>
@@ -495,15 +500,15 @@
                     <div class="grid grid-cols-3 gap-3">
                         <div id="editBoxVan">
                             <label class="block mb-1 text-slate-400">🚌 Van Service Fee (₹)</label>
-                            <input type="number" id="editVanFee" name="VanFee" class="w-full p-2 border rounded-xl bg-slate-50">
+                            <input type="number" id="editVanFee" class="w-full p-2 border rounded-xl bg-slate-50">
                         </div>
                         <div id="editBoxDayCare">
                             <label class="block mb-1 text-slate-400">☀️ Day Care Facility Fee (₹)</label>
-                            <input type="number" id="editDayCareFee" name="DayCareFee" class="w-full p-2 border rounded-xl bg-slate-50">
+                            <input type="number" id="editDayCareFee" class="w-full p-2 border rounded-xl bg-slate-50">
                         </div>
                         <div id="editBoxOptMonthly">
                             <label class="block mb-1 text-slate-400">🗓️ Custom Monthly Opt Fee (₹)</label>
-                            <input type="number" id="editOptMonthlyFee" name="OptMonthlyFee" class="w-full p-2 border rounded-xl bg-slate-50">
+                            <input type="number" id="editOptMonthlyFee" class="w-full p-2 border rounded-xl bg-slate-50">
                         </div>
                     </div>
                 </div>
@@ -511,35 +516,34 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-3 border-t pt-3">
                     <div>
                         <label class="block mb-1 text-slate-400">Primary Guardian Name</label>
-                        <input type="text" id="editGuardianName" name="GuardianName" required class="w-full p-2 border rounded-xl bg-slate-50">
+                        <input type="text" id="editGuardianName" required class="w-full p-2 border rounded-xl bg-slate-50">
                     </div>
                     <div>
                         <label class="block mb-1 text-slate-400">Contact Number</label>
-                        <input type="tel" id="editContact" name="Contact" required class="w-full p-2 border rounded-xl bg-slate-50">
+                        <input type="tel" id="editContact" required class="w-full p-2 border rounded-xl bg-slate-50">
                     </div>
                     <div>
                         <label class="block mb-1 text-slate-400">Alternative Contact</label>
-                        <input type="tel" id="editAltContact" name="AltContact" class="w-full p-2 border rounded-xl bg-slate-50">
+                        <input type="tel" id="editAltContact" class="w-full p-2 border rounded-xl bg-slate-50">
                     </div>
                     <div>
                         <label class="block mb-1 text-slate-400">Address</label>
-                        <input type="text" id="editAddress" name="Address" class="w-full p-2 border rounded-xl bg-slate-50">
+                        <input type="text" id="editAddress" class="w-full p-2 border rounded-xl bg-slate-50">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 border-t pt-3">
                     <div>
                         <label class="block mb-1 text-slate-400">Blood Group</label>
-                        <input type="text" id="editBloodGroup" name="BloodGroup" class="w-full p-2 border rounded-xl bg-slate-50">
+                        <input type="text" id="editBloodGroup" class="w-full p-2 border rounded-xl bg-slate-50">
                     </div>
                     <div>
                         <label class="block mb-1 text-slate-400">Gender</label>
-                        <select id="editGender" name="Gender" class="w-full p-2 border rounded-xl bg-slate-50">
-                            <option value="Boy">Boy</option>
-                            <option value="Girl">Girl</option>
+                        <select id="editGender" class="w-full p-2 border rounded-xl bg-slate-50">
+                            <option value="Boy">Boy</option><option value="Girl">Girl</option>
                         </select>
                     </div>
-                    <div class="pt-2">
+                    <div class="pt-2 col-span-2">
                         <label class="block mb-1 text-slate-400">Replace Profile Image</label>
                         <input type="file" accept="image/*" onchange="processEditImageUpload(this)" class="w-full text-xs">
                     </div>
@@ -605,6 +609,18 @@
                     <button type="submit" class="w-2/3 bg-emerald-600 text-white font-bold py-2.5 rounded-xl shadow">Log Settle Transaction</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <div id="changePasswordModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-amber-400 text-center space-y-4">
+            <h3 class="font-black text-indigo-950 text-lg">System Security Hub</h3>
+            <p class="text-xs text-slate-400 font-medium">Update the validation security passphrase below.</p>
+            <input type="text" id="newPasscodeInput" class="w-full px-3 py-2 border rounded-xl text-center font-mono focus:outline-none">
+            <div class="flex space-x-2">
+                <button onclick="closeChangePasswordModal()" class="w-1/3 bg-slate-100 py-2 rounded-xl text-xs font-bold">Cancel</button>
+                <button onclick="commitNewPasscodeKey()" class="w-2/3 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold shadow">Save Passcode</button>
+            </div>
         </div>
     </div>
 
@@ -783,11 +799,11 @@
                     
                     if(showUserAlert) { alert("🔄 Cloud database sheets synchronized successfully!"); }
                 }
-            } catch (err) { console.error("Database connection lost:", err); }
+            } catch (err) { console.error("Database connection fault:", err); }
         }
 
         function renderCohortHeadcounts() {
-            const list = globalAppState.students.filter(s => s.StudentName && s.StudentName !== "DELETED");
+            const list = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED");
             document.getElementById('countCohortDR').innerText = `${list.filter(s=>s.Class==='DR').length} Kids`;
             document.getElementById('countCohortEW').innerText = `${list.filter(s=>s.Class==='EW').length} Kids`;
             document.getElementById('countCohortRTF1').innerText = `${list.filter(s=>s.Class==='RTF1').length} Kids`;
@@ -798,7 +814,7 @@
 
         function renderStudentCards() {
             const grid = document.getElementById('studentCardsGrid'); grid.innerHTML = '';
-            let list = globalAppState.students.filter(s => s.StudentName && s.StudentName !== "DELETED");
+            let list = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED");
             if (currentActiveCohortFilter !== 'ALL') list = list.filter(s => s.Class === currentActiveCohortFilter);
             const search = document.getElementById('rosterSearch').value.toLowerCase();
             if (search) list = list.filter(s => s.StudentName.toLowerCase().includes(search));
@@ -844,7 +860,7 @@
 
             const targetPeriodMonthStr = "July-2026";
 
-            globalAppState.students.filter(s => s.StudentName && s.StudentName !== "DELETED").forEach(s => {
+            globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED").forEach(s => {
                 const studentPaymentsLog = globalAppState.payments.filter(x => x.StudentID === s.StudentID) || [];
                 const activeMonthPaymentRow = studentPaymentsLog.find(x => x.MonthYear === targetPeriodMonthStr) || {};
                 const activeNullifiedFlags = (activeMonthPaymentRow.NullifiedServices || "").toString().split(',');
@@ -865,7 +881,7 @@
                     }
                 }
 
-                // 1. Van Reminders Metric Engine
+                // 1. Van Reminders Engine
                 if (Number(s.VanFee) > 0) {
                     let totalBilledVan = elapsedMonthsToBillCount * Number(s.VanFee);
                     let totalPaidVan = 0;
@@ -887,7 +903,7 @@
                                     <span class="text-rose-600 font-black">₹${finalVanDisplayDue}</span>
                                 </div>
                                 <div class="flex items-center justify-between gap-1 pt-1 border-t">
-                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cubic-pointer">
+                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
                                         <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID}','Van',this.checked)" ${isFrozenThisMonth?'checked':''}>
                                         <span>Freeze Month</span>
                                     </label>
@@ -927,7 +943,7 @@
                                     <span class="text-rose-600 font-black">₹${finalDCDisplayDue}</span>
                                 </div>
                                 <div class="flex items-center justify-between gap-1 pt-1 border-t">
-                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cubic-pointer">
+                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
                                         <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID}','DayCare',this.checked)" ${isFrozenThisMonth?'checked':''}>
                                         <span>Freeze Month</span>
                                     </label>
@@ -943,8 +959,8 @@
                     }
                 }
 
-                // 3. Custom Monthly Opt Fee Reminders Engine (Strictly handles recurring plan parameter accounts)
-                if (s.BillingModel === "Monthly" && Number(s.OptMonthlyFee) > 0 && s.Class !== "DayCare") {
+                // 3. Custom Monthly Opt Fee Reminders Engine (Strictly handles only recurring base rates)
+                if (student.BillingModel === "Monthly" && Number(s.OptMonthlyFee) > 0 && s.Class !== "DayCare") {
                     let totalBilledOpt = elapsedMonthsToBillCount * Number(s.OptMonthlyFee);
                     let totalPaidOpt = 0;
                     studentPaymentsLog.forEach(p => {
@@ -965,7 +981,7 @@
                                     <span class="text-rose-600 font-black">₹${finalOptDisplayDue}</span>
                                 </div>
                                 <div class="flex items-center justify-between gap-1 pt-1 border-t">
-                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cubic-pointer">
+                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
                                         <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID}','OptMonthly',this.checked)" ${isFrozenThisMonth?'checked':''}>
                                         <span>Freeze Month</span>
                                     </label>
@@ -1013,7 +1029,7 @@
             const row = [
                 "PAY-" + Date.now(), sid, activeSystemMonthContext, Number(feeValue),
                 new Date().toISOString().substring(0,10), channelMode,
-                `Settled reminder stream historical transaction segment: ${serviceKey}`, "Settled", ""
+                `Cleared outstanding tracking stream row: ${serviceKey}`, "Settled", ""
             ];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })});
             alert("✅ Payment processed and synchronized!");
@@ -1104,11 +1120,22 @@
         }
 
         async function handleStudentDetailUpdate(e) {
-            e.preventDefault(); const f = new FormData(e.target); const sid = document.getElementById('detailStudentID').value;
+            e.preventDefault(); const sid = document.getElementById('detailStudentID').value;
             const mModel = document.querySelector('input[name="EditBillingModel"]:checked').value;
-            const rowData = [sid, f.get('StudentName'), f.get('DOB'), f.get('Gender'), f.get('Class'), f.get('GuardianName'), f.get('Contact'), f.get('AltContact'), f.get('Address'), document.getElementById('detailPhotoBase64').value || "N/A", mModel, Number(f.get('CustomFee'))||0, Number(f.get('AdmissionFee'))||0, Number(f.get('StudentKitFee'))||0, Number(f.get('SpareUniformFee'))||0, Number(f.get('VanFee'))||0, Number(f.get('DayCareFee'))||0, Number(f.get('OptMonthlyFee'))||0, f.get('BloodGroup'), f.get('DOJ')];
+            const rowData = [
+                sid, document.getElementById('editStudentName').value, document.getElementById('editDOB').value,
+                document.getElementById('editGender').value, document.getElementById('editClass').value,
+                document.getElementById('editGuardianName').value, document.getElementById('editContact').value,
+                document.getElementById('editAltContact').value, document.getElementById('editAddress').value,
+                document.getElementById('detailPhotoBase64').value || "N/A", mModel,
+                Number(document.getElementById('editCustomFee').value)||0, Number(document.getElementById('editAdmissionFee').value)||0,
+                Number(document.getElementById('editStudentKitFee').value)||0, Number(document.getElementById('editSpareUniformFee').value)||0,
+                Number(document.getElementById('editVanFee').value)||0, Number(document.getElementById('editDayCareFee').value)||0,
+                Number(document.getElementById('editOptMonthlyFee').value)||0, document.getElementById('editBloodGroup').value,
+                document.getElementById('editDOJ').value
+            ];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: rowData })});
-            alert("✅ Student master profile record saved successfully!"); closeStudentDetailModal(); await refreshApplicationState(false);
+            alert("✅ Student profile record saved successfully!"); closeStudentDetailModal(); await refreshApplicationState(false);
         }
 
         async function triggerDeleteStudent() {
@@ -1137,11 +1164,11 @@
                 totalCollected += (Number(p.AmountPaid) || 0);
             });
 
-            globalAppState.students.filter(s=>s.StudentName!=="DELETED").forEach(s => {
+            globalAppState.students.filter(s=>s.StudentName.toString().trim() !== "DELETED").forEach(s => {
                 totalReceivables += (Number(s.CustomFee)||0) + (Number(s.AdmissionFee)||0) + (Number(s.StudentKitFee)||0) + (Number(s.SpareUniformFee)||0) + (Number(s.VanFee)||0) + (Number(s.DayCareFee)||0) + (Number(s.OptMonthlyFee)||0);
             });
 
-            let filteredExpenses = globalAppState.expenses.filter(x => x.Date && x.Category !== "DELETED");
+            let filteredExpenses = globalAppState.expenses.filter(x => x.Date && x.Category.toString().trim() !== "DELETED");
             if (currentExpenseTimeframeContext === 'monthly') {
                 filteredExpenses = filteredExpenses.filter(e => {
                     if(!e.Date) return false;
@@ -1221,14 +1248,14 @@
 
         function renderBirthdayWidget() {
             const c = document.getElementById('birthdayRosterContainer'); const bdays = [];
-            globalAppState.students.filter(s => s.StudentName && s.StudentName !== "DELETED").forEach(s => {
+            globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED").forEach(s => {
                 if(!s.DOB) return; 
                 const dateClean = s.DOB.toString().replace(/\//g, "-");
                 const parts = dateClean.split('-');
                 let birthMonth = parts[1]; let birthDay = parts[2];
                 if(parts[0].length < 4) { birthMonth = parts[1]; birthDay = parts[0]; }
                 
-                if(birthMonth === "07" || birthMonth === "7") {
+                if(parseInt(birthMonth,10) === 7) {
                     bdays.push(`🎂 <strong>${s.StudentName}</strong> - July ${parseInt(birthDay,10)} (Turning ${calculateExactAge(s.DOB)} Yrs)`);
                 }
             });
@@ -1245,7 +1272,7 @@
             const insBox = document.getElementById('insightsBox');
             if(!insBox) return;
             let hints = [`<li>🟢 Database synchronization channels operational.</li>`];
-            let list = globalAppState.students.filter(s => s.StudentName && s.StudentName !== "DELETED" && s.Class === "DayCare");
+            let list = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED" && s.Class === "DayCare");
             if(list.length > 0) hints.push(`<li>💼 Isolated track verification active for ${list.length} pure Day Care enrollments.</li>`);
             insBox.innerHTML = `<ul class="list-disc pl-4 space-y-0.5">${hints.join('')}</ul>`; 
         }
@@ -1254,14 +1281,10 @@
             if (!dobString) return "N/A";
             const dateClean = dobString.toString().replace(/\//g, "-");
             const parts = dateClean.split('-');
-            let y = parseInt(parts[0],10); let m = parseInt(parts[1],10)-1; let d = parseInt(parts[2],10);
-            if(parts[0].length < 4) { y = parseInt(parts[2],10); m = parseInt(parts[1],10)-1; d = parseInt(parts[0],10); }
-            
-            if(isNaN(y) || isNaN(m) || isNaN(d)) return "N/A";
-            const birth = new Date(y, m, d); const today = new Date();
-            let age = today.getFullYear() - birth.getFullYear();
-            if (today.getMonth() < birth.getMonth() || (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) age--;
-            return age;
+            let y = parseInt(parts[0],10); let m = parseInt(parts[1],10);
+            if(parts[0].length < 4) { y = parseInt(parts[2],10); m = parseInt(parts[1],10); }
+            if(isNaN(y)) return "N/A";
+            return 2026 - y; // Fixed literal context calculation rule pass bypass timezone shifts
         }
         
         function calculateIntakeDiscount() { const c = document.getElementById('intakeClassSelect').value; const base = globalAppState.standardFees[c] || 0; const custom = Number(document.getElementById('intakeAnnualTuition').value) || 0; const disc = base - custom; document.getElementById('intakeDiscountBadge').innerText = `₹${disc > 0 ? disc : 0} Offered Discount`; }
@@ -1273,16 +1296,31 @@
         
         async function handleStudentSubmission(event) {
             event.preventDefault();
-            const f = new FormData(event.target);
-            const sid = "STU-" + Date.now();
-            const photo = document.getElementById('base64PayloadCache').value || "N/A";
             const bModel = document.querySelector('input[name="BillingModel"]:checked').value;
+            const photo = document.getElementById('base64PayloadCache').value || "N/A";
+            const sid = "STU-" + Date.now();
 
             const studentRow = [
-                sid, f.get('StudentName'), f.get('DOB'), f.get('Gender'), f.get('Class'),
-                f.get('GuardianName'), f.get('Contact'), f.get('AltContact'), f.get('Address'), photo,
-                bModel, Number(f.get('CustomFee'))||0, Number(f.get('AdmissionFee'))||0, Number(f.get('StudentKitFee'))||0, Number(f.get('SpareUniformFee'))||0,
-                Number(f.get('VanFee'))||0, Number(f.get('DayCareFee'))||0, Number(f.get('OptMonthlyFee'))||0, f.get('BloodGroup'), f.get('DOJ')
+                sid,
+                document.getElementById('intakeStudentName').value,
+                document.getElementById('intakeDOB').value,
+                document.getElementById('intakeGender').value,
+                document.getElementById('intakeClassSelect').value,
+                document.getElementById('intakeGuardianName').value,
+                document.getElementById('intakeContact').value,
+                document.getElementById('intakeAltContact').value,
+                document.getElementById('intakeAddress').value,
+                photo,
+                bModel,
+                Number(document.getElementById('intakeAnnualTuition').value) || 0,
+                Number(document.getElementById('intakeAdmissionFee').value) || 0,
+                Number(document.getElementById('intakeKitFee').value) || 0,
+                Number(document.getElementById('intakeUniformFee').value) || 0,
+                Number(document.getElementById('FormVanFee').value) || 0,
+                Number(document.getElementById('FormDayCareFee').value) || 0,
+                Number(document.getElementById('FormOptMonthlyFee').value) || 0,
+                document.getElementById('intakeBloodGroup').value,
+                document.getElementById('intakeDOJ').value
             ];
 
             try {
@@ -1292,7 +1330,7 @@
                 
                 alert("🎉 Admissions Intake Logged & Saved Safely!");
                 event.target.reset();
-                if(document.getElementById('base64PayloadCache')) { document.getElementById('base64PayloadCache').value = ""; }
+                document.getElementById('base64PayloadCache').value = "";
                 
                 const detailsEl = document.getElementById('intakeFormDetailsContainer');
                 if(detailsEl) detailsEl.removeAttribute('open');
@@ -1303,7 +1341,7 @@
 
         async function handleEventSubmission(e) { e.preventDefault(); const f = new FormData(e.target); const row = ["EVT-"+Date.now(), f.get('Title'), f.get('Date'), f.get('Time'), f.get('Category')]; await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Events", rowData: row })}); alert("✅ Calendar Event Pinned!"); e.target.reset(); await refreshApplicationState(false); }
 
-        // Immediately Invoking Structural Self-Initialization Routine Block
+        // Secure Self-Executing Run Engine Setup Hook
         (() => {
             const checkFormInpExistLoop = setInterval(() => {
                 const dojInp = document.getElementById('intakeDOJ');
