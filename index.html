@@ -77,7 +77,7 @@
                 <h3 class="font-black text-sm text-indigo-950 uppercase tracking-wider flex items-center space-x-2">
                     <span>⏰</span> <span>Live Outstanding Monthly Reminders</span>
                 </h3>
-                <span id="reminderPeriodBadge" class="bg-indigo-100 text-indigo-800 text-[11px] font-black px-3 py-1 rounded-full">July-2026 Context</span>
+                <span id="reminderPeriodBadge" class="bg-indigo-100 text-indigo-800 text-[11px] font-black px-3 py-1 rounded-full">July-2026 Context View</span>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
@@ -614,7 +614,7 @@
     </div>
 
     <script>
-        // PASTE YOUR EXTENSIONS APPS SCRIPT LINK BELOW EXACTLY INSIDE THE DOUBLE QUOTES
+        // REPLACE THIS STRING WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP EXTENSION LINK URL
         const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyaykhdrvyBUCNwruy0IGGpDK4zG14QaoHG1cYurVDww6qMsBIRuIfg7NxygrE6KLha8w/exec";
         
         let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "ApexSullurpeta2026!";
@@ -903,14 +903,13 @@
                                         </select>
                                         <button onclick="commitReminderSettlement('${s.StudentID}','Van',${finalVanDisplayDue})" class="bg-emerald-500 text-white font-bold px-2 py-0.5 rounded text-[10px]">Settle</button>
                                     </div>
-                                end text layout
                                 </div>
                             </div>
                         `);
                     }
                 }
 
-                // 2. Day Care Reminders calculation loop
+                // 2. Day Care Reminders Engine
                 const isDayCareTrackActive = Number(s.DayCareFee) > 0 || s.Class === "DayCare";
                 if (isDayCareTrackActive) {
                     const monthlyBaseRateValue = s.Class === "DayCare" ? (Number(s.OptMonthlyFee) || 0) : Number(s.DayCareFee);
@@ -950,7 +949,7 @@
                     }
                 }
 
-                // 3. Custom Monthly Opt Fee Reminders Engine (Isolate math from Kit and Admission fees entirely)
+                // 3. Custom Monthly Opt Fee Reminders Engine (Strictly handles only recurring base rates)
                 if (s.BillingModel === "Monthly" && Number(s.OptMonthlyFee) > 0 && s.Class !== "DayCare") {
                     let totalBilledOpt = elapsedMonthsToBillCount * Number(s.OptMonthlyFee);
                     let totalPaidOpt = 0;
@@ -1023,7 +1022,7 @@
                 `Settled reminder stream segment: ${serviceKey}`, "Settled", ""
             ];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })});
-            alert("✅ Payment accepted and cleared!");
+            alert("✅ Payment processed and synchronized!");
             await refreshApplicationState(false);
         }
 
@@ -1043,7 +1042,7 @@
             document.getElementById('lblModalOutstandingBalance').innerText = `₹${totalBilledStructure - cumulativePaid}`;
             
             document.getElementById('txAmountPaid').value = totalBilledStructure - cumulativePaid;
-            document.getElementById('txPaymentDate').value = new Date().toISOString().substring(0,10);
+            document.getElementById('tx PaymentDate').value = new Date().toISOString().substring(0,10);
 
             document.getElementById('paymentModalOverlay').classList.remove('hidden');
         }
@@ -1062,7 +1061,7 @@
             ];
 
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })});
-            alert("✅ Fee installment written successfully!"); closePaymentModal(); await refreshApplicationState(false);
+            alert("✅ Fee transaction written to database successfully!"); closePaymentModal(); await refreshApplicationState(false);
         }
 
         function openStudentDetailModal(sid) {
@@ -1166,7 +1165,6 @@
                     const dateClean = e.Date.toString().replace(/[\/\s]/g, "-");
                     const parts = dateClean.split('-');
                     let yr = parseInt(parts[0],10); let mo = parseInt(parts[1],10) - 1;
-                    if(parts[0].length < 4) { yr = parseInt(parts[2],10); mo = parseInt(parts[1],10) - 1; }
                     return mo === selectedMonth && yr === selectedYear;
                 });
             } else if (currentExpenseTimeframeContext === 'currentYear') {
@@ -1175,7 +1173,6 @@
                     const dateClean = e.Date.toString().replace(/[\/\s]/g, "-");
                     const parts = dateClean.split('-');
                     let yr = parseInt(parts[0],10); let mo = parseInt(parts[1],10) - 1;
-                    if(parts[0].length < 4) { yr = parseInt(parts[2],10); mo = parseInt(parts[1],10) - 1; }
                     return (yr === selectedYear && mo >= 5) || (yr === (selectedYear + 1) && mo < 5);
                 });
             }
@@ -1243,8 +1240,9 @@
                 if(!s.DOB) return; 
                 const dateClean = s.DOB.toString().replace(/[\/\s]/g, "-");
                 const parts = dateClean.split('-');
+                
+                // Unified String Context Index Parser Mapping Configuration Block
                 let birthMonth = parts[1]; let birthDay = parts[2];
-                if(parts[0].length < 4) { birthMonth = parts[1]; birthDay = parts[0]; }
                 
                 if(parseInt(birthMonth,10) === 7) {
                     bdays.push(`🎂 <strong>${s.StudentName}</strong> - July ${parseInt(birthDay,10)} (Turning ${calculateExactAge(s.DOB)} Yrs)`);
@@ -1273,7 +1271,6 @@
             const dateClean = dobString.toString().replace(/[\/\s]/g, "-");
             const parts = dateClean.split('-');
             let y = parseInt(parts[0],10);
-            if(parts[0].length < 4) { y = parseInt(parts[2],10); }
             if(isNaN(y)) return "N/A";
             return 2026 - y;
         }
