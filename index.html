@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Little Millennium Sullurpeta Master ERP</title>
+    <title>Little Millennium Sullurpeta Core Master ERP</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -15,18 +15,16 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-16 selection:bg-indigo-500 selection:text-white">
 
-    <!-- Auth Shield Screen -->
     <div id="authShield" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-4">
         <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border-4 border-amber-400">
             <h1 class="text-2xl font-black text-indigo-950 mb-1">Little Millennium</h1>
             <p class="text-[10px] font-bold uppercase tracking-widest text-amber-600 mb-6">Sullurpeta Campus Management</p>
-            <input type="password" id="gateKey" placeholder="Enter Passcode" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-center text-lg font-mono focus:outline-none focus:border-indigo-600 mb-4">
+            <input type="password" id="gateKey" placeholder="Enter Management Passcode" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-center text-lg font-mono focus:outline-none focus:border-indigo-600 mb-4">
             <button onclick="attemptAuthentication()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition duration-200">Unlock Master ERP</button>
             <p id="authError" class="text-rose-600 text-sm mt-3 hidden font-semibold">❌ Access Key Verification Failed.</p>
         </div>
     </div>
 
-    <!-- Main Navigation Bar -->
     <header class="bg-indigo-950 text-white shadow-xl sticky top-0 z-40 px-4 py-3">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-3 cursor-pointer" onclick="goToHome()">
@@ -45,10 +43,8 @@
         </div>
     </header>
 
-    <!-- Main Workspace Container -->
     <main id="appWorkspace" class="max-w-7xl mx-auto p-4 space-y-6 hidden">
         
-        <!-- Cohort Headcount Tracker Panels -->
         <section class="grid grid-cols-2 md:grid-cols-6 gap-4">
             <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-indigo-600">
                 <span class="text-[10px] uppercase font-bold text-slate-400">DR Count</span>
@@ -76,15 +72,14 @@
             </div>
         </section>
 
-        <!-- Live Outstanding Monthly Reminders Panel -->
         <section class="bg-white p-5 rounded-3xl shadow-sm border border-indigo-100 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
                 <h3 class="font-black text-sm text-indigo-950 uppercase tracking-wider flex items-center space-x-2">
-                    <span>⏰</span> <span>Live Outstanding Monthly Reminders (Calculated From Joining Date)</span>
+                    <span>⏰</span> <span>Live Outstanding Monthly Reminders (Accumulated Balance Matrix)</span>
                 </h3>
+                <span class="bg-indigo-100 text-indigo-800 text-[10px] font-black px-2.5 py-0.5 rounded-full">July Context Cycle</span>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Van Monthly Operations Desk Box -->
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
                         <span>Transit (Van)</span>
@@ -92,7 +87,6 @@
                     </h4>
                     <div id="containerVanReminders" class="space-y-2 max-h-56 overflow-y-auto text-[11px] font-semibold pr-1"></div>
                 </div>
-                <!-- Day Care Monthly Operations Desk Box -->
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
                         <span>Day Care Operations</span>
@@ -100,7 +94,6 @@
                     </h4>
                     <div id="containerDayCareReminders" class="space-y-2 max-h-56 overflow-y-auto text-[11px] font-semibold pr-1"></div>
                 </div>
-                <!-- Custom Monthly Opt Operations Desk Box -->
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
                         <span>Custom Monthly Opt / Base</span>
@@ -111,7 +104,6 @@
             </div>
         </section>
 
-        <!-- Birthday Calendar & System Operations Panel -->
         <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="bg-gradient-to-br from-amber-400 to-orange-500 rounded-3xl p-5 text-white shadow-lg relative overflow-hidden">
                 <div class="absolute -right-6 -bottom-6 text-8xl opacity-10">🎂</div>
@@ -121,22 +113,19 @@
             <div class="bg-gradient-to-br from-indigo-900 to-slate-900 rounded-3xl p-5 text-indigo-100 shadow-lg relative overflow-hidden">
                 <div class="absolute -right-6 -bottom-6 text-8xl opacity-10">💡</div>
                 <h3 class="font-black text-lg flex items-center space-x-2 text-amber-300"><span>🧠</span> <span>System Guidance Dashboard</span></h3>
-                <div id="insightsBox" class="mt-2 text-xs leading-relaxed space-y-1 opacity-90 font-semibold text-slate-200"></div>
+                <div id="insightsBox" class="mt-2 text-xs leading-relaxed space-y-1 font-semibold text-slate-200 max-h-36 overflow-y-auto"></div>
             </div>
         </section>
 
-        <!-- Navigation Tabs -->
         <nav class="flex space-x-2 bg-slate-200 p-1.5 rounded-xl overflow-x-auto hide-scrollbar">
             <button id="btn-studentsTab" onclick="switchTab('studentsTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold bg-white text-indigo-950 shadow-sm flex-1 text-center">👶 Student Registry</button>
             <button id="btn-financeTab" onclick="switchTab('financeTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-300 flex-1 text-center">📊 Financial Ledger & Metrics</button>
             <button id="btn-calendarTab" onclick="switchTab('calendarTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-300 flex-1 text-center">🗓️ Academic Calendar</button>
         </nav>
 
-        <!-- Tab Content Viewport 1: Student Roster and Entry -->
         <div id="studentsTab" class="tab-pane space-y-6">
-            <!-- Intake Form Entry -->
             <details class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden group">
-                <summary class="p-5 font-black text-sm tracking-wide text-indigo-950 cubic-pointer hover:bg-slate-50 list-none flex justify-between items-center">
+                <summary class="p-5 font-black text-sm tracking-wide text-indigo-950 cursor-pointer hover:bg-slate-50 list-none flex justify-between items-center">
                     <span class="flex items-center space-x-2"><span>➕</span> <span>New Complete Admissions Intake Form</span></span>
                     <span class="text-xs text-indigo-600 font-bold group-open:hidden">Open Sheet ↓</span>
                     <span class="text-xs text-indigo-600 font-bold hidden group-open:inline">Close Sheet ↑</span>
@@ -205,7 +194,7 @@
                     </div>
 
                     <div id="sectionIntakeServices" class="border-t pt-3">
-                        <h4 class="text-indigo-950 font-black mb-2 text-sm">Monthly Service Activation Engine</h4>
+                        <h4 class="text-indigo-950 font-black mb-2 text-sm">Monthly Service Activation</h4>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="bg-slate-50 p-3 rounded-xl border" id="boxFormVan">
                                 <label class="flex items-center space-x-2 font-bold text-slate-700">
@@ -257,7 +246,10 @@
                         </div>
                         <div>
                             <label class="block mb-1 text-slate-500">Gender *</label>
-                            <select name="Gender" class="w-full px-3 py-2 rounded-xl border bg-slate-50"><option value="Boy">Boy</option><option value="Girl">Girl</option></select>
+                            <select name="Gender" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                                <option value="Boy">Boy</option>
+                                <option value="Girl">Girl</option>
+                            </select>
                         </div>
                     </div>
 
@@ -267,7 +259,6 @@
                 </form>
             </details>
 
-            <!-- Filters Dashboard bar -->
             <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
                 <div class="flex flex-wrap gap-1.5">
                     <button onclick="filterCohort('ALL')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white">All Rosters</button>
@@ -283,7 +274,6 @@
             <div id="studentCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
-        <!-- Tab Content Viewport 2: Finance Metrics Ledger -->
         <div id="financeTab" class="tab-pane hidden space-y-6">
             <div class="bg-white p-4 rounded-2xl shadow-sm border flex flex-wrap items-center gap-4 text-xs font-bold">
                 <span class="text-indigo-950 uppercase tracking-wider text-[10px]">Filter Expenses Target Period:</span>
@@ -387,7 +377,6 @@
             </div>
         </div>
 
-        <!-- Tab Content Viewport 3: Events Agenda -->
         <div id="calendarTab" class="tab-pane hidden space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 text-xs font-semibold">
@@ -429,7 +418,6 @@
         </div>
     </main>
 
-    <!-- Student Profile View & Comprehensive Edit Modal -->
     <div id="studentDetailModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-[2rem] max-w-2xl w-full p-6 shadow-2xl space-y-4 border-2 border-indigo-100 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-start border-b pb-3">
@@ -549,7 +537,10 @@
                     </div>
                     <div>
                         <label class="block mb-1 text-slate-400">Gender</label>
-                        <select id="editGender" name="Gender" class="w-full p-2 border rounded-xl bg-slate-50"><option value="Boy">Boy</option><option value="Girl">Girl</option></select>
+                        <select id="editGender" name="Gender" class="w-full p-2 border rounded-xl bg-slate-50">
+                            <option value="Boy">Boy</option>
+                            <option value="Girl">Girl</option>
+                        </select>
                     </div>
                     <div class="pt-2">
                         <label class="block mb-1 text-slate-400">Replace Profile Image</label>
@@ -570,13 +561,12 @@
         </div>
     </div>
 
-    <!-- Fee Particulars Modal -->
     <div id="paymentModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-[2rem] max-w-md w-full p-6 shadow-2xl space-y-4 border-2 border-indigo-100 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
                 <div>
                     <h3 id="modalStudentTitleName" class="font-black text-indigo-950 text-base">Fee Particulars Deck</h3>
-                    <p id="modalStudentCohortSubtitle" class="text-[10px] font-bold text-amber-600 tracking-wider uppercase">Balance Monitoring Sheet</p>
+                    <p id="modalStudentCohortSubtitle" class="text-[10px] font-bold text-amber-600 tracking-wider uppercase">Balance Sheet Context</p>
                 </div>
                 <button type="button" onclick="closePaymentModal()" class="text-2xl text-slate-400 font-bold leading-none">&times;</button>
             </div>
@@ -611,7 +601,7 @@
                 </div>
                 <div>
                     <label class="block mb-1 text-slate-500">Remarks</label>
-                    <input type="text" id="txRemarks" placeholder="Reference notes or bank tracking keys" class="w-full p-2 rounded-xl border bg-slate-50">
+                    <input type="text" id="txRemarks" placeholder="Reference remarks" class="w-full p-2 rounded-xl border bg-slate-50">
                 </div>
                 <div class="flex space-x-2 pt-2">
                     <button type="button" onclick="closePaymentModal()" class="w-1/3 bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl">Close</button>
@@ -621,9 +611,8 @@
         </div>
     </div>
 
-    <!-- Javascript Script Logic Hub Engine -->
     <script>
-        // REPLACE THIS STRING CONTAINER WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP LINK
+        // PASTE YOUR EXTENSIONS APPS SCRIPT LINK BELOW EXACTLY INSIDE THE DOUBLE QUOTES
         const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzejxWGHXEQdyVSZ97fi4Aiqx3oZPJCVrYo5jGrxuhBh7o7QYE1z8y71WAThonTm4Yu/exec";
         
         let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "ApexSullurpeta2026!";
@@ -660,7 +649,7 @@
             const val = document.getElementById('newPasscodeInput').value.trim();
             if(val) {
                 CURRENT_GATE_PASSPHRASE = val; localStorage.setItem("LM_PASSPHRASE", val);
-                alert("Passcode layout context key variable synchronized!"); closeChangePasswordModal();
+                alert("Passcode updated!"); closeChangePasswordModal();
             }
         }
 
@@ -797,7 +786,7 @@
                     
                     if(showUserAlert) { alert("🔄 Cloud database sheets synchronized successfully!"); }
                 }
-            } catch (err) { console.error("Database connection lost:", err); }
+            } catch (err) { console.error("Database connection fault:", err); }
         }
 
         function renderCohortHeadcounts() {
@@ -850,7 +839,6 @@
             });
         }
 
-        // REMINDER TIMELINE CALCULATOR ENGINE LOGIC PATTERN CODE BLOCK
         function renderFrontPageReminders() {
             const vanBox = document.getElementById('containerVanReminders'); vanBox.innerHTML = '';
             const dcBox = document.getElementById('containerDayCareReminders'); dcBox.innerHTML = '';
@@ -864,26 +852,28 @@
                 const activeMonthPaymentRow = studentPaymentsLog.find(x => x.MonthYear === targetPeriodMonthStr) || {};
                 const activeNullifiedFlags = (activeMonthPaymentRow.NullifiedServices || "").toString().split(',');
 
-                // Calculate cumulative dynamic months outstanding based on their Joining Date (DOJ)
                 let elapsedMonthsToBillCount = 1;
-                if(s.DOJ) {
-                    const joinDate = new Date(s.DOJ);
-                    const currentPeriodDate = new Date("2026-07-01");
-                    const diffMonths = (currentPeriodDate.getFullYear() - joinDate.getFullYear()) * 12 + (currentPeriodDate.getMonth() - joinDate.getMonth());
-                    if(diffMonths > 0) elapsedMonthsToBillCount += diffMonths;
+                if(s.DOJ && s.DOJ !== "N/A") {
+                    const parts = s.DOJ.split('-');
+                    if(parts.length >= 2) {
+                        const jYear = parseInt(parts[0],10);
+                        const jMonth = parseInt(parts[1],10) - 1;
+                        const joinDate = new Date(jYear, jMonth, 1);
+                        const currentPeriodDate = new Date(2026, 6, 1); // July 2026 Context
+                        const diffMonths = (currentPeriodDate.getFullYear() - joinDate.getFullYear()) * 12 + (currentPeriodDate.getMonth() - joinDate.getMonth());
+                        if(diffMonths > 0) elapsedMonthsToBillCount += diffMonths;
+                    }
                 }
 
-                // 1. Van Reminders Calculation
+                // 1. Van Reminders Engine
                 if (Number(s.VanFee) > 0) {
                     let totalBilledVan = elapsedMonthsToBillCount * Number(s.VanFee);
                     let totalPaidVan = 0;
-                    
                     studentPaymentsLog.forEach(p => {
-                        if(p.Status === "Settled" && (p.Remarks || "").includes("Van")) {
+                        if(p.Status === "Settled" && (p.Remarks || "").toString().includes("Van")) {
                             totalPaidVan += Number(p.AmountPaid) || 0;
                         }
                     });
-
                     const netVanOutstanding = totalBilledVan - totalPaidVan;
                     const isFrozenThisMonth = activeNullifiedFlags.includes('Van');
                     const finalVanDisplayDue = isFrozenThisMonth ? (netVanOutstanding - Number(s.VanFee)) : netVanOutstanding;
@@ -913,19 +903,17 @@
                     }
                 }
 
-                // 2. Day Care Reminders Calculation
+                // 2. Day Care Reminders Engine
                 const isDayCareTrackActive = Number(s.DayCareFee) > 0 || s.Class === "DayCare";
                 if (isDayCareTrackActive) {
                     const monthlyBaseRateValue = s.Class === "DayCare" ? (Number(s.OptMonthlyFee) || 0) : Number(s.DayCareFee);
                     let totalBilledDC = elapsedMonthsToBillCount * monthlyBaseRateValue;
                     let totalPaidDC = 0;
-
                     studentPaymentsLog.forEach(p => {
-                        if(p.Status === "Settled" && ((p.Remarks || "").includes("DayCare") || (p.Remarks || "").includes("Day Care Only"))) {
+                        if(p.Status === "Settled" && ((p.Remarks || "").toString().includes("DayCare") || (p.Remarks || "").toString().includes("Day Care"))) {
                             totalPaidDC += Number(p.AmountPaid) || 0;
                         }
                     });
-
                     const netDCOutstanding = totalBilledDC - totalPaidDC;
                     const isFrozenThisMonth = activeNullifiedFlags.includes('DayCare');
                     const finalDCDisplayDue = isFrozenThisMonth ? (netDCOutstanding - monthlyBaseRateValue) : netDCOutstanding;
@@ -955,17 +943,15 @@
                     }
                 }
 
-                // 3. Custom Monthly Opt / Tuition Reminders Calculation
+                // 3. Custom Monthly Opt Fee Reminders Engine
                 if (Number(s.OptMonthlyFee) > 0 && s.Class !== "DayCare") {
                     let totalBilledOpt = elapsedMonthsToBillCount * Number(s.OptMonthlyFee);
                     let totalPaidOpt = 0;
-
                     studentPaymentsLog.forEach(p => {
-                        if(p.Status === "Settled" && (p.Remarks || "").includes("OptMonthly")) {
+                        if(p.Status === "Settled" && (p.Remarks || "").toString().includes("OptMonthly")) {
                             totalPaidOpt += Number(p.AmountPaid) || 0;
                         }
                     });
-
                     const netOptOutstanding = totalBilledOpt - totalPaidOpt;
                     const isFrozenThisMonth = activeNullifiedFlags.includes('OptMonthly');
                     const finalOptDisplayDue = isFrozenThisMonth ? (netOptOutstanding - Number(s.OptMonthlyFee)) : netOptOutstanding;
@@ -1012,9 +998,7 @@
                 currentNulls = currentNulls.filter(x => x !== serviceKey);
             }
 
-            const row = [
-                pId, sid, activeSystemMonthContext, 0, "", "Cash", "Toggled structural freeze flags", "Active", currentNulls.join(',')
-            ];
+            const row = [pId, sid, activeSystemMonthContext, 0, "", "Cash", "Freeze Action Toggled", "Active", currentNulls.join(',')];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Fee_Payments", rowId: pId, rowData: row })});
             await refreshApplicationState(false);
         }
@@ -1032,7 +1016,7 @@
                 `Settled reminder stream historical transaction segment: ${serviceKey}`, "Settled", ""
             ];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })});
-            alert("✅ Outstanding balance record successfully cleared!");
+            alert("✅ Payment processed and synchronized!");
             await refreshApplicationState(false);
         }
 
@@ -1079,11 +1063,11 @@
             if(!s) return;
             document.getElementById('detailStudentID').value = s.StudentID;
             document.getElementById('detailStudentNameHeader').innerText = s.StudentName;
-            document.getElementById('detailStudentClassHeader').innerText = `${s.Class} Record Profile Data`;
+            document.getElementById('detailStudentClassHeader').innerText = `${s.Class} Master Record`;
             
             document.getElementById('editStudentName').value = s.StudentName;
-            document.getElementById('editDOB').value = s.DOB ? s.DOB.substring(0,10) : "";
-            document.getElementById('editDOJ').value = s.DOJ ? s.DOJ.substring(0,10) : "";
+            document.getElementById('editDOB').value = s.DOB ? s.DOB.toString().substring(0,10) : "";
+            document.getElementById('editDOJ').value = s.DOJ ? s.DOJ.toString().substring(0,10) : "";
             document.getElementById('editGender').value = s.Gender || "Boy";
             document.getElementById('editClass').value = s.Class;
             document.getElementById('editGuardianName').value = s.GuardianName || "";
@@ -1124,12 +1108,12 @@
             const mModel = document.querySelector('input[name="EditBillingModel"]:checked').value;
             const rowData = [sid, f.get('StudentName'), f.get('DOB'), f.get('Gender'), f.get('Class'), f.get('GuardianName'), f.get('Contact'), f.get('AltContact'), f.get('Address'), document.getElementById('detailPhotoBase64').value || "N/A", mModel, Number(f.get('CustomFee'))||0, Number(f.get('AdmissionFee'))||0, Number(f.get('StudentKitFee'))||0, Number(f.get('SpareUniformFee'))||0, Number(f.get('VanFee'))||0, Number(f.get('DayCareFee'))||0, Number(f.get('OptMonthlyFee'))||0, f.get('BloodGroup'), f.get('DOJ')];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: rowData })});
-            alert("✅ Record saved successfully!"); closeStudentDetailModal(); await refreshApplicationState(false);
+            alert("✅ Student master profile record saved successfully!"); closeStudentDetailModal(); await refreshApplicationState(false);
         }
 
         async function triggerDeleteStudent() {
             const sid = document.getElementById('detailStudentID').value;
-            if(confirm("Permanently wipe out student record data row?")) {
+            if(confirm("Permanently wipe out student enrollment data row?")) {
                 await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: [sid, "DELETED", "", "", "", "", "", "", "", "N/A"] })});
                 alert("Profile Terminated!"); closeStudentDetailModal(); await refreshApplicationState(false);
             }
@@ -1160,19 +1144,22 @@
             let filteredExpenses = globalAppState.expenses.filter(x => x.Date && x.Category !== "DELETED");
             if (currentExpenseTimeframeContext === 'monthly') {
                 filteredExpenses = filteredExpenses.filter(e => {
-                    const d = new Date(e.Date);
-                    return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
+                    if(!e.Date) return false;
+                    const parts = e.Date.split('-');
+                    return parseInt(parts[1],10) - 1 === selectedMonth && parseInt(parts[0],10) === selectedYear;
                 });
             } else if (currentExpenseTimeframeContext === 'currentYear') {
                 filteredExpenses = filteredExpenses.filter(e => {
-                    const d = new Date(e.Date);
-                    return (d.getFullYear() === selectedYear && d.getMonth() >= 5) || (d.getFullYear() === (selectedYear + 1) && d.getMonth() < 5);
+                    if(!e.Date) return false;
+                    const parts = e.Date.split('-');
+                    const year = parseInt(parts[0],10); const mon = parseInt(parts[1],10) - 1;
+                    return (year === selectedYear && mon >= 5) || (year === (selectedYear + 1) && mon < 5);
                 });
             }
 
             filteredExpenses.forEach(e => {
                 const a = Number(e.Amount)||0; totalExpenses += a; cats[e.Category] = (cats[e.Category]||0) + a;
-                expenseStreamBox.insertAdjacentHTML('beforeend', `<div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border"><div><strong>${e.Category}</strong> - <span class="text-slate-400">${e.Date.substring(0,10)}</span><p class="text-[10px] text-slate-400 font-medium">${e.Description || ''}</p></div><div class="flex items-center space-x-2"><span class="font-bold text-rose-600">₹${a}</span><button onclick="loadExpenseToEditForm('${e.ExpenseID}')" class="text-indigo-600 hover:underline">Edit</button></div></div>`);
+                expenseStreamBox.insertAdjacentHTML('beforeend', `<div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border"><div><strong>${e.Category}</strong> - <span class="text-slate-400">${e.Date.toString().substring(0,10)}</span><p class="text-[10px] text-slate-400 font-medium">${e.Description || ''}</p></div><div class="flex items-center space-x-2"><span class="font-bold text-rose-600">₹${a}</span><button onclick="loadExpenseToEditForm('${e.ExpenseID}')" class="text-indigo-600 hover:underline">Edit</button></div></div>`);
             });
 
             document.getElementById('kpiGrossRevenue').innerText = `₹${totalReceivables}`;
@@ -1193,7 +1180,7 @@
             const e = globalAppState.expenses.find(x => x.ExpenseID === expId);
             if(!e) return;
             document.getElementById('expenseFormID').value = e.ExpenseID;
-            document.getElementById('expenseInputDate').value = e.Date ? e.Date.substring(0,10) : '';
+            document.getElementById('expenseInputDate').value = e.Date ? e.Date.toString().substring(0,10) : '';
             document.getElementById('expenseInputCategory').value = e.Category;
             document.getElementById('expenseInputAmount').value = e.Amount;
             document.getElementById('expenseInputType').value = e.Type;
@@ -1230,8 +1217,11 @@
         function renderBirthdayWidget() {
             const c = document.getElementById('birthdayRosterContainer'); const bdays = [];
             globalAppState.students.filter(s => s.StudentName && s.StudentName !== "DELETED").forEach(s => {
-                if(!s.DOB) return; const p = s.DOB.toString().substring(0,10).split('-');
-                if(p.length >= 3) bdays.push(`🎂 <strong>${s.StudentName}</strong> - Date: July ${parseInt(p[2],10)} (Turning ${calculateExactAge(s.DOB)} Yrs)`);
+                if(!s.DOB) return; 
+                const parts = s.DOB.toString().split('-');
+                if(parts.length >= 2 && parts[1] === "07") {
+                    bdays.push(`🎂 <strong>${s.StudentName}</strong> - July ${parseInt(parts[2],10)} (Turning ${calculateExactAge(s.DOB)} Yrs)`);
+                }
             });
             c.innerHTML = bdays.length ? bdays.join('<br>') : "✨ No birthdays recorded for July.";
         }
@@ -1239,14 +1229,27 @@
         function renderCalendarAgenda() {
             const stream = document.getElementById('calendarAgendaStream'); stream.innerHTML = '';
             if(!globalAppState.events.length) { stream.innerHTML = '<p class="text-xs text-slate-400">No events found.</p>'; return; }
-            globalAppState.events.forEach(e => stream.insertAdjacentHTML('beforeend', `<div class="p-3 border-l-4 border-indigo-500 bg-indigo-50 text-slate-900 text-xs font-semibold flex justify-between"><div><h5 class="font-black">${e.Title}</h5><span>🗓️ ${e.Date ? e.Date.substring(0,10) : ''}</span></div></div>`));
+            globalAppState.events.forEach(e => stream.insertAdjacentHTML('beforeend', `<div class="p-3 border-l-4 border-indigo-500 bg-indigo-50 text-slate-900 text-xs font-semibold flex justify-between"><div><h5 class="font-black">${e.Title}</h5><span>🗓️ ${e.Date ? e.Date.toString().substring(0,10) : ''}</span></div></div>`));
         }
 
         function renderInsightsPanel() { 
-            let vanRev = 0;
-            globalAppState.payments.forEach(p => vanRev += (Number(p.AmountPaid) || 0));
-            const hints = [`<li>🟢 System synchronized with database tables. Reference timelines populated cleanly.</li>`];
-            document.getElementById('insightsBox').innerHTML = `<ul class="list-disc pl-4 space-y-0.5">${hints.join('')}</ul>`; 
+            const insBox = document.getElementById('insightsBox');
+            if(!insBox) return;
+            let hints = [`<li>🟢 Database synchronization channels operational.</li>`];
+            let list = globalAppState.students.filter(s => s.StudentName && s.StudentName !== "DELETED" && s.Class === "DayCare");
+            if(list.length > 0) hints.push(`<li>💼 Isolated track verification active for ${list.length} pure Day Care enrollments.</li>`);
+            insBox.innerHTML = `<ul class="list-disc pl-4 space-y-0.5">${hints.join('')}</ul>`; 
+        }
+
+        function calculateExactAge(dobString) {
+            if (!dobString) return "N/A";
+            const parts = dobString.split('-');
+            if(parts.length < 3) return "N/A";
+            const birth = new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, parseInt(parts[2],10));
+            const today = new Date();
+            let age = today.getFullYear() - birth.getFullYear();
+            if (today.getMonth() < birth.getMonth() || (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) age--;
+            return age;
         }
         
         function calculateIntakeDiscount() { const c = document.getElementById('intakeClassSelect').value; const base = globalAppState.standardFees[c] || 0; const custom = Number(document.getElementById('intakeAnnualTuition').value) || 0; const disc = base - custom; document.getElementById('intakeDiscountBadge').innerText = `₹${disc > 0 ? disc : 0} Offered Discount`; }
@@ -1284,7 +1287,6 @@
 
         async function handleEventSubmission(e) { e.preventDefault(); const f = new FormData(e.target); const row = ["EVT-"+Date.now(), f.get('Title'), f.get('Date'), f.get('Time'), f.get('Category')]; await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Events", rowData: row })}); alert("✅ Calendar Event Pinned!"); e.target.reset(); await refreshApplicationState(false); }
 
-        // Set default Joining Date selector view context context value properties to today's date
         document.getElementById('intakeDOJ').value = new Date().toISOString().substring(0,10);
         handleFormBillingTypeChange('Regular');
     </script>
