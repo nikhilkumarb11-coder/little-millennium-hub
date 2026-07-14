@@ -75,8 +75,9 @@
         <section class="bg-white p-5 rounded-3xl shadow-sm border border-indigo-100 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
                 <h3 class="font-black text-sm text-indigo-950 uppercase tracking-wider flex items-center space-x-2">
-                    <span>⏰</span> <span>Live Outstanding Monthly Reminders (Accumulated Balance Matrix)</span>
+                    <span>⏰</span> <span>Live Outstanding Monthly Reminders</span>
                 </h3>
+                <span id="reminderPeriodBadge" class="bg-indigo-100 text-indigo-800 text-[11px] font-black px-3 py-1 rounded-full">July-2026 Context</span>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
@@ -602,7 +603,7 @@
                 </div>
                 <div>
                     <label class="block mb-1 text-slate-500">Remarks</label>
-                    <input type="text" id="txRemarks" placeholder="Reference notes or bank tracking keys" class="w-full p-2 rounded-xl border bg-slate-50">
+                    <input type="text" id="txRemarks" placeholder="Reference remarks" class="w-full p-2 rounded-xl border bg-slate-50">
                 </div>
                 <div class="flex space-x-2 pt-2">
                     <button type="button" onclick="closePaymentModal()" class="w-1/3 bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl">Close</button>
@@ -847,6 +848,7 @@
             let vCount = 0, dCount = 0, oCount = 0;
 
             const targetPeriodMonthStr = "July-2026";
+            document.getElementById('reminderPeriodBadge').innerText = `${targetPeriodMonthStr} Context View`;
 
             globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED").forEach(s => {
                 const studentPaymentsLog = globalAppState.payments.filter(x => x.StudentID === s.StudentID) || [];
@@ -854,9 +856,9 @@
                 const activeNullifiedFlags = (activeMonthPaymentRow.NullifiedServices || "").toString().split(',');
 
                 let elapsedMonthsToBillCount = 1;
-                const normalizedDojStr = (s.DOJ || "").toString().replace(/\//g, "-");
-                if(normalizedDojStr.includes("-")) {
-                    const parts = normalizedDojStr.split('-');
+                const dateClean = (s.DOJ || "").toString().replace(/[\/\s]/g, "-");
+                if(dateClean.includes("-")) {
+                    const parts = dateClean.split('-');
                     let jYear = parseInt(parts[0], 10);
                     let jMonth = parseInt(parts[1], 10) - 1;
                     if (parts[0].length < 4) { jYear = parseInt(parts[2], 10); jMonth = parseInt(parts[1], 10) - 1; }
@@ -869,12 +871,12 @@
                     }
                 }
 
-                // 1. Van Reminders Metric Engine
+                // 1. Van Reminders calculation loop
                 if (Number(s.VanFee) > 0) {
                     let totalBilledVan = elapsedMonthsToBillCount * Number(s.VanFee);
                     let totalPaidVan = 0;
                     studentPaymentsLog.forEach(p => {
-                        if(p.Status === "Settled" && (p.Remarks || "").toString().includes("Van")) {
+                        if((p.Remarks || "").toString().includes("Van")) {
                             totalPaidVan += Number(p.AmountPaid) || 0;
                         }
                     });
@@ -882,7 +884,7 @@
                     const isFrozenThisMonth = activeNullifiedFlags.includes('Van');
                     const finalVanDisplayDue = isFrozenThisMonth ? (netVanOutstanding - Number(s.VanFee)) : netVanOutstanding;
 
-                    if (finalVanDisplayDue > 0 && activeMonthPaymentRow.Status !== "Settled") {
+                    if (finalVanDisplayDue > 0) {
                         vCount++;
                         vanBox.insertAdjacentHTML('beforeend', `
                             <div class="bg-white p-3 rounded-xl border mb-2 shadow-sm space-y-2">
@@ -901,20 +903,21 @@
                                         </select>
                                         <button onclick="commitReminderSettlement('${s.StudentID}','Van',${finalVanDisplayDue})" class="bg-emerald-500 text-white font-bold px-2 py-0.5 rounded text-[10px]">Settle</button>
                                     </div>
+                                end text layout
                                 </div>
                             </div>
                         `);
                     }
                 }
 
-                // 2. Day Care Reminders Engine
+                // 2. Day Care Reminders calculation loop
                 const isDayCareTrackActive = Number(s.DayCareFee) > 0 || s.Class === "DayCare";
                 if (isDayCareTrackActive) {
                     const monthlyBaseRateValue = s.Class === "DayCare" ? (Number(s.OptMonthlyFee) || 0) : Number(s.DayCareFee);
                     let totalBilledDC = elapsedMonthsToBillCount * monthlyBaseRateValue;
                     let totalPaidDC = 0;
                     studentPaymentsLog.forEach(p => {
-                        if(p.Status === "Settled" && ((p.Remarks || "").toString().includes("DayCare") || (p.Remarks || "").toString().includes("Day Care"))) {
+                        if(((p.Remarks || "").toString().includes("DayCare") || (p.Remarks || "").toString().includes("Day Care"))) {
                             totalPaidDC += Number(p.AmountPaid) || 0;
                         }
                     });
@@ -922,7 +925,7 @@
                     const isFrozenThisMonth = activeNullifiedFlags.includes('DayCare');
                     const finalDCDisplayDue = isFrozenThisMonth ? (netDCOutstanding - monthlyBaseRateValue) : netDCOutstanding;
 
-                    if (finalDCDisplayDue > 0 && activeMonthPaymentRow.Status !== "Settled") {
+                    if (finalDCDisplayDue > 0) {
                         dCount++;
                         dcBox.insertAdjacentHTML('beforeend', `
                             <div class="bg-white p-3 rounded-xl border mb-2 shadow-sm space-y-2">
@@ -947,12 +950,12 @@
                     }
                 }
 
-                // 3. Custom Monthly Opt Fee Reminders Engine (Isolate loop tracker using explicit s mapping)
+                // 3. Custom Monthly Opt Fee Reminders Engine (Isolate math from Kit and Admission fees entirely)
                 if (s.BillingModel === "Monthly" && Number(s.OptMonthlyFee) > 0 && s.Class !== "DayCare") {
                     let totalBilledOpt = elapsedMonthsToBillCount * Number(s.OptMonthlyFee);
                     let totalPaidOpt = 0;
                     studentPaymentsLog.forEach(p => {
-                        if(p.Status === "Settled" && (p.Remarks || "").toString().includes("OptMonthly")) {
+                        if((p.Remarks || "").toString().includes("OptMonthly")) {
                             totalPaidOpt += Number(p.AmountPaid) || 0;
                         }
                     });
@@ -960,7 +963,7 @@
                     const isFrozenThisMonth = activeNullifiedFlags.includes('OptMonthly');
                     const finalOptDisplayDue = isFrozenThisMonth ? (netOptOutstanding - Number(s.OptMonthlyFee)) : netOptOutstanding;
 
-                    if (finalOptDisplayDue > 0 && activeMonthPaymentRow.Status !== "Settled") {
+                    if (finalOptDisplayDue > 0) {
                         oCount++;
                         optBox.insertAdjacentHTML('beforeend', `
                             <div class="bg-white p-3 rounded-xl border mb-2 shadow-sm space-y-2">
@@ -1017,10 +1020,10 @@
             const row = [
                 "PAY-" + Date.now(), sid, activeSystemMonthContext, Number(feeValue),
                 new Date().toISOString().substring(0,10), channelMode,
-                `Cleared outstanding tracking stream row: ${serviceKey}`, "Settled", ""
+                `Settled reminder stream segment: ${serviceKey}`, "Settled", ""
             ];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })});
-            alert("✅ Payment processed and synchronized!");
+            alert("✅ Payment accepted and cleared!");
             await refreshApplicationState(false);
         }
 
@@ -1059,7 +1062,7 @@
             ];
 
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })});
-            alert("✅ Fee transaction written to database successfully!"); closePaymentModal(); await refreshApplicationState(false);
+            alert("✅ Fee installment written successfully!"); closePaymentModal(); await refreshApplicationState(false);
         }
 
         function openStudentDetailModal(sid) {
@@ -1123,7 +1126,7 @@
                 document.getElementById('editDOJ').value
             ];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: rowData })});
-            alert("✅ Student profile record saved successfully!"); closeStudentDetailModal(); await refreshApplicationState(false);
+            alert("✅ Modifications committed cleanly!"); closeStudentDetailModal(); await refreshApplicationState(false);
         }
 
         async function triggerDeleteStudent() {
@@ -1160,7 +1163,7 @@
             if (currentExpenseTimeframeContext === 'monthly') {
                 filteredExpenses = filteredExpenses.filter(e => {
                     if(!e.Date) return false;
-                    const dateClean = e.Date.toString().replace(/\//g, "-");
+                    const dateClean = e.Date.toString().replace(/[\/\s]/g, "-");
                     const parts = dateClean.split('-');
                     let yr = parseInt(parts[0],10); let mo = parseInt(parts[1],10) - 1;
                     if(parts[0].length < 4) { yr = parseInt(parts[2],10); mo = parseInt(parts[1],10) - 1; }
@@ -1169,7 +1172,7 @@
             } else if (currentExpenseTimeframeContext === 'currentYear') {
                 filteredExpenses = filteredExpenses.filter(e => {
                     if(!e.Date) return false;
-                    const dateClean = e.Date.toString().replace(/\//g, "-");
+                    const dateClean = e.Date.toString().replace(/[\/\s]/g, "-");
                     const parts = dateClean.split('-');
                     let yr = parseInt(parts[0],10); let mo = parseInt(parts[1],10) - 1;
                     if(parts[0].length < 4) { yr = parseInt(parts[2],10); mo = parseInt(parts[1],10) - 1; }
@@ -1238,7 +1241,7 @@
             const c = document.getElementById('birthdayRosterContainer'); const bdays = [];
             globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED").forEach(s => {
                 if(!s.DOB) return; 
-                const dateClean = s.DOB.toString().replace(/\//g, "-");
+                const dateClean = s.DOB.toString().replace(/[\/\s]/g, "-");
                 const parts = dateClean.split('-');
                 let birthMonth = parts[1]; let birthDay = parts[2];
                 if(parts[0].length < 4) { birthMonth = parts[1]; birthDay = parts[0]; }
@@ -1267,7 +1270,7 @@
 
         function calculateExactAge(dobString) {
             if (!dobString) return "N/A";
-            const dateClean = dobString.toString().replace(/\//g, "-");
+            const dateClean = dobString.toString().replace(/[\/\s]/g, "-");
             const parts = dateClean.split('-');
             let y = parseInt(parts[0],10);
             if(parts[0].length < 4) { y = parseInt(parts[2],10); }
@@ -1318,7 +1321,7 @@
                 
                 alert("🎉 Admissions Intake Logged & Saved Safely!");
                 event.target.reset();
-                if(document.getElementById('base64PayloadCache')) { document.getElementById('base64PayloadCache').value = ""; }
+                document.getElementById('base64PayloadCache').value = "";
                 
                 const detailsEl = document.getElementById('intakeFormDetailsContainer');
                 if(detailsEl) detailsEl.removeAttribute('open');
