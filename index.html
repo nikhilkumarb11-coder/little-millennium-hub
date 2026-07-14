@@ -563,7 +563,7 @@
             <div class="flex justify-between items-center border-b pb-3">
                 <div>
                     <h3 id="modalStudentTitleName" class="font-black text-indigo-950 text-base">Fee Particulars Deck</h3>
-                    <p id="modalStudentCohortSubtitle" class="text-[10px] font-bold text-amber-600 tracking-wider uppercase">Balance Sheet Context</p>
+                    <p id="modalStudentCohortSubtitle" class="text-[10px] font-bold text-amber-600 tracking-wider uppercase">Balance Monitoring Sheet</p>
                 </div>
                 <button type="button" onclick="closePaymentModal()" class="text-2xl text-slate-400 font-bold leading-none">&times;</button>
             </div>
@@ -598,7 +598,7 @@
                 </div>
                 <div>
                     <label class="block mb-1 text-slate-500">Remarks</label>
-                    <input type="text" id="txRemarks" placeholder="Reference remarks" class="w-full p-2 rounded-xl border bg-slate-50">
+                    <input type="text" id="txRemarks" placeholder="Reference notes or bank tracking keys" class="w-full p-2 rounded-xl border bg-slate-50">
                 </div>
                 <div class="flex space-x-2 pt-2">
                     <button type="button" onclick="closePaymentModal()" class="w-1/3 bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl">Close</button>
@@ -609,7 +609,7 @@
     </div>
 
     <script>
-        // PASTE YOUR DEPLOYED APPS SCRIPT WEB APP LINK URL DIRECTLY INSIDE THESE QUOTES
+        // PASTE YOUR EXTENSIONS APPS SCRIPT LINK BELOW EXACTLY INSIDE THE DOUBLE QUOTES
         const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzejxWGHXEQdyVSZ97fi4Aiqx3oZPJCVrYo5jGrxuhBh7o7QYE1z8y71WAThonTm4Yu/exec";
         
         let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "ApexSullurpeta2026!";
@@ -783,7 +783,7 @@
                     
                     if(showUserAlert) { alert("🔄 Cloud database sheets synchronized successfully!"); }
                 }
-            } catch (err) { console.error("Database connection fault:", err); }
+            } catch (err) { console.error("Database connection lost:", err); }
         }
 
         function renderCohortHeadcounts() {
@@ -850,11 +850,14 @@
                 const activeNullifiedFlags = (activeMonthPaymentRow.NullifiedServices || "").toString().split(',');
 
                 let elapsedMonthsToBillCount = 1;
-                if(s.DOJ && s.DOJ !== "N/A" && s.DOJ.toString().includes("-")) {
-                    const parts = s.DOJ.toString().split('-');
-                    if(parts.length >= 2) {
-                        const jYear = parseInt(parts[0],10);
-                        const jMonth = parseInt(parts[1],10) - 1;
+                const normalizedDojStr = (s.DOJ || "").toString().replace(/\//g, "-");
+                if(normalizedDojStr.includes("-")) {
+                    const parts = normalizedDojStr.split('-');
+                    let jYear = parseInt(parts[0], 10);
+                    let jMonth = parseInt(parts[1], 10) - 1;
+                    if (parts[0].length < 4) { jYear = parseInt(parts[2], 10); jMonth = parseInt(parts[1], 10) - 1; }
+                    
+                    if(!isNaN(jYear) && !isNaN(jMonth)) {
                         const joinDate = new Date(jYear, jMonth, 1);
                         const currentPeriodDate = new Date(2026, 6, 1);
                         const diffMonths = (currentPeriodDate.getFullYear() - joinDate.getFullYear()) * 12 + (currentPeriodDate.getMonth() - joinDate.getMonth());
@@ -862,7 +865,7 @@
                     }
                 }
 
-                // 1. Van Reminders calculation loop
+                // 1. Van Reminders Metric Engine
                 if (Number(s.VanFee) > 0) {
                     let totalBilledVan = elapsedMonthsToBillCount * Number(s.VanFee);
                     let totalPaidVan = 0;
@@ -884,7 +887,7 @@
                                     <span class="text-rose-600 font-black">₹${finalVanDisplayDue}</span>
                                 </div>
                                 <div class="flex items-center justify-between gap-1 pt-1 border-t">
-                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
+                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cubic-pointer">
                                         <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID}','Van',this.checked)" ${isFrozenThisMonth?'checked':''}>
                                         <span>Freeze Month</span>
                                     </label>
@@ -900,7 +903,7 @@
                     }
                 }
 
-                // 2. Day Care Reminders calculation loop
+                // 2. Day Care Reminders Engine
                 const isDayCareTrackActive = Number(s.DayCareFee) > 0 || s.Class === "DayCare";
                 if (isDayCareTrackActive) {
                     const monthlyBaseRateValue = s.Class === "DayCare" ? (Number(s.OptMonthlyFee) || 0) : Number(s.DayCareFee);
@@ -924,7 +927,7 @@
                                     <span class="text-rose-600 font-black">₹${finalDCDisplayDue}</span>
                                 </div>
                                 <div class="flex items-center justify-between gap-1 pt-1 border-t">
-                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
+                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cubic-pointer">
                                         <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID}','DayCare',this.checked)" ${isFrozenThisMonth?'checked':''}>
                                         <span>Freeze Month</span>
                                     </label>
@@ -940,8 +943,8 @@
                     }
                 }
 
-                // 3. Custom Monthly Opt Fee Reminders Engine (Strictly handles only recurring base rates)
-                if (Number(s.OptMonthlyFee) > 0 && s.Class !== "DayCare") {
+                // 3. Custom Monthly Opt Fee Reminders Engine (Strictly handles recurring plan parameter accounts)
+                if (s.BillingModel === "Monthly" && Number(s.OptMonthlyFee) > 0 && s.Class !== "DayCare") {
                     let totalBilledOpt = elapsedMonthsToBillCount * Number(s.OptMonthlyFee);
                     let totalPaidOpt = 0;
                     studentPaymentsLog.forEach(p => {
@@ -962,7 +965,7 @@
                                     <span class="text-rose-600 font-black">₹${finalOptDisplayDue}</span>
                                 </div>
                                 <div class="flex items-center justify-between gap-1 pt-1 border-t">
-                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
+                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cubic-pointer">
                                         <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID}','OptMonthly',this.checked)" ${isFrozenThisMonth?'checked':''}>
                                         <span>Freeze Month</span>
                                     </label>
@@ -1142,15 +1145,20 @@
             if (currentExpenseTimeframeContext === 'monthly') {
                 filteredExpenses = filteredExpenses.filter(e => {
                     if(!e.Date) return false;
-                    const parts = e.Date.split('-');
-                    return parseInt(parts[1],10) - 1 === selectedMonth && parseInt(parts[0],10) === selectedYear;
+                    const dateClean = e.Date.toString().replace(/\//g, "-");
+                    const parts = dateClean.split('-');
+                    let yr = parseInt(parts[0],10); let mo = parseInt(parts[1],10) - 1;
+                    if(parts[0].length < 4) { yr = parseInt(parts[2],10); mo = parseInt(parts[1],10) - 1; }
+                    return mo === selectedMonth && yr === selectedYear;
                 });
             } else if (currentExpenseTimeframeContext === 'currentYear') {
                 filteredExpenses = filteredExpenses.filter(e => {
                     if(!e.Date) return false;
-                    const parts = e.Date.split('-');
-                    const year = parseInt(parts[0],10); const mon = parseInt(parts[1],10) - 1;
-                    return (year === selectedYear && mon >= 5) || (year === (selectedYear + 1) && mon < 5);
+                    const dateClean = e.Date.toString().replace(/\//g, "-");
+                    const parts = dateClean.split('-');
+                    let yr = parseInt(parts[0],10); let mo = parseInt(parts[1],10) - 1;
+                    if(parts[0].length < 4) { yr = parseInt(parts[2],10); mo = parseInt(parts[1],10) - 1; }
+                    return (yr === selectedYear && mo >= 5) || (yr === (selectedYear + 1) && mo < 5);
                 });
             }
 
@@ -1215,9 +1223,13 @@
             const c = document.getElementById('birthdayRosterContainer'); const bdays = [];
             globalAppState.students.filter(s => s.StudentName && s.StudentName !== "DELETED").forEach(s => {
                 if(!s.DOB) return; 
-                const parts = s.DOB.toString().split('-');
-                if(parts.length >= 2 && parts[1] === "07") {
-                    bdays.push(`🎂 <strong>${s.StudentName}</strong> - July ${parseInt(parts[2],10)} (Turning ${calculateExactAge(s.DOB)} Yrs)`);
+                const dateClean = s.DOB.toString().replace(/\//g, "-");
+                const parts = dateClean.split('-');
+                let birthMonth = parts[1]; let birthDay = parts[2];
+                if(parts[0].length < 4) { birthMonth = parts[1]; birthDay = parts[0]; }
+                
+                if(birthMonth === "07" || birthMonth === "7") {
+                    bdays.push(`🎂 <strong>${s.StudentName}</strong> - July ${parseInt(birthDay,10)} (Turning ${calculateExactAge(s.DOB)} Yrs)`);
                 }
             });
             c.innerHTML = bdays.length ? bdays.join('<br>') : "✨ No birthdays recorded for July.";
@@ -1240,10 +1252,13 @@
 
         function calculateExactAge(dobString) {
             if (!dobString) return "N/A";
-            const parts = dobString.split('-');
-            if(parts.length < 3) return "N/A";
-            const birth = new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, parseInt(parts[2],10));
-            const today = new Date();
+            const dateClean = dobString.toString().replace(/\//g, "-");
+            const parts = dateClean.split('-');
+            let y = parseInt(parts[0],10); let m = parseInt(parts[1],10)-1; let d = parseInt(parts[2],10);
+            if(parts[0].length < 4) { y = parseInt(parts[2],10); m = parseInt(parts[1],10)-1; d = parseInt(parts[0],10); }
+            
+            if(isNaN(y) || isNaN(m) || isNaN(d)) return "N/A";
+            const birth = new Date(y, m, d); const today = new Date();
             let age = today.getFullYear() - birth.getFullYear();
             if (today.getMonth() < birth.getMonth() || (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) age--;
             return age;
@@ -1288,12 +1303,17 @@
 
         async function handleEventSubmission(e) { e.preventDefault(); const f = new FormData(e.target); const row = ["EVT-"+Date.now(), f.get('Title'), f.get('Date'), f.get('Time'), f.get('Category')]; await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Events", rowData: row })}); alert("✅ Calendar Event Pinned!"); e.target.reset(); await refreshApplicationState(false); }
 
-        // Secure Window Initializer Hook Placement block
-        window.addEventListener('DOMContentLoaded', () => {
-            const dojInp = document.getElementById('intakeDOJ');
-            if(dojInp) dojInp.value = new Date().toISOString().substring(0,10);
-            handleFormBillingTypeChange('Regular');
-        });
+        // Immediately Invoking Structural Self-Initialization Routine Block
+        (() => {
+            const checkFormInpExistLoop = setInterval(() => {
+                const dojInp = document.getElementById('intakeDOJ');
+                if(dojInp) {
+                    clearInterval(checkFormInpExistLoop);
+                    dojInp.value = new Date().toISOString().substring(0,10);
+                    handleFormBillingTypeChange('Regular');
+                }
+            }, 50);
+        })();
     </script>
 </body>
 </html>
