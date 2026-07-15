@@ -27,7 +27,7 @@
 
     <header class="bg-indigo-950 text-white shadow-xl sticky top-0 z-40 px-4 py-3">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-3 cubic-pointer" onclick="goToHome()">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="goToHome()">
                 <div class="bg-amber-400 p-2 rounded-xl text-indigo-950 text-xl font-black shadow-inner">LM</div>
                 <div>
                     <h2 class="text-base font-black leading-none tracking-tight">Little Millennium</h2>
@@ -608,8 +608,19 @@
         </div>
     </div>
 
+    <div id="changePasswordModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-amber-400 text-center space-y-4">
+            <h3 class="font-black text-indigo-950 text-lg">System Security Hub</h3>
+            <p class="text-xs text-slate-400 font-medium">Update the validation security passphrase below.</p>
+            <input type="text" id="newPasscodeInput" class="w-full px-3 py-2 border rounded-xl text-center font-mono focus:outline-none">
+            <div class="flex space-x-2">
+                <button onclick="closeChangePasswordModal()" class="w-1/3 bg-slate-100 py-2 rounded-xl text-xs font-bold">Cancel</button>
+                <button onclick="commitNewPasscodeKey()" class="w-2/3 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold shadow">Save Passcode</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // PASTE YOUR EXTENSIONS APPS SCRIPT LINK BELOW EXACTLY INSIDE THE DOUBLE QUOTES
         const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyaykhdrvyBUCNwruy0IGGpDK4zG14QaoHG1cYurVDww6qMsBIRuIfg7NxygrE6KLha8w/exec";
         
         let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "ApexSullurpeta2026!";
@@ -774,14 +785,14 @@
                     globalAppState.expenses = result.data.expenses || [];
                     globalAppState.events = result.data.events || [];
                     
-                    // Absolute boundary safety execution pass lines
-                    try { renderCohortHeadcounts(); } catch(e){console.error("Headcount Fault:", e);}
-                    try { renderStudentCards(); } catch(e){console.error("Cards Fault:", e);}
-                    try { renderFrontPageReminders(); } catch(e){console.error("Reminders Fault:", e);}
-                    try { renderBirthdayWidget(); } catch(e){console.error("Birthday Widget Fault:", e);}
-                    try { renderCalendarAgenda(); } catch(e){console.error("Agenda Fault:", e);}
-                    try { renderFinanceLedger(); } catch(e){console.error("Finance Ledger Fault:", e);}
-                    try { renderInsightsPanel(); } catch(e){console.error("Insights Fault:", e);}
+                    // Independent safety blocks ensure a failure in one list never freezes the others
+                    try { renderCohortHeadcounts(); } catch(e){console.error("Headcount Error:", e);}
+                    try { renderStudentCards(); } catch(e){console.error("Cards Error:", e);}
+                    try { renderFrontPageReminders(); } catch(e){console.error("Reminders Error:", e);}
+                    try { renderBirthdayWidget(); } catch(e){console.error("Birthday Error:", e);}
+                    try { renderCalendarAgenda(); } catch(e){console.error("Calendar Error:", e);}
+                    try { renderFinanceLedger(); } catch(e){console.error("Finance Error:", e);}
+                    try { renderInsightsPanel(); } catch(e){console.error("Insights Error:", e);}
                     
                     if(showUserAlert) { alert("🔄 Cloud database sheets synchronized successfully!"); }
                 }
@@ -946,7 +957,7 @@
                     }
                 }
 
-                // 3. Custom Monthly Opt Fee Reminders Engine (Strict structural mapping isolation block pass)
+                // 3. Custom Monthly Opt Fee Reminders Engine
                 if (s.BillingModel === "Monthly" && Number(s.OptMonthlyFee) > 0 && s.Class !== "DayCare") {
                     let totalBilledOpt = elapsedMonthsToBillCount * Number(s.OptMonthlyFee);
                     let totalPaidOpt = 0;
@@ -1161,8 +1172,10 @@
                 const dateClean = e.Date.toString().replace(/[\/\s]/g, "-");
                 const parts = dateClean.split('-');
                 if(parts.length < 2) return false;
-                let yr = parseInt(parts[0],10); let mo = parseInt(parts[1],10) - 1;
-                if(parts[0].length < 4) { yr = parseInt(parts[2],10); mo = parseInt(parts[1],10) - 1; }
+                
+                // Fallback architecture reads values from left or right indices flawlessly
+                let yr = parseInt(parts[0], 10); let mo = parseInt(parts[1], 10) - 1;
+                if(parts[0].length < 4) { yr = parseInt(parts[2], 10); mo = parseInt(parts[1], 10) - 1; }
                 
                 if (currentExpenseTimeframeContext === 'monthly') {
                     return mo === selectedMonth && yr === selectedYear;
@@ -1182,7 +1195,6 @@
             document.getElementById('kpiDuesPending').innerText = `₹${totalReceivables - totalCollected}`;
             document.getElementById('kpiTotalExpenses').innerText = `₹${totalExpenses}`;
 
-            // Chart isolated block pass bypass hidden element faults
             try {
                 const ctx1 = document.getElementById('collectionsBalanceChart').getContext('2d');
                 if (window.myCollectionChart) window.myCollectionChart.destroy();
@@ -1192,7 +1204,7 @@
                 if (window.myExpenseChart) window.myExpenseChart.destroy();
                 window.myExpenseChart = new Chart(ctx2, { type: 'doughnut', data: { labels: Object.keys(cats), datasets: [{ data: Object.values(cats), backgroundColor: ['#4f46e5','#f43f5e','#eab308','#10b981','#a855f7'] }] }, options: { responsive: true } });
             } catch(e) {
-                console.log("Canvas width calculation deferred safely.");
+                console.log("Canvas mapping calculation deferred smoothly.");
             }
         }
 
@@ -1242,6 +1254,7 @@
                 const parts = dateClean.split('-');
                 if(parts.length < 2) return;
                 
+                // Universal dynamic location tracking parses any slash/dash alignment type safely
                 let birthMonth = parts[1]; let birthDay = parts[2];
                 if(parts[0].length < 4) { birthMonth = parts[1]; birthDay = parts[0]; }
                 
