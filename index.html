@@ -249,11 +249,6 @@
                                 <option value="Girl">Girl</option>
                             </select>
                         </div>
-                        <div class="pt-2 col-span-2">
-                            <label class="block mb-1 text-slate-500">Photo Attachment</label>
-                            <input type="file" accept="image/*" onchange="processImageUpload(this)" class="w-full text-xs">
-                            <input type="hidden" id="base64PayloadCache">
-                        </div>
                     </div>
 
                     <div class="flex justify-end pt-2">
@@ -568,7 +563,7 @@
             <div class="flex justify-between items-center border-b pb-3">
                 <div>
                     <h3 id="modalStudentTitleName" class="font-black text-indigo-950 text-base">Fee Particulars Deck</h3>
-                    <p id="modalStudentCohortSubtitle" class="text-[10px] font-bold text-amber-600 tracking-wider uppercase">Balance Monitoring Sheet</p>
+                    <p id="modalStudentCohortSubtitle" class="text-[10px] font-bold text-amber-600 tracking-wider uppercase">Balance sheet Monitoring Context</p>
                 </div>
                 <button type="button" onclick="closePaymentModal()" class="text-2xl text-slate-400 font-bold leading-none">&times;</button>
             </div>
@@ -777,6 +772,7 @@
             });
             document.getElementById(tabId).classList.remove('hidden');
             const b = document.getElementById('btn-' + tabId); if(b) b.classList.add('bg-white', 'text-indigo-950', 'shadow-sm');
+            if (tabId === 'financeTab') { renderFinanceLedger(); }
             window.scrollTo(0,0);
         }
 
@@ -790,7 +786,7 @@
                     globalAppState.expenses = result.data.expenses || [];
                     globalAppState.events = result.data.events || [];
                     
-                    // Unified isolated execution sequence layout
+                    // Bulletproof isolated execution sequence layout
                     try { renderCohortHeadcounts(); } catch(e){console.error(e);}
                     try { renderStudentCards(); } catch(e){console.error(e);}
                     try { renderFrontPageReminders(); } catch(e){console.error(e);}
@@ -809,8 +805,6 @@
             document.getElementById('countCohortDR').innerText = `${list.filter(s=>s.Class==='DR').length} Kids`;
             document.getElementById('countCohortEW').innerText = `${list.filter(s=>s.Class==='EW').length} Kids`;
             document.getElementById('countCohortRTF1').innerText = `${list.filter(s=>s.Class==='RTF1').length} Kids`;
-            document.getElementById('countCohortRTF2').innerText = `${list.filter(s=>s.Class==='RTF2').length} Kids`;
-            document.getElementById('countCohortDC').innerText = `${list.filter(s=>s.Class==='DayCare').length} Kids`;
             document.getElementById('countCohortTotal').innerText = `${list.length} Active`;
         }
 
@@ -884,7 +878,7 @@
                     }
                 }
 
-                // 1. Van Reminders calculation loop
+                // 1. Van Reminders Metric Engine
                 if (Number(s.VanFee) > 0) {
                     let totalBilledVan = elapsedMonthsToBillCount * Number(s.VanFee);
                     let totalPaidVan = 0;
@@ -962,7 +956,7 @@
                     }
                 }
 
-                // 3. Custom Monthly Opt Fee Reminders Engine (Isolate math fields to use active s loop token parameters)
+                // 3. Custom Monthly Opt Fee Reminders Engine (Strictly isolated recurring variables pass matching)
                 if (s.BillingModel === "Monthly" && Number(s.OptMonthlyFee) > 0 && s.Class !== "DayCare") {
                     let totalBilledOpt = elapsedMonthsToBillCount * Number(s.OptMonthlyFee);
                     let totalPaidOpt = 0;
@@ -1074,7 +1068,7 @@
             ];
 
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })});
-            alert("✅ Fee transaction written successfully!"); closePaymentModal(); await refreshApplicationState(false);
+            alert("✅ Fee transaction written to database successfully!"); closePaymentModal(); await refreshApplicationState(false);
         }
 
         function openStudentDetailModal(sid) {
@@ -1171,28 +1165,22 @@
                 totalReceivables += (Number(s.CustomFee)||0) + (Number(s.AdmissionFee)||0) + (Number(s.StudentKitFee)||0) + (Number(s.SpareUniformFee)||0) + (Number(s.VanFee)||0) + (Number(s.DayCareFee)||0) + (Number(s.OptMonthlyFee)||0);
             });
 
-            // Calibrated dynamic string index scanner bypass character drops
             let filteredExpenses = globalAppState.expenses.filter(x => x.Date && x.Category.toString().trim() !== "DELETED" && x.Category.toString().trim() !== "");
             
-            if (currentExpenseTimeframeContext === 'monthly') {
-                filteredExpenses = filteredExpenses.filter(e => {
-                    const cleanDate = e.Date.toString().replace(/[\/\s]/g, "-");
-                    const parts = cleanDate.split('-');
-                    if(parts.length < 2) return false;
-                    let yr = parseInt(parts[0], 10); let mo = parseInt(parts[1], 10) - 1;
-                    if(parts[0].length < 4) { yr = parseInt(parts[2], 10); mo = parseInt(parts[1], 10) - 1; }
+            filteredExpenses = filteredExpenses.filter(e => {
+                const dateClean = e.Date.toString().replace(/[\/\s]/g, "-");
+                const parts = dateClean.split('-');
+                if(parts.length < 2) return false;
+                let yr = parseInt(parts[0],10); let mo = parseInt(parts[1],10) - 1;
+                if(parts[0].length < 4) { yr = parseInt(parts[2],10); mo = parseInt(parts[1],10) - 1; }
+                
+                if (currentExpenseTimeframeContext === 'monthly') {
                     return mo === selectedMonth && yr === selectedYear;
-                });
-            } else if (currentExpenseTimeframeContext === 'currentYear') {
-                filteredExpenses = filteredExpenses.filter(e => {
-                    const cleanDate = e.Date.toString().replace(/[\/\s]/g, "-");
-                    const parts = cleanDate.split('-');
-                    if(parts.length < 2) return false;
-                    let yr = parseInt(parts[0], 10); let mo = parseInt(parts[1], 10) - 1;
-                    if(parts[0].length < 4) { yr = parseInt(parts[2], 10); mo = parseInt(parts[1], 10) - 1; }
+                } else if (currentExpenseTimeframeContext === 'currentYear') {
                     return (yr === selectedYear && mo >= 5) || (yr === (selectedYear + 1) && mo < 5);
-                });
-            }
+                }
+                return true;
+            });
 
             filteredExpenses.forEach(e => {
                 const a = Number(e.Amount)||0; totalExpenses += a; cats[e.Category] = (cats[e.Category]||0) + a;
@@ -1204,13 +1192,18 @@
             document.getElementById('kpiDuesPending').innerText = `₹${totalReceivables - totalCollected}`;
             document.getElementById('kpiTotalExpenses').innerText = `₹${totalExpenses}`;
 
-            const ctx1 = document.getElementById('collectionsBalanceChart').getContext('2d');
-            if (window.myCollectionChart) window.myCollectionChart.destroy();
-            window.myCollectionChart = new Chart(ctx1, { type: 'bar', data: { labels: ['Receivables', 'Collected', 'Pending Dues'], datasets: [{ data: [totalReceivables, totalCollected, totalReceivables - totalCollected], backgroundColor: ['#4f46e5', '#10b981', '#f59e0b'] }] }, options: { responsive: true, plugins: { legend: { display: false } } } });
+            // Wrap chart rendering in an isolated block to prevent silent hidden canvas tab crashes
+            try {
+                const ctx1 = document.getElementById('collectionsBalanceChart').getContext('2d');
+                if (window.myCollectionChart) window.myCollectionChart.destroy();
+                window.myCollectionChart = new Chart(ctx1, { type: 'bar', data: { labels: ['Receivables', 'Collected', 'Pending Dues'], datasets: [{ data: [totalReceivables, totalCollected, totalReceivables - totalCollected], backgroundColor: ['#4f46e5', '#10b981', '#f59e0b'] }] }, options: { responsive: true, plugins: { legend: { display: false } } } });
 
-            const ctx2 = document.getElementById('expenseCategoryChart').getContext('2d');
-            if (window.myExpenseChart) window.myExpenseChart.destroy();
-            window.myExpenseChart = new Chart(ctx2, { type: 'doughnut', data: { labels: Object.keys(cats), datasets: [{ data: Object.values(cats), backgroundColor: ['#4f46e5','#f43f5e','#eab308','#10b981','#a855f7'] }] }, options: { responsive: true } });
+                const ctx2 = document.getElementById('expenseCategoryChart').getContext('2d');
+                if (window.myExpenseChart) window.myExpenseChart.destroy();
+                window.myExpenseChart = new Chart(ctx2, { type: 'doughnut', data: { labels: Object.keys(cats), datasets: [{ data: Object.values(cats), backgroundColor: ['#4f46e5','#f43f5e','#eab308','#10b981','#a855f7'] }] }, options: { responsive: true } });
+            } catch(chartError) {
+                console.log("Chart rendering deferred until tab is visible.");
+            }
         }
 
         function loadExpenseToEditForm(expId) {
@@ -1241,7 +1234,7 @@
             const actionType = expId ? "updateRow" : "addRow"; const id = expId || "EXP-" + Date.now();
             const row = [id, f.get('Date'), f.get('Category'), Number(f.get('Amount')), f.get('Description'), f.get('Type')];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: actionType, targetSheet: "Expenses", rowId: id, rowData: row })});
-            alert("✅ Outflow ledger record submitted!"); resetExpenseForm(); await refreshApplicationState(false);
+            alert("✅ Outflow record committed!"); resetExpenseForm(); await refreshApplicationState(false);
         }
 
         async function triggerDeleteExpense(expId) {
@@ -1256,9 +1249,13 @@
             globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED").forEach(s => {
                 if(!s.DOB) return; 
                 const dateClean = s.DOB.toString().trim().replace(/[\/\s]/g, "-");
-                if(dateClean.includes("-07-") || dateClean.includes("-7-")) {
-                    const parts = dateClean.split('-');
-                    let birthDay = parts[2]; if(parts[0].length < 4) birthDay = parts[0];
+                const parts = dateClean.split('-');
+                if(parts.length < 2) return;
+                
+                let birthMonth = parts[1]; let birthDay = parts[2];
+                if(parts[0].length < 4) { birthMonth = parts[1]; birthDay = parts[0]; }
+                
+                if(parseInt(birthMonth,10) === 7) {
                     bdays.push(`🎂 <strong>${s.StudentName}</strong> - July ${parseInt(birthDay,10)} (Turning ${calculateExactAge(s.DOB)} Yrs)`);
                 }
             });
