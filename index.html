@@ -266,6 +266,7 @@
                 </form>
             </details>
 
+            <!-- Filters bar -->
             <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
                 <div class="flex flex-wrap gap-1.5">
                     <button onclick="filterCohort('ALL')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white">All Rosters</button>
@@ -281,7 +282,7 @@
             <div id="studentCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
-        <!-- Tab Content Viewport 2: Finance Dashboard -->
+        <!-- Tab Content Viewport 2: Finance Ledger Dashboard -->
         <div id="financeTab" class="tab-pane hidden space-y-6">
             <div class="bg-white p-4 rounded-2xl shadow-sm border flex flex-wrap items-center gap-4 text-xs font-bold">
                 <span class="text-indigo-950 uppercase tracking-wider text-[10px]">Filter Expenses Target Period:</span>
@@ -579,7 +580,7 @@
                     <h3 id="modalStudentTitleName" class="font-black text-indigo-950 text-base">Fee Particulars Deck</h3>
                     <p id="modalStudentCohortSubtitle" class="text-[10px] font-bold text-amber-600 tracking-wider uppercase">Balance Monitoring Sheet</p>
                 </div>
-                <button type="button" onclick="closePaymentModal()" class="text-2xl text-slate-400 hover:text-slate-600 font-bold leading-none">&times;</button>
+                <button type="button" onclick="closePaymentModal()" class="text-2xl text-slate-400 font-bold leading-none">&times;</button>
             </div>
             
             <div class="bg-slate-50 p-4 rounded-2xl border space-y-2 text-xs font-bold text-slate-700">
@@ -622,10 +623,24 @@
         </div>
     </div>
 
+    <!-- Security Settings Modal -->
+    <div id="changePasswordModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-amber-400 text-center space-y-4">
+            <h3 class="font-black text-indigo-950 text-lg">System Security Hub</h3>
+            <p class="text-xs text-slate-400 font-medium">Update the validation security passcode below.</p>
+            <input type="text" id="newPasscodeInput" class="w-full px-3 py-2 border rounded-xl text-center font-mono focus:outline-none">
+            <div class="flex space-x-2">
+                <button onclick="closeChangePasswordModal()" class="w-1/3 bg-slate-100 py-2 rounded-xl text-xs font-bold">Cancel</button>
+                <button onclick="commitNewPasscodeKey()" class="w-2/3 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold shadow">Save Passcode</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Javascript Script Logic Engine Hub -->
     <script>
         // PASTE YOUR REAL APPS SCRIPT WEB APP LINK URL DIRECTLY INSIDE THESE QUOTES
-        const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyaykhdrvyBUCNwruy0IGGpDK4zG14QaoHG1cYurVDww6qMsBIRuIfg7NxygrE6KLha8w/exec";
+        const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyaykhdrvyBUCNwruy0IGGpDK4zG14QaoHG1cYurVDww6qMsBIRuIfg7NxygrE6KLha8w/exec
+";
         
         let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "ApexSullurpeta2026!";
         let globalAppState = { students: [], payments: [], expenses: [], events: [], standardFees: { "DR":41000, "EW":42000, "RTF1":43000, "RTF2":44000 } };
@@ -655,6 +670,10 @@
         function openChangePasswordModal() {
             document.getElementById('newPasscodeInput').value = CURRENT_GATE_PASSPHRASE;
             document.getElementById('changePasswordModalOverlay').classList.remove('hidden');
+        }
+        function toggleFormFeeInput(checkbox, targetInputId) {
+            const inp = document.getElementById(targetInputId); inp.disabled = !checkbox.checked;
+            if(!checkbox.checked) inp.value = "0";
         }
         function closeChangePasswordModal() { document.getElementById('changePasswordModalOverlay').classList.add('hidden'); }
         function commitNewPasscodeKey() {
@@ -762,11 +781,6 @@
             calculateEditDiscount();
         }
 
-        function toggleFormFeeInput(checkbox, targetInputId) {
-            const inp = document.getElementById(targetInputId); inp.disabled = !checkbox.checked;
-            if(!checkbox.checked) inp.value = "0";
-        }
-
         function switchTab(tabId) {
             document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -820,7 +834,7 @@
             if (search) list = list.filter(s => s.StudentName.toLowerCase().includes(search));
 
             list.forEach((s, index) => {
-                const isRegularModel = (s.BillingModel === "Regular");
+                const isRegularModel = (s.BillingModel === "Regular" || s.billingmodel === "Regular");
                 const colorClass = AVATAR_COLORS[index % AVATAR_COLORS.length];
                 const imageContent = (s.PhotoBase64 && s.PhotoBase64 !== "N/A" && s.PhotoBase64.length > 50) 
                     ? `<img src="${s.PhotoBase64}" class="w-full h-full object-cover">` 
@@ -854,6 +868,24 @@
             });
         }
 
+        // Helper function parses and sanitizes raw dates into strictly browser-compatible formats
+        function cleanInputDateString(dateValue) {
+            if (!dateValue) return "";
+            let cleanStr = dateValue.toString().trim().split('T')[0].replace(/[\/\s]/g, "-");
+            let parts = cleanStr.split('-');
+            if (parts.length < 3) return "";
+            
+            // Layout map checks if string begins with year (yyyy-MM-dd)
+            if (parts[0].length === 4) {
+                return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+            }
+            // Layout map checks if string ends with year (dd-MM-yyyy)
+            if (parts[2].length === 4) {
+                return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+            }
+            return "";
+        }
+
         function renderFrontPageReminders() {
             const vanBox = document.getElementById('containerVanReminders'); vanBox.innerHTML = '';
             const dcBox = document.getElementById('containerDayCareReminders'); dcBox.innerHTML = '';
@@ -885,8 +917,8 @@
                     }
                 }
 
-                if (Number(s.VanFee) > 0) {
-                    let totalBilledVan = elapsedMonthsToBillCount * Number(s.VanFee);
+                if (Number(s.VanFee || s.vanfee) > 0) {
+                    let totalBilledVan = elapsedMonthsToBillCount * Number(s.VanFee || s.vanfee);
                     let totalPaidVan = 0;
                     studentPaymentsLog.forEach(p => {
                         if((p.Remarks || "").toString().includes("Van")) {
@@ -895,7 +927,7 @@
                     });
                     const netVanOutstanding = totalBilledVan - totalPaidVan;
                     const isFrozenThisMonth = activeNullifiedFlags.includes('Van');
-                    const finalVanDisplayDue = isFrozenThisMonth ? (netVanOutstanding - Number(s.VanFee)) : netVanOutstanding;
+                    const finalVanDisplayDue = isFrozenThisMonth ? (netVanOutstanding - Number(s.VanFee || s.vanfee)) : netVanOutstanding;
 
                     if (finalVanDisplayDue > 0) {
                         vCount++;
@@ -922,9 +954,9 @@
                     }
                 }
 
-                const isDayCareTrackActive = Number(s.DayCareFee) > 0 || s.Class === "DayCare";
+                const isDayCareTrackActive = Number(s.DayCareFee || s.daycarefee) > 0 || s.Class === "DayCare";
                 if (isDayCareTrackActive) {
-                    const monthlyBaseRateValue = s.Class === "DayCare" ? (Number(s.OptMonthlyFee) || 0) : Number(s.DayCareFee);
+                    const monthlyBaseRateValue = s.Class === "DayCare" ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : Number(s.DayCareFee || s.daycarefee);
                     let totalBilledDC = elapsedMonthsToBillCount * monthlyBaseRateValue;
                     let totalPaidDC = 0;
                     studentPaymentsLog.forEach(p => {
@@ -961,8 +993,8 @@
                     }
                 }
 
-                if (s.BillingModel === "Monthly" && Number(s.OptMonthlyFee) > 0 && s.Class !== "DayCare") {
-                    let totalBilledOpt = elapsedMonthsToBillCount * Number(s.OptMonthlyFee);
+                if ((s.BillingModel === "Monthly" || s.billingmodel === "Monthly") && Number(s.OptMonthlyFee || s.optmonthlyfee) > 0 && s.Class !== "DayCare") {
+                    let totalBilledOpt = elapsedMonthsToBillCount * Number(s.OptMonthlyFee || s.optmonthlyfee);
                     let totalPaidOpt = 0;
                     studentPaymentsLog.forEach(p => {
                         if((p.Remarks || "").toString().includes("OptMonthly")) {
@@ -971,7 +1003,7 @@
                     });
                     const netOptOutstanding = totalBilledOpt - totalPaidOpt;
                     const isFrozenThisMonth = activeNullifiedFlags.includes('OptMonthly');
-                    const finalOptDisplayDue = isFrozenThisMonth ? (netOptOutstanding - Number(s.OptMonthlyFee)) : netOptOutstanding;
+                    const finalOptDisplayDue = isFrozenThisMonth ? (netOptOutstanding - Number(s.OptMonthlyFee || s.optmonthlyfee)) : netOptOutstanding;
 
                     if (finalOptDisplayDue > 0) {
                         oCount++;
@@ -1046,7 +1078,7 @@
             const payments = globalAppState.payments.filter(x => x.StudentID === sid);
             let cumulativePaid = 0;
             payments.forEach(p => cumulativePaid += (Number(p.AmountPaid) || 0));
-            const totalBilledStructure = Number(s.CustomFee) || 0;
+            const totalBilledStructure = Number(s.CustomFee || s.customfee) || 0;
             
             document.getElementById('lblModalTotalBilled').innerText = `₹${totalBilledStructure}`;
             document.getElementById('lblModalTotalPaid').innerText = `₹${cumulativePaid}`;
@@ -1084,21 +1116,18 @@
             
             document.getElementById('editStudentName').value = s.StudentName;
             
-            // Bulletproof Dual-Match Case Router extracts dates under any JSON envelope format cleanly
-            const extractedBirthDate = s.DOB || s.dob || "";
-            const extractedJoiningDate = s.DOJ || s.doj || "";
+            // Clean dynamic format extraction maps incoming structures directly into input layout criteria
+            document.getElementById('editDOB').value = cleanInputDateString(s.DOB || s.dob);
+            document.getElementById('editDOJ').value = cleanInputDateString(s.DOJ || s.doj);
             
-            document.getElementById('editDOB').value = extractedBirthDate ? extractedBirthDate.toString().substring(0,10) : "";
-            document.getElementById('editDOJ').value = extractedJoiningDate ? extractedJoiningDate.toString().substring(0,10) : "";
-            
-            document.getElementById('editGender').value = s.Gender || "Boy";
-            document.getElementById('editClass').value = s.Class;
+            document.getElementById('editGender').value = s.Gender || s.gender || "Boy";
+            document.getElementById('editClass').value = s.Class || s.class;
             document.getElementById('editGuardianName').value = s.GuardianName || s.guardianname || "";
             document.getElementById('editContact').value = s.Contact || s.contact || "";
             document.getElementById('editAltContact').value = s.AltContact || s.altcontact || "N/A";
             document.getElementById('editAddress').value = s.Address || s.address || "N/A";
             document.getElementById('editBloodGroup').value = s.BloodGroup || s.bloodgroup || "";
-            document.getElementById('detailPhotoBase64').value = s.PhotoBase64 || "N/A";
+            document.getElementById('detailPhotoBase64').value = s.PhotoBase64 || s.photobase64 || "N/A";
 
             updateEditClassFeeDashboardDisplay(s);
             document.getElementById('studentDetailModalOverlay').classList.remove('hidden');
@@ -1123,7 +1152,8 @@
             if(s.Class === 'DayCare') { updateEditClassFeeDefault(); }
             calculateEditDiscount();
             const photoSlot = document.getElementById('detailProfilePhotoSlot');
-            photoSlot.innerHTML = (s.PhotoBase64 && s.PhotoBase64 !== "N/A" && s.PhotoBase64.length > 50) ? `<img src="${s.PhotoBase64}" class="w-full h-full object-cover">` : s.StudentName.charAt(0);
+            const cacheImg = s.PhotoBase64 || s.photobase64 || "N/A";
+            photoSlot.innerHTML = (cacheImg !== "N/A" && cacheImg.length > 50) ? `<img src="${cacheImg}" class="w-full h-full object-cover">` : s.StudentName.charAt(0);
         }
 
         async function handleStudentDetailUpdate(e) {
@@ -1155,14 +1185,6 @@
             alert("✅ Modifications committed cleanly!"); closeStudentDetailModal(); await refreshApplicationState(false);
         }
 
-        async function triggerDeleteStudent() {
-            const sid = document.getElementById('detailStudentID').value;
-            if(confirm("Permanently wipe out student enrollment data row?")) {
-                await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: [sid, "DELETED", "", "", "", "", "", "", "", "N/A"] })});
-                alert("Profile Terminated!"); closeStudentDetailModal(); await refreshApplicationState(false);
-            }
-        }
-
         function setExpenseGraphTimeframe(frame) {
             currentExpenseTimeframeContext = frame;
             document.querySelectorAll('[id^="btnExpTime-"]').forEach(btn => btn.classList.replace('bg-white', 'text-slate-600'));
@@ -1182,7 +1204,7 @@
             });
 
             globalAppState.students.filter(s=>s.StudentName.toString().trim() !== "DELETED").forEach(s => {
-                totalReceivables += (Number(s.CustomFee)||0) + (Number(s.AdmissionFee)||0) + (Number(s.StudentKitFee)||0) + (Number(s.SpareUniformFee)||0) + (Number(s.VanFee)||0) + (Number(s.DayCareFee)||0) + (Number(s.OptMonthlyFee)||0);
+                totalReceivables += (Number(s.CustomFee || s.customfee)||0) + (Number(s.AdmissionFee || s.admissionfee)||0) + (Number(s.StudentKitFee || s.studentkitfee)||0) + (Number(s.SpareUniformFee || s.spareuniformfee)||0) + (Number(s.VanFee || s.vanfee)||0) + (Number(s.DayCareFee || s.daycarefee)||0) + (Number(s.OptMonthlyFee || s.optmonthlyfee)||0);
             });
 
             let filteredExpenses = globalAppState.expenses.filter(x => x.Date && x.Category.toString().trim() !== "DELETED" && x.Category.toString().trim() !== "");
@@ -1351,7 +1373,6 @@
                 
                 alert("🎉 Admissions Intake Logged & Saved Safely!");
                 event.target.reset();
-                document.getElementById('base64PayloadCache').value = "";
                 
                 const detailsEl = document.getElementById('intakeFormDetailsContainer');
                 if(detailsEl) detailsEl.removeAttribute('open');
