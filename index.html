@@ -266,7 +266,6 @@
                 </form>
             </details>
 
-            <!-- Filters Desk -->
             <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
                 <div class="flex flex-wrap gap-1.5">
                     <button onclick="filterCohort('ALL')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white">All Rosters</button>
@@ -282,7 +281,7 @@
             <div id="studentCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
-        <!-- Tab Content Viewport 2: Finance Dashboard -->
+        <!-- Tab Content Viewport 2: Finance Ledger Dashboard -->
         <div id="financeTab" class="tab-pane hidden space-y-6">
             <div class="bg-white p-4 rounded-2xl shadow-sm border flex flex-wrap items-center gap-4 text-xs font-bold">
                 <span class="text-indigo-950 uppercase tracking-wider text-[10px]">Filter Expenses Target Period:</span>
@@ -333,7 +332,6 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Outflow log section -->
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
                     <h4 class="font-black text-sm text-slate-700 mb-3" id="expenseFormHeader">Commit Operational Expenditure Row</h4>
                     <form id="expenseForm" onsubmit="handleExpenseSubmission(event)" class="space-y-3 text-xs font-semibold">
@@ -625,6 +623,7 @@
 
     <!-- Javascript Script Logic Engine Hub -->
     <script>
+        // PASTE YOUR REAL APPS SCRIPT WEB APP LINK URL DIRECTLY INSIDE THESE QUOTES
         const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyaykhdrvyBUCNwruy0IGGpDK4zG14QaoHG1cYurVDww6qMsBIRuIfg7NxygrE6KLha8w/exec";
         
         let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "ApexSullurpeta2026!";
@@ -853,9 +852,9 @@
             });
         }
 
-        function formatToInputDate(dateVal) {
-            if (!dateVal) return "";
-            let cleanStr = dateVal.toString().trim().split('T')[0].replace(/[\/\s]/g, "-");
+        function formatToInputDate(dateValue) {
+            if (!dateValue) return "";
+            let cleanStr = dateValue.toString().trim().split('T')[0].replace(/[\/\s]/g, "-");
             let parts = cleanStr.split('-');
             if (parts.length < 3) return "";
             
@@ -1018,77 +1017,6 @@
             document.getElementById('countOptDues').innerText = oCount;
         }
 
-        async function toggleReminderNullify(sid, serviceKey, isChecked) {
-            const pId = "PAY-" + sid + "-" + activeSystemMonthContext;
-            const pObj = globalAppState.payments.find(x => x.PaymentID === pId) || {};
-            
-            let currentNulls = pObj.NullifiedServices ? pObj.NullifiedServices.toString().split(',') : [];
-            if(isChecked) {
-                if(!currentNulls.includes(serviceKey)) currentNulls.push(serviceKey);
-            } else {
-                currentNulls = currentNulls.filter(x => x !== serviceKey);
-            }
-
-            const row = [pId, sid, activeSystemMonthContext, 0, "", "Cash", "Freeze Action Toggled", "Active", currentNulls.join(',')];
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Fee_Payments", rowId: pId, rowData: row })});
-            await refreshApplicationState(false);
-        }
-
-        async function commitReminderSettlement(sid, serviceKey, feeValue) {
-            const pId = "PAY-" + sid + "-" + activeSystemMonthContext;
-            let channelMode = "Cash";
-            if(serviceKey === 'Van') channelMode = document.getElementById(`mode-van-${sid}`).value;
-            if(serviceKey === 'DayCare') channelMode = document.getElementById(`mode-dc-${sid}`).value;
-            if(serviceKey === 'OptMonthly') channelMode = document.getElementById(`mode-opt-${sid}`).value;
-
-            const row = [
-                "PAY-" + Date.now(), sid, activeSystemMonthContext, Number(feeValue),
-                new Date().toISOString().substring(0,10), channelMode,
-                `Settled reminder stream segment: ${serviceKey}`, "Settled", ""
-            ];
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })});
-            alert("✅ Payment processed and synchronized!");
-            await refreshApplicationState(false);
-        }
-
-        function openPaymentModal(sid) {
-            const s = globalAppState.students.find(x => x.StudentID === sid);
-            if(!s) return;
-            document.getElementById('modalTargetStudentID').value = sid;
-            document.getElementById('modalStudentTitleName').innerText = s.StudentName;
-            
-            const payments = globalAppState.payments.filter(x => x.StudentID === sid);
-            let cumulativePaid = 0;
-            payments.forEach(p => cumulativePaid += (Number(p.AmountPaid) || 0));
-            const totalBilledStructure = Number(s.CustomFee || s.customfee) || 0;
-            
-            document.getElementById('lblModalTotalBilled').innerText = `₹${totalBilledStructure}`;
-            document.getElementById('lblModalTotalPaid').innerText = `₹${cumulativePaid}`;
-            document.getElementById('lblModalOutstandingBalance').innerText = `₹${totalBilledStructure - cumulativePaid}`;
-            
-            document.getElementById('txAmountPaid').value = totalBilledStructure - cumulativePaid;
-            document.getElementById('txPaymentDate').value = new Date().toISOString().substring(0,10);
-
-            document.getElementById('paymentModalOverlay').classList.remove('hidden');
-        }
-
-        function closePaymentModal() { document.getElementById('paymentModalOverlay').classList.add('hidden'); }
-
-        async function commitParticularsTransaction(e) {
-            e.preventDefault();
-            const sid = document.getElementById('modalTargetStudentID').value;
-            const txId = "TX-" + Date.now();
-            
-            const row = [
-                txId, sid, activeSystemMonthContext, Number(document.getElementById('txAmountPaid').value)||0,
-                document.getElementById('txPaymentDate').value, document.getElementById('txPaymentMode').value,
-                document.getElementById('txRemarks').value, "Settled", ""
-            ];
-
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })});
-            alert("✅ Fee transaction written to database successfully!"); closePaymentModal(); await refreshApplicationState(false);
-        }
-
         function openStudentDetailModal(sid) {
             const s = globalAppState.students.find(x => x.StudentID === sid);
             if(!s) return;
@@ -1099,8 +1027,8 @@
             document.getElementById('editStudentName').value = s.StudentName;
             
             // Clean format extraction maps straight into date box value anchors
-            document.getElementById('editDOB').value = formatToInputDate(s.DOB || s.dob);
-            document.getElementById('editDOJ').value = formatToInputDate(s.DOJ || s.doj);
+            document.getElementById('editDOB').value = formatToInputDate(s.DOB || s.dob || "");
+            document.getElementById('editDOJ').value = formatToInputDate(s.DOJ || s.doj || "");
             
             document.getElementById('editGender').value = s.Gender || s.gender || "Boy";
             document.getElementById('editClass').value = s.Class || s.class;
