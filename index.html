@@ -29,7 +29,7 @@
     <!-- Main Navigation Bar -->
     <header class="bg-indigo-950 text-white shadow-xl sticky top-0 z-40 px-4 py-3">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-3 cubic-pointer" onclick="goToHome()">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="goToHome()">
                 <div class="bg-amber-400 p-2 rounded-xl text-indigo-950 text-xl font-black shadow-inner">LM</div>
                 <div>
                     <h2 class="text-base font-black leading-none tracking-tight">Little Millennium</h2>
@@ -134,7 +134,7 @@
         <div id="studentsTab" class="tab-pane space-y-6">
             <!-- Intake Form Entry -->
             <details id="intakeFormDetailsContainer" class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden group">
-                <summary class="p-5 font-black text-sm tracking-wide text-indigo-950 cubic-pointer hover:bg-slate-50 list-none flex justify-between items-center">
+                <summary class="p-5 font-black text-sm tracking-wide text-indigo-950 cursor-pointer hover:bg-slate-50 list-none flex justify-between items-center">
                     <span class="flex items-center space-x-2"><span>➕</span> <span>New Complete Admissions Intake Form</span></span>
                 </summary>
                 <form id="studentEnrollmentForm" onsubmit="handleStudentSubmission(event)" class="p-5 border-t border-slate-100 space-y-4 text-xs font-semibold">
@@ -266,7 +266,7 @@
                 </form>
             </details>
 
-            <!-- Filters Desk -->
+            <!-- Filters bar -->
             <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
                 <div class="flex flex-wrap gap-1.5">
                     <button onclick="filterCohort('ALL')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white">All Rosters</button>
@@ -333,7 +333,6 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Outflow log section -->
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
                     <h4 class="font-black text-sm text-slate-700 mb-3" id="expenseFormHeader">Commit Operational Expenditure Row</h4>
                     <form id="expenseForm" onsubmit="handleExpenseSubmission(event)" class="space-y-3 text-xs font-semibold">
@@ -623,8 +622,22 @@
         </div>
     </div>
 
+    <!-- Security Settings Modal -->
+    <div id="changePasswordModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-amber-400 text-center space-y-4">
+            <h3 class="font-black text-indigo-950 text-lg">System Security Hub</h3>
+            <p class="text-xs text-slate-400 font-medium">Update the validation security passcode below.</p>
+            <input type="text" id="newPasscodeInput" class="w-full px-3 py-2 border rounded-xl text-center font-mono focus:outline-none">
+            <div class="flex space-x-2">
+                <button onclick="closeChangePasswordModal()" class="w-1/3 bg-slate-100 py-2 rounded-xl text-xs font-bold">Cancel</button>
+                <button onclick="commitNewPasscodeKey()" class="w-2/3 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold shadow">Save Passcode</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Javascript Script Logic Engine Hub -->
     <script>
+        // REPLACE THIS STRING WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP EXTENSION LINK URL
         const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyaykhdrvyBUCNwruy0IGGpDK4zG14QaoHG1cYurVDww6qMsBIRuIfg7NxygrE6KLha8w/exec";
         
         let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "ApexSullurpeta2026!";
@@ -829,18 +842,18 @@
                 const guardNameVal = s.GuardianName || s.guardianname || "N/A";
 
                 const trackingActionBtn = isRegularModel 
-                    ? `<button onclick="openPaymentModal('${s.StudentID}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-[11px]">Fee Particulars</button>`
+                    ? `<button onclick="openPaymentModal('${s.StudentID || s.studentid}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-[11px]">Fee Particulars</button>`
                     : `<span class="text-[10px] bg-slate-100 px-2 py-1 rounded text-slate-400 font-bold">Monthly Account</span>`;
 
                 grid.insertAdjacentHTML('beforeend', `
-                    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm gamified-card flex flex-col justify-between cursor-pointer" onclick="openStudentDetailModal('${s.StudentID}')">
+                    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm gamified-card flex flex-col justify-between cursor-pointer" onclick="openStudentDetailModal('${s.StudentID || s.studentid}')">
                         <div class="flex items-start space-x-4">
                             <div class="w-16 h-16 rounded-2xl bg-indigo-50 border flex-shrink-0 flex items-center justify-center overflow-hidden font-black text-xl text-indigo-500">
                                 ${imageContent}
                             </div>
                             <div class="flex-1 min-w-0">
                                 <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded uppercase">${s.Class === 'DayCare' ? 'DayCare Track' : s.Class}</span>
-                                <h4 class="font-black text-slate-900 text-sm truncate mt-1">${s.StudentName}</h4>
+                                <h4 class="font-black text-slate-900 text-sm truncate mt-1">${s.StudentName || s.studentname}</h4>
                                 <p class="text-[11px] text-slate-600 font-bold mt-1">👤 Guard: ${guardNameVal}</p>
                                 <p class="text-[11px] text-indigo-700 font-mono font-bold mt-0.5">📞 Phone: ${phoneNumVal}</p>
                             </div>
@@ -878,9 +891,9 @@
             document.getElementById('reminderPeriodBadge').innerText = `${targetPeriodMonthStr} Context View`;
 
             globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED").forEach(s => {
-                const studentPaymentsLog = globalAppState.payments.filter(x => x.StudentID === s.StudentID) || [];
-                const activeMonthPaymentRow = studentPaymentsLog.find(x => x.MonthYear === targetPeriodMonthStr) || {};
-                const activeNullifiedFlags = (activeMonthPaymentRow.NullifiedServices || "").toString().split(',');
+                const studentPaymentsLog = globalAppState.payments.filter(x => x.StudentID === s.StudentID || x.studentid === s.StudentID) || [];
+                const activeMonthPaymentRow = studentPaymentsLog.find(x => x.MonthYear === targetPeriodMonthStr || x.monthyear === targetPeriodMonthStr) || {};
+                const activeNullifiedFlags = (activeMonthPaymentRow.NullifiedServices || activeMonthPaymentRow.nullifiedservices || "").toString().split(',');
 
                 let elapsedMonthsToBillCount = 1;
                 const rawDoj = s.DOJ || s.doj || "";
@@ -903,8 +916,8 @@
                     let totalBilledVan = elapsedMonthsToBillCount * Number(s.VanFee || s.vanfee);
                     let totalPaidVan = 0;
                     studentPaymentsLog.forEach(p => {
-                        if((p.Remarks || "").toString().includes("Van")) {
-                            totalPaidVan += Number(p.AmountPaid) || 0;
+                        if((p.Remarks || p.remarks || "").toString().includes("Van")) {
+                            totalPaidVan += Number(p.AmountPaid || p.amountpaid) || 0;
                         }
                     });
                     const netVanOutstanding = totalBilledVan - totalPaidVan;
@@ -916,19 +929,19 @@
                         vanBox.insertAdjacentHTML('beforeend', `
                             <div class="bg-white p-3 rounded-xl border mb-2 shadow-sm space-y-2">
                                 <div class="flex justify-between items-center">
-                                    <span class="font-bold text-slate-800">${s.StudentName}</span>
+                                    <span class="font-bold text-slate-800">${s.StudentName || s.studentname}</span>
                                     <span class="text-rose-600 font-black">₹${finalVanDisplayDue}</span>
                                 </div>
                                 <div class="flex items-center justify-between gap-1 pt-1 border-t">
                                     <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
-                                        <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID}','Van',this.checked)" ${isFrozenThisMonth?'checked':''}>
+                                        <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID || s.studentid}','Van',this.checked)" ${isFrozenThisMonth?'checked':''}>
                                         <span>Freeze Month</span>
                                     </label>
                                     <div class="flex items-center space-x-1">
-                                        <select id="mode-van-${s.StudentID}" class="text-[10px] bg-slate-50 border rounded p-0.5">
+                                        <select id="mode-van-${s.StudentID || s.studentid}" class="text-[10px] bg-slate-50 border rounded p-0.5">
                                             <option value="Cash">Cash</option><option value="UPI">UPI</option>
                                         </select>
-                                        <button onclick="commitReminderSettlement('${s.StudentID}','Van',${finalVanDisplayDue})" class="bg-emerald-500 text-white font-bold px-2 py-0.5 rounded text-[10px]">Settle</button>
+                                        <button onclick="commitReminderSettlement('${s.StudentID || s.studentid}','Van',${finalVanDisplayDue})" class="bg-emerald-500 text-white font-bold px-2 py-0.5 rounded text-[10px]">Settle</button>
                                     </div>
                                 </div>
                             </div>
@@ -936,14 +949,14 @@
                     }
                 }
 
-                const isDayCareTrackActive = Number(s.DayCareFee || s.daycarefee) > 0 || s.Class === "DayCare";
+                const isDayCareTrackActive = Number(s.DayCareFee || s.daycarefee) > 0 || s.Class === "DayCare" || s.class === "DayCare";
                 if (isDayCareTrackActive) {
-                    const monthlyBaseRateValue = s.Class === "DayCare" ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : Number(s.DayCareFee || s.daycarefee);
+                    const monthlyBaseRateValue = (s.Class === "DayCare" || s.class === "DayCare") ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : Number(s.DayCareFee || s.daycarefee);
                     let totalBilledDC = elapsedMonthsToBillCount * monthlyBaseRateValue;
                     let totalPaidDC = 0;
                     studentPaymentsLog.forEach(p => {
-                        if(((p.Remarks || "").toString().includes("DayCare") || (p.Remarks || "").toString().includes("Day Care"))) {
-                            totalPaidDC += Number(p.AmountPaid) || 0;
+                        if(((p.Remarks || p.remarks || "").toString().includes("DayCare") || (p.Remarks || p.remarks || "").toString().includes("Day Care"))) {
+                            totalPaidDC += Number(p.AmountPaid || p.amountpaid) || 0;
                         }
                     });
                     const netDCOutstanding = totalBilledDC - totalPaidDC;
@@ -955,19 +968,19 @@
                         dcBox.insertAdjacentHTML('beforeend', `
                             <div class="bg-white p-3 rounded-xl border mb-2 shadow-sm space-y-2">
                                 <div class="flex justify-between items-center">
-                                    <span class="font-bold text-slate-800">${s.StudentName}</span>
+                                    <span class="font-bold text-slate-800">${s.StudentName || s.studentname}</span>
                                     <span class="text-rose-600 font-black">₹${finalDCDisplayDue}</span>
                                 </div>
                                 <div class="flex items-center justify-between gap-1 pt-1 border-t">
                                     <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
-                                        <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID}','DayCare',this.checked)" ${isFrozenThisMonth?'checked':''}>
+                                        <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID || s.studentid}','DayCare',this.checked)" ${isFrozenThisMonth?'checked':''}>
                                         <span>Freeze Month</span>
                                     </label>
                                     <div class="flex items-center space-x-1">
-                                        <select id="mode-dc-${s.StudentID}" class="text-[10px] bg-slate-50 border rounded p-0.5">
+                                        <select id="mode-dc-${s.StudentID || s.studentid}" class="text-[10px] bg-slate-50 border rounded p-0.5">
                                             <option value="Cash">Cash</option><option value="UPI">UPI</option>
                                         </select>
-                                        <button onclick="commitReminderSettlement('${s.StudentID}','DayCare',${finalDCDisplayDue})" class="bg-emerald-500 text-white font-bold px-2 py-0.5 rounded text-[10px]">Settle</button>
+                                        <button onclick="commitReminderSettlement('${s.StudentID || s.studentid}','DayCare',${finalDCDisplayDue})" class="bg-emerald-500 text-white font-bold px-2 py-0.5 rounded text-[10px]">Settle</button>
                                     </div>
                                 </div>
                             </div>
@@ -975,12 +988,12 @@
                     }
                 }
 
-                if ((s.BillingModel === "Monthly" || s.billingmodel === "Monthly") && Number(s.OptMonthlyFee || s.optmonthlyfee) > 0 && s.Class !== "DayCare") {
+                if ((s.BillingModel === "Monthly" || s.billingmodel === "Monthly") && Number(s.OptMonthlyFee || s.optmonthlyfee) > 0 && s.Class !== "DayCare" && s.class !== "DayCare") {
                     let totalBilledOpt = elapsedMonthsToBillCount * Number(s.OptMonthlyFee || s.optmonthlyfee);
                     let totalPaidOpt = 0;
                     studentPaymentsLog.forEach(p => {
-                        if((p.Remarks || "").toString().includes("OptMonthly")) {
-                            totalPaidOpt += Number(p.AmountPaid) || 0;
+                        if((p.Remarks || p.remarks || "").toString().includes("OptMonthly")) {
+                            totalPaidOpt += Number(p.AmountPaid || p.amountpaid) || 0;
                         }
                     });
                     const netOptOutstanding = totalBilledOpt - totalPaidOpt;
@@ -992,19 +1005,19 @@
                         optBox.insertAdjacentHTML('beforeend', `
                             <div class="bg-white p-3 rounded-xl border mb-2 shadow-sm space-y-2">
                                 <div class="flex justify-between items-center">
-                                    <span class="font-bold text-slate-800">${s.StudentName}</span>
+                                    <span class="font-bold text-slate-800">${s.StudentName || s.studentname}</span>
                                     <span class="text-rose-600 font-black">₹${finalOptDisplayDue}</span>
                                 </div>
                                 <div class="flex items-center justify-between gap-1 pt-1 border-t">
                                     <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
-                                        <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID}','OptMonthly',this.checked)" ${isFrozenThisMonth?'checked':''}>
+                                        <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID || s.studentid}','OptMonthly',this.checked)" ${isFrozenThisMonth?'checked':''}>
                                         <span>Freeze Month</span>
                                     </label>
                                     <div class="flex items-center space-x-1">
-                                        <select id="mode-opt-${s.StudentID}" class="text-[10px] bg-slate-50 border rounded p-0.5">
+                                        <select id="mode-opt-${s.StudentID || s.studentid}" class="text-[10px] bg-slate-50 border rounded p-0.5">
                                             <option value="Cash">Cash</option><option value="UPI">UPI</option>
                                         </select>
-                                        <button onclick="commitReminderSettlement('${s.StudentID}','OptMonthly',${finalOptDisplayDue})" class="bg-emerald-500 text-white font-bold px-2 py-0.5 rounded text-[10px]">Settle</button>
+                                        <button onclick="commitReminderSettlement('${s.StudentID || s.studentid}','OptMonthly',${finalOptDisplayDue})" class="bg-emerald-500 text-white font-bold px-2 py-0.5 rounded text-[10px]">Settle</button>
                                     </div>
                                 </div>
                             </div>
@@ -1019,17 +1032,20 @@
         }
 
         function openStudentDetailModal(sid) {
-            const s = globalAppState.students.find(x => x.StudentID === sid);
+            const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
             if(!s) return;
-            document.getElementById('detailStudentID').value = s.StudentID;
-            document.getElementById('detailStudentNameHeader').innerText = s.StudentName;
+            document.getElementById('detailStudentID').value = sid;
+            document.getElementById('detailStudentNameHeader').innerText = s.StudentName || s.studentname;
             document.getElementById('detailStudentClassHeader').innerText = `${s.Class || s.class} Master Record`;
             
-            document.getElementById('editStudentName').value = s.StudentName;
+            document.getElementById('editStudentName').value = s.StudentName || s.studentname;
             
-            // Clean format extraction using the bulletproof utility function
-            document.getElementById('editDOB').value = formatToInputDate(s.DOB || s.dob);
-            document.getElementById('editDOJ').value = formatToInputDate(s.DOJ || s.doj);
+            // Explicit lookup extracts values from exact uppercase DOB/DOJ sheet tags and sanitizes them for browser pickers
+            const rawBirthDate = s.DOB || s.dob || "";
+            const rawJoiningDate = s.DOJ || s.doj || "";
+            
+            document.getElementById('editDOB').value = formatToInputDate(rawBirthDate);
+            document.getElementById('editDOJ').value = formatToInputDate(rawJoiningDate);
             
             document.getElementById('editGender').value = s.Gender || s.gender || "Boy";
             document.getElementById('editClass').value = s.Class || s.class;
@@ -1064,7 +1080,7 @@
             calculateEditDiscount();
             const photoSlot = document.getElementById('detailProfilePhotoSlot');
             const imgCache = s.PhotoBase64 || s.photobase64 || "N/A";
-            photoSlot.innerHTML = (imgCache !== "N/A" && imgCache.length > 50) ? `<img src="${imgCache}" class="w-full h-full object-cover">` : s.StudentName.charAt(0);
+            photoSlot.innerHTML = (imgCache !== "N/A" && imgCache.length > 50) ? `<img src="${imgCache}" class="w-full h-full object-cover">` : (s.StudentName || s.studentname).charAt(0);
         }
 
         async function handleStudentDetailUpdate(e) {
@@ -1111,17 +1127,19 @@
             const selectedYear = parseInt(document.getElementById('expensePeriodYear').value, 10);
 
             globalAppState.payments.forEach(p => {
-                totalCollected += (Number(p.AmountPaid) || 0);
+                totalCollected += (Number(p.amountpaid || p.AmountPaid) || 0);
             });
 
             globalAppState.students.filter(s=>s.StudentName.toString().trim() !== "DELETED").forEach(s => {
                 totalReceivables += (Number(s.CustomFee || s.customfee)||0) + (Number(s.AdmissionFee || s.admissionfee)||0) + (Number(s.StudentKitFee || s.studentkitfee)||0) + (Number(s.SpareUniformFee || s.spareuniformfee)||0) + (Number(s.VanFee || s.vanfee)||0) + (Number(s.DayCareFee || s.daycarefee)||0) + (Number(s.OptMonthlyFee || s.optmonthlyfee)||0);
             });
 
-            let filteredExpenses = globalAppState.expenses.filter(x => x.Date && x.Category.toString().trim() !== "DELETED" && x.Category.toString().trim() !== "");
+            let filteredExpenses = globalAppState.expenses.filter(x => x.Date || x.date);
+            filteredExpenses = filteredExpenses.filter(x => x.category || x.Category);
             
             filteredExpenses = filteredExpenses.filter(e => {
-                const dateClean = e.Date.toString().replace(/[\/\s]/g, "-");
+                const rawDate = e.Date || e.date || "";
+                const dateClean = rawDate.toString().replace(/[\/\s]/g, "-");
                 const parts = dateClean.split('-');
                 if(parts.length < 2) return false;
                 
@@ -1137,8 +1155,12 @@
             });
 
             filteredExpenses.forEach(e => {
-                const a = Number(e.Amount)||0; totalExpenses += a; cats[e.Category] = (cats[e.Category]||0) + a;
-                expenseStreamBox.insertAdjacentHTML('beforeend', `<div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border"><div><strong>${e.Category}</strong> - <span class="text-slate-400">${e.Date.toString().substring(0,10)}</span><p class="text-[10px] text-slate-400 font-medium">${e.Description || ''}</p></div><div class="flex items-center space-x-2"><span class="font-bold text-rose-600">₹${a}</span><button onclick="loadExpenseToEditForm('${e.ExpenseID}')" class="text-indigo-600 hover:underline">Edit</button></div></div>`);
+                const rawCat = e.Category || e.category || "";
+                const rawDate = e.Date || e.date || "";
+                const rawDesc = e.Description || e.description || "";
+                const rawId = e.ExpenseID || e.expenseid || "";
+                const a = Number(e.Amount || e.amount)||0; totalExpenses += a; cats[rawCat] = (cats[rawCat]||0) + a;
+                expenseStreamBox.insertAdjacentHTML('beforeend', `<div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border"><div><strong>${rawCat}</strong> - <span class="text-slate-400">${rawDate.toString().substring(0,10)}</span><p class="text-[10px] text-slate-400 font-medium">${rawDesc}</p></div><div class="flex items-center space-x-2"><span class="font-bold text-rose-600">₹${a}</span><button onclick="loadExpenseToEditForm('${rawId}')" class="text-indigo-600 hover:underline">Edit</button></div></div>`);
             });
 
             document.getElementById('kpiGrossRevenue').innerText = `₹${totalReceivables}`;
@@ -1160,19 +1182,20 @@
         }
 
         function loadExpenseToEditForm(expId) {
-            const e = globalAppState.expenses.find(x => x.ExpenseID === expId);
+            const e = globalAppState.expenses.find(x => (x.expenseid || x.ExpenseID) === expId);
             if(!e) return;
-            document.getElementById('expenseFormID').value = e.ExpenseID;
-            document.getElementById('expenseInputDate').value = e.Date ? e.Date.toString().substring(0,10) : '';
-            document.getElementById('expenseInputCategory').value = e.Category;
-            document.getElementById('expenseInputAmount').value = e.Amount;
-            document.getElementById('expenseInputType').value = e.Type;
-            document.getElementById('expenseInputDescription').value = e.Description || '';
+            document.getElementById('expenseFormID').value = expId;
+            const rawDate = e.date || e.Date || "";
+            document.getElementById('expenseInputDate').value = rawDate ? rawDate.toString().substring(0,10) : '';
+            document.getElementById('expenseInputCategory').value = e.category || e.Category || "";
+            document.getElementById('expenseInputAmount').value = e.amount || e.Amount || 0;
+            document.getElementById('expenseInputType').value = e.type || e.Type || "";
+            document.getElementById('expenseInputDescription').value = e.description || e.Description || '';
             
             document.getElementById('expenseFormHeader').innerText = "Modify Existing Outflow Record Entry";
             document.getElementById('expenseFormActions').innerHTML = `
                 <button type="submit" class="w-2/3 bg-indigo-600 text-white font-bold py-2 rounded-xl">Save Changes</button>
-                <button type="button" onclick="triggerDeleteExpense('${e.ExpenseID}')" class="w-1/3 bg-rose-100 text-rose-600 font-bold py-2 rounded-xl">Delete</button>
+                <button type="button" onclick="triggerDeleteExpense('${expId}')" class="w-1/3 bg-rose-100 text-rose-600 font-bold py-2 rounded-xl">Delete</button>
             `;
         }
 
@@ -1210,7 +1233,7 @@
                 if(parts[0].length < 4) { birthMonth = parts[1]; birthDay = parts[0]; }
                 
                 if(parseInt(birthMonth,10) === 7) {
-                    bdays.push(`🎂 <strong>${s.StudentName}</strong> - July ${parseInt(birthDay,10)} (Turning ${calculateExactAge(rawDob)} Yrs)`);
+                    bdays.push(`🎂 <strong>${s.StudentName || s.studentname}</strong> - July ${parseInt(birthDay,10)} (Turning ${calculateExactAge(rawDob)} Yrs)`);
                 }
             });
             c.innerHTML = bdays.length ? bdays.join('<br>') : "✨ No birthdays recorded for July.";
@@ -1219,7 +1242,11 @@
         function renderCalendarAgenda() {
             const stream = document.getElementById('calendarAgendaStream'); stream.innerHTML = '';
             if(!globalAppState.events.length) { stream.innerHTML = '<p class="text-xs text-slate-400">No events posted on the schedule matching current filters.</p>'; return; }
-            globalAppState.events.forEach(e => stream.insertAdjacentHTML('beforeend', `<div class="p-3 border-l-4 border-indigo-500 bg-indigo-50 text-slate-900 text-xs font-semibold flex justify-between"><div><h5 class="font-black">${e.Title}</h5><span>🗓️ ${e.Date ? e.Date.toString().substring(0,10) : ''}</span></div></div>`));
+            globalAppState.events.forEach(e => {
+                const titleVal = e.Title || e.title || "";
+                const dateVal = e.Date || e.date || "";
+                stream.insertAdjacentHTML('beforeend', `<div class="p-3 border-l-4 border-indigo-500 bg-indigo-50 text-slate-900 text-xs font-semibold flex justify-between"><div><h5 class="font-black">${titleVal}</h5><span>🗓️ ${dateVal.toString().substring(0,10)}</span></div></div>`);
+            });
         }
 
         function renderInsightsPanel() { 
@@ -1231,18 +1258,6 @@
             insBox.innerHTML = `<ul class="list-disc pl-4 space-y-0.5">${hints.join('')}</ul>`; 
         }
 
-        function calculateExactAge(dobString) {
-            if (!dobString) return "N/A";
-            const dateClean = dobString.toString().replace(/[\/\s]/g, "-");
-            const parts = dateClean.split('-');
-            let y = parseInt(parts[0],10);
-            if(parts[0].length < 4) { y = parseInt(parts[2],10); }
-            if(isNaN(y)) return "N/A";
-            return 2026 - y;
-        }
-        
-        function calculateIntakeDiscount() { const c = document.getElementById('intakeClassSelect').value; const base = globalAppState.standardFees[c] || 0; const custom = Number(document.getElementById('intakeAnnualTuition').value) || 0; const disc = base - custom; document.getElementById('intakeDiscountBadge').innerText = `₹${disc > 0 ? disc : 0} Offered Discount`; }
-        function calculateEditDiscount() { const c = document.getElementById('editClass').value; const base = globalAppState.standardFees[c] || 0; const custom = Number(document.getElementById('editCustomFee').value) || 0; const disc = base - custom; document.getElementById('editDiscountBadge').innerText = `₹${disc > 0 ? disc : 0} Offered Discount`; }
         function executeSearchFilter() { renderStudentCards(); }
         function filterCohort(type) { currentActiveCohortFilter = type; document.querySelectorAll('.cohort-filter-btn').forEach(b => b.classList.replace('bg-indigo-600', 'bg-slate-100')); event.target.classList.replace('bg-slate-100', 'bg-indigo-600'); renderStudentCards(); }
         function processImageUpload(input) { const file = input.files[0]; if (!file) return; const r = new FileReader(); r.onloadend = () => document.getElementById('base64PayloadCache').value = r.result; r.readAsDataURL(file); }
