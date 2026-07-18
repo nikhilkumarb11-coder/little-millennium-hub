@@ -333,6 +333,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Ledger expenses stream row layout input -->
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
                     <h4 class="font-black text-sm text-slate-700 mb-3" id="expenseFormHeader">Commit Operational Expenditure Row</h4>
                     <form id="expenseForm" onsubmit="handleExpenseSubmission(event)" class="space-y-3 text-xs font-semibold">
@@ -866,7 +867,7 @@
             });
         }
 
-        // Repaired parameter target maps directly to standard date format configurations
+        // Standardizes layout configuration attributes and shields against undefined values
         function formatToInputDate(dateVal) {
             if (!dateVal) return "";
             let cleanStr = dateVal.toString().trim().split('T')[0].replace(/[\/\s]/g, "-");
@@ -1321,7 +1322,7 @@
         (() => {
             const checkFormInpExistLoop = setInterval(() => {
                 const dojInp = document.getElementById('intakeDOJ');
-                if(dojInp) {
+                if( dojInp ) {
                     clearInterval(checkFormInpExistLoop);
                     dojInp.value = new Date().toISOString().substring(0,10);
                     handleFormBillingTypeChange('Regular');
