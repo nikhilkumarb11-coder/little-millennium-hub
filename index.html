@@ -450,11 +450,11 @@
                 <div id="editModelWrapper" class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 flex items-center space-x-6">
                     <span class="font-black text-indigo-950">Billing Pipeline Model:</span>
                     <label class="flex items-center space-x-1 cursor-pointer">
-                        <input type="radio" id="editModelRegular" name="EditBillingModel" value="Regular" onchange="handleEditFormBillingTypeChange('Regular')">
+                        <input type="radio" id="editModelRegular" name="EditBillingModel" value="Regular">
                         <span>Regular Base Model</span>
                     </label>
                     <label class="flex items-center space-x-1 cursor-pointer">
-                        <input type="radio" id="editModelMonthly" name="EditBillingModel" value="Monthly" onchange="handleEditFormBillingTypeChange('Monthly')">
+                        <input type="radio" id="editModelMonthly" name="EditBillingModel" value="Monthly">
                         <span>Custom Monthly Model</span>
                     </label>
                 </div>
@@ -623,24 +623,10 @@
         </div>
     </div>
 
-    <!-- Security Settings Modal -->
-    <div id="changePasswordModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-amber-400 text-center space-y-4">
-            <h3 class="font-black text-indigo-950 text-lg">System Security Hub</h3>
-            <p class="text-xs text-slate-400 font-medium">Update the validation security passcode below.</p>
-            <input type="text" id="newPasscodeInput" class="w-full px-3 py-2 border rounded-xl text-center font-mono focus:outline-none">
-            <div class="flex space-x-2">
-                <button onclick="closeChangePasswordModal()" class="w-1/3 bg-slate-100 py-2 rounded-xl text-xs font-bold">Cancel</button>
-                <button onclick="commitNewPasscodeKey()" class="w-2/3 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold shadow">Save Passcode</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Javascript Script Logic Engine Hub -->
     <script>
-        // PASTE YOUR REAL APPS SCRIPT WEB APP LINK URL DIRECTLY INSIDE THESE QUOTES
-        const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyaykhdrvyBUCNwruy0IGGpDK4zG14QaoHG1cYurVDww6qMsBIRuIfg7NxygrE6KLha8w/exec
-";
+        // REPLACE THIS STRING WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP EXTENSION LINK URL
+        const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbz_d_exec_placeholder";
         
         let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "ApexSullurpeta2026!";
         let globalAppState = { students: [], payments: [], expenses: [], events: [], standardFees: { "DR":41000, "EW":42000, "RTF1":43000, "RTF2":44000 } };
@@ -773,7 +759,7 @@
                 document.getElementById('editBoxVan').style.display = "block";
                 document.getElementById('editBoxDayCare').style.display = "block";
                 const isRegular = document.querySelector('input[name="EditBillingModel"]:checked').value === 'Regular';
-                if(isRegular) {
+                if(sRegular) {
                     document.getElementById('editCustomFee').value = globalAppState.standardFees[cls] || 0;
                     handleEditFormBillingTypeChange('Regular');
                 }
@@ -866,24 +852,6 @@
                     </div>
                 `);
             });
-        }
-
-        // Helper function parses and sanitizes raw dates into strictly browser-compatible formats
-        function cleanInputDateString(dateValue) {
-            if (!dateValue) return "";
-            let cleanStr = dateValue.toString().trim().split('T')[0].replace(/[\/\s]/g, "-");
-            let parts = cleanStr.split('-');
-            if (parts.length < 3) return "";
-            
-            // Layout map checks if string begins with year (yyyy-MM-dd)
-            if (parts[0].length === 4) {
-                return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
-            }
-            // Layout map checks if string ends with year (dd-MM-yyyy)
-            if (parts[2].length === 4) {
-                return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-            }
-            return "";
         }
 
         function renderFrontPageReminders() {
@@ -1036,89 +1004,18 @@
             document.getElementById('countOptDues').innerText = oCount;
         }
 
-        async function toggleReminderNullify(sid, serviceKey, isChecked) {
-            const pId = "PAY-" + sid + "-" + activeSystemMonthContext;
-            const pObj = globalAppState.payments.find(x => x.PaymentID === pId) || {};
-            
-            let currentNulls = pObj.NullifiedServices ? pObj.NullifiedServices.toString().split(',') : [];
-            if(isChecked) {
-                if(!currentNulls.includes(serviceKey)) currentNulls.push(serviceKey);
-            } else {
-                currentNulls = currentNulls.filter(x => x !== serviceKey);
-            }
-
-            const row = [pId, sid, activeSystemMonthContext, 0, "", "Cash", "Freeze Action Toggled", "Active", currentNulls.join(',')];
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Fee_Payments", rowId: pId, rowData: row })});
-            await refreshApplicationState(false);
-        }
-
-        async function commitReminderSettlement(sid, serviceKey, feeValue) {
-            const pId = "PAY-" + sid + "-" + activeSystemMonthContext;
-            let channelMode = "Cash";
-            if(serviceKey === 'Van') channelMode = document.getElementById(`mode-van-${sid}`).value;
-            if(serviceKey === 'DayCare') channelMode = document.getElementById(`mode-dc-${sid}`).value;
-            if(serviceKey === 'OptMonthly') channelMode = document.getElementById(`mode-opt-${sid}`).value;
-
-            const row = [
-                "PAY-" + Date.now(), sid, activeSystemMonthContext, Number(feeValue),
-                new Date().toISOString().substring(0,10), channelMode,
-                `Settled reminder stream segment: ${serviceKey}`, "Settled", ""
-            ];
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })});
-            alert("✅ Payment processed and synchronized!");
-            await refreshApplicationState(false);
-        }
-
-        function openPaymentModal(sid) {
-            const s = globalAppState.students.find(x => x.StudentID === sid);
-            if(!s) return;
-            document.getElementById('modalTargetStudentID').value = sid;
-            document.getElementById('modalStudentTitleName').innerText = s.StudentName;
-            
-            const payments = globalAppState.payments.filter(x => x.StudentID === sid);
-            let cumulativePaid = 0;
-            payments.forEach(p => cumulativePaid += (Number(p.AmountPaid) || 0));
-            const totalBilledStructure = Number(s.CustomFee || s.customfee) || 0;
-            
-            document.getElementById('lblModalTotalBilled').innerText = `₹${totalBilledStructure}`;
-            document.getElementById('lblModalTotalPaid').innerText = `₹${cumulativePaid}`;
-            document.getElementById('lblModalOutstandingBalance').innerText = `₹${totalBilledStructure - cumulativePaid}`;
-            
-            document.getElementById('txAmountPaid').value = totalBilledStructure - cumulativePaid;
-            document.getElementById('txPaymentDate').value = new Date().toISOString().substring(0,10);
-
-            document.getElementById('paymentModalOverlay').classList.remove('hidden');
-        }
-
-        function closePaymentModal() { document.getElementById('paymentModalOverlay').classList.add('hidden'); }
-
-        async function commitParticularsTransaction(e) {
-            e.preventDefault();
-            const sid = document.getElementById('modalTargetStudentID').value;
-            const txId = "TX-" + Date.now();
-            
-            const row = [
-                txId, sid, activeSystemMonthContext, Number(document.getElementById('txAmountPaid').value)||0,
-                document.getElementById('txPaymentDate').value, document.getElementById('txPaymentMode').value,
-                document.getElementById('txRemarks').value, "Settled", ""
-            ];
-
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })});
-            alert("✅ Fee transaction written to database successfully!"); closePaymentModal(); await refreshApplicationState(false);
-        }
-
-        function openStudentDetailModal(sid) {
+        async function openStudentDetailModal(sid) {
             const s = globalAppState.students.find(x => x.StudentID === sid);
             if(!s) return;
             document.getElementById('detailStudentID').value = s.StudentID;
             document.getElementById('detailStudentNameHeader').innerText = s.StudentName;
-            document.getElementById('detailStudentClassHeader').innerText = `${s.Class} Master Record`;
+            document.getElementById('detailStudentClassHeader').innerText = `${s.Class || s.class} Master Record`;
             
             document.getElementById('editStudentName').value = s.StudentName;
             
-            // Clean dynamic format extraction maps incoming structures directly into input layout criteria
-            document.getElementById('editDOB').value = cleanInputDateString(s.DOB || s.dob);
-            document.getElementById('editDOJ').value = cleanInputDateString(s.DOJ || s.doj);
+            // Native Assignment Layer processes clean yyyy-MM-dd strings arriving directly from backend
+            document.getElementById('editDOB').value = s.DOB || s.dob || "";
+            document.getElementById('editDOJ').value = s.DOJ || s.doj || "";
             
             document.getElementById('editGender').value = s.Gender || s.gender || "Boy";
             document.getElementById('editClass').value = s.Class || s.class;
@@ -1149,11 +1046,11 @@
             document.getElementById('editVanFee').value = s.VanFee || s.vanfee || 0;
             document.getElementById('editDayCareFee').value = s.DayCareFee || s.daycarefee || 0;
             document.getElementById('editOptMonthlyFee').value = s.OptMonthlyFee || s.optmonthlyfee || 0;
-            if(s.Class === 'DayCare') { updateEditClassFeeDefault(); }
+            if((s.Class || s.class) === 'DayCare') { updateEditClassFeeDefault(); }
             calculateEditDiscount();
             const photoSlot = document.getElementById('detailProfilePhotoSlot');
-            const cacheImg = s.PhotoBase64 || s.photobase64 || "N/A";
-            photoSlot.innerHTML = (cacheImg !== "N/A" && cacheImg.length > 50) ? `<img src="${cacheImg}" class="w-full h-full object-cover">` : s.StudentName.charAt(0);
+            const imgCache = s.PhotoBase64 || s.photobase64 || "N/A";
+            photoSlot.innerHTML = (imgCache !== "N/A" && imgCache.length > 50) ? `<img src="${imgCache}" class="w-full h-full object-cover">` : s.StudentName.charAt(0);
         }
 
         async function handleStudentDetailUpdate(e) {
