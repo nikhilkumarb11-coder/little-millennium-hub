@@ -622,9 +622,22 @@
         </div>
     </div>
 
+    <!-- Security Settings Modal -->
+    <div id="changePasswordModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-amber-400 text-center space-y-4">
+            <h3 class="font-black text-indigo-950 text-lg">System Security Hub</h3>
+            <p class="text-xs text-slate-400 font-medium">Update the validation security passcode below.</p>
+            <input type="text" id="newPasscodeInput" class="w-full px-3 py-2 border rounded-xl text-center font-mono focus:outline-none">
+            <div class="flex space-x-2">
+                <button onclick="closeChangePasswordModal()" class="w-1/3 bg-slate-100 py-2 rounded-xl text-xs font-bold">Cancel</button>
+                <button onclick="commitNewPasscodeKey()" class="w-2/3 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold shadow">Save Passcode</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Javascript Script Logic Engine Hub -->
     <script>
-        // PASTE YOUR REAL APPS SCRIPT WEB APP LINK URL DIRECTLY INSIDE THESE QUOTES
+        // REPLACE THIS STRING WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP EXTENSION LINK URL
         const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyaykhdrvyBUCNwruy0IGGpDK4zG14QaoHG1cYurVDww6qMsBIRuIfg7NxygrE6KLha8w/exec";
         
         let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "ApexSullurpeta2026!";
@@ -853,7 +866,7 @@
             });
         }
 
-        // Variable formatting function safely isolated from name mismatches
+        // Fixed baseline reference maps inputs cleanly without throwing naming criteria crashes
         function formatToInputDate(dateVal) {
             if (!dateVal) return "";
             let cleanStr = dateVal.toString().trim().split('T')[0].replace(/[\/\s]/g, "-");
@@ -1289,7 +1302,7 @@
             ];
 
             try {
-                await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Students", rowId: sid, rowData: studentRow })});
+                await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Students", rowData: studentRow })});
                 const pRow = ["PAY-"+sid+"-"+activeSystemMonthContext, sid, activeSystemMonthContext, 0, "", "Cash", "Admission Record Initialized", "Active", ""];
                 await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: pRow })});
                 
