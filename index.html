@@ -45,7 +45,7 @@
         </div>
     </header>
 
-    <!-- Main Workspace Container -->
+    <!-- Main Workspace Workspace Container -->
     <main id="appWorkspace" class="max-w-7xl mx-auto p-4 space-y-6 hidden">
         
         <!-- Cohort Headcount Tracker Panels -->
@@ -132,7 +132,6 @@
 
         <!-- Tab Content Viewport 1: Student Registry -->
         <div id="studentsTab" class="tab-pane space-y-6">
-            <!-- Intake Form Entry -->
             <details id="intakeFormDetailsContainer" class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden group">
                 <summary class="p-5 font-black text-sm tracking-wide text-indigo-950 cursor-pointer hover:bg-slate-50 list-none flex justify-between items-center">
                     <span class="flex items-center space-x-2"><span>➕</span> <span>New Complete Admissions Intake Form</span></span>
@@ -266,7 +265,6 @@
                 </form>
             </details>
 
-            <!-- Filters Desk -->
             <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
                 <div class="flex flex-wrap gap-1.5">
                     <button onclick="filterCohort('ALL')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white">All Rosters</button>
@@ -282,7 +280,7 @@
             <div id="studentCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
-        <!-- Tab Content Viewport 2: Finance Metrics Ledger -->
+        <!-- Tab Content Viewport 2: Finance Ledger Dashboard -->
         <div id="financeTab" class="tab-pane hidden space-y-6">
             <div class="bg-white p-4 rounded-2xl shadow-sm border flex flex-wrap items-center gap-4 text-xs font-bold">
                 <span class="text-indigo-950 uppercase tracking-wider text-[10px]">Filter Expenses Target Period:</span>
@@ -429,7 +427,7 @@
         </div>
     </main>
 
-    <!-- Student Profile Edit Modal Container -->
+    <!-- Student Profile Detailed View & COMPREHENSIVE Edit Modal -->
     <div id="studentDetailModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-[2rem] max-w-2xl w-full p-6 shadow-2xl space-y-4 border-2 border-indigo-100 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-start border-b pb-3">
@@ -636,12 +634,9 @@
         </div>
     </div>
 
-    <!-- Security Settings Modal Inputs Layout Shield Hidden Inputs Cache -->
-    <input type="hidden" id="base64PayloadCache">
-
     <!-- Javascript Script Logic Engine Hub -->
     <script>
-        // PASTE YOUR REAL APPS SCRIPT WEB APP LINK URL DIRECTLY INSIDE THESE QUOTES
+        // REPLACE THIS STRING WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP EXTENSION LINK URL
         const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyaykhdrvyBUCNwruy0IGGpDK4zG14QaoHG1cYurVDww6qMsBIRuIfg7NxygrE6KLha8w/exec";
         
         let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "ApexSullurpeta2026!";
@@ -806,7 +801,6 @@
                     globalAppState.expenses = result.data.expenses || [];
                     globalAppState.events = result.data.events || [];
                     
-                    // Independent programmatic security passes keep one loop error from freezing other modules
                     try { renderCohortHeadcounts(); } catch(e){console.error("Headcount Error:", e);}
                     try { renderStudentCards(); } catch(e){console.error("Cards Error:", e);}
                     try { renderFrontPageReminders(); } catch(e){console.error("Reminders Error:", e);}
@@ -844,9 +838,8 @@
                     ? `<img src="${student.PhotoBase64}" class="w-full h-full object-cover">` 
                     : `<div class="w-full h-full ${colorClass} text-white font-black flex items-center justify-center text-xl shadow-inner uppercase">${student.StudentName.charAt(0)}</div>`;
 
-                const trackingActionBtn = isRegularModel 
-                    ? `<button onclick="openPaymentModal('${student.StudentID}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-[11px]">Fee Particulars</button>`
-                    : `<span class="text-[10px] bg-slate-100 px-2 py-1 rounded text-slate-400 font-bold">Monthly Account</span>`;
+                const dobVal = student.DOB || student.dob || "N/A";
+                const dojVal = student.DOJ || student.doj || "N/A";
 
                 grid.insertAdjacentHTML('beforeend', `
                     <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm gamified-card flex flex-col justify-between cursor-pointer" onclick="openStudentDetailModal('${student.StudentID}')">
@@ -858,11 +851,11 @@
                                 <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded uppercase">${student.Class === 'DayCare' ? 'DayCare Track' : student.Class}</span>
                                 <h4 class="font-black text-slate-900 text-sm truncate mt-1">${student.StudentName}</h4>
                                 <p class="text-[11px] text-slate-600 font-bold mt-1">👤 Guard: ${student.GuardianName || 'N/A'}</p>
-                                <p class="text-[11px] text-indigo-700 font-mono font-bold">📞 Phone: ${student.Contact || 'N/A'}</p>
+                                <p class="text-[11px] text-indigo-700 font-mono font-bold">📅 DOJ: ${dojVal}</p>
                             </div>
                         </div>
                         <div class="mt-4 pt-3 border-t flex justify-between items-center" onclick="event.stopPropagation();">
-                            <div class="flex space-x-1 text-sm"></div>
+                            <div class="text-[10px] text-slate-400 font-bold">🎂 DOB: ${dobVal}</div>
                             ${trackingActionBtn}
                         </div>
                     </div>
@@ -885,7 +878,8 @@
                 const activeNullifiedFlags = (activeMonthPaymentRow.NullifiedServices || "").toString().split(',');
 
                 let elapsedMonthsToBillCount = 1;
-                const dateClean = (s.DOJ || "").toString().trim().replace(/[\/\s]/g, "-");
+                const rawDoj = s.DOJ || s.doj || "";
+                const dateClean = rawDoj.toString().trim().replace(/[\/\s]/g, "-");
                 if(dateClean.includes("-")) {
                     const parts = dateClean.split('-');
                     let jYear = parseInt(parts[0], 10);
@@ -900,7 +894,6 @@
                     }
                 }
 
-                // 1. Van Reminders calculation loop
                 if (Number(s.VanFee) > 0) {
                     let totalBilledVan = elapsedMonthsToBillCount * Number(s.VanFee);
                     let totalPaidVan = 0;
@@ -938,7 +931,6 @@
                     }
                 }
 
-                // 2. Day Care Reminders Engine
                 const isDayCareTrackActive = Number(s.DayCareFee) > 0 || s.Class === "DayCare";
                 if (isDayCareTrackActive) {
                     const monthlyBaseRateValue = s.Class === "DayCare" ? (Number(s.OptMonthlyFee) || 0) : Number(s.DayCareFee);
@@ -978,7 +970,6 @@
                     }
                 }
 
-                // 3. Custom Monthly Opt Fee Reminders Engine
                 if (s.BillingModel === "Monthly" && Number(s.OptMonthlyFee) > 0 && s.Class !== "DayCare") {
                     let totalBilledOpt = elapsedMonthsToBillCount * Number(s.OptMonthlyFee);
                     let totalPaidOpt = 0;
@@ -1090,7 +1081,7 @@
             ];
 
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })});
-            alert("✅ Fee transaction written successfully!"); closePaymentModal(); await refreshApplicationState(false);
+            alert("✅ Fee transaction written to database successfully!"); closePaymentModal(); await refreshApplicationState(false);
         }
 
         function openStudentDetailModal(sid) {
@@ -1101,8 +1092,14 @@
             document.getElementById('detailStudentClassHeader').innerText = `${s.Class} Master Record`;
             
             document.getElementById('editStudentName').value = s.StudentName;
-            document.getElementById('editDOB').value = s.DOB ? s.DOB.toString().substring(0,10) : "";
-            document.getElementById('editDOJ').value = s.DOJ ? s.DOJ.toString().substring(0,10) : "";
+            
+            // Case-Insensitive Multi-Key Fallback Router Enforces Form Preservation
+            const extractedBirthDate = s.DOB || s.dob || "";
+            const extractedJoiningDate = s.DOJ || s.doj || "";
+            
+            document.getElementById('editDOB').value = extractedBirthDate ? extractedBirthDate.toString().substring(0,10) : "";
+            document.getElementById('editDOJ').value = extractedJoiningDate ? extractedJoiningDate.toString().substring(0,10) : "";
+            
             document.getElementById('editGender').value = s.Gender || "Boy";
             document.getElementById('editClass').value = s.Class;
             document.getElementById('editGuardianName').value = s.GuardianName || "";
@@ -1193,9 +1190,8 @@
                 const dateClean = e.Date.toString().replace(/[\/\s]/g, "-");
                 const parts = dateClean.split('-');
                 if(parts.length < 2) return false;
-                
-                let yr = parseInt(parts[0], 10); let mo = parseInt(parts[1], 10) - 1;
-                if(parts[0].length < 4) { yr = parseInt(parts[2], 10); mo = parseInt(parts[1], 10) - 1; }
+                let yr = parseInt(parts[0],10); let mo = parseInt(parts[1],10) - 1;
+                if(parts[0].length < 4) { yr = parseInt(parts[2],10); mo = parseInt(parts[1],10) - 1; }
                 
                 if (currentExpenseTimeframeContext === 'monthly') {
                     return mo === selectedMonth && yr === selectedYear;
@@ -1269,8 +1265,9 @@
         function renderBirthdayWidget() {
             const c = document.getElementById('birthdayRosterContainer'); const bdays = [];
             globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED").forEach(s => {
-                if(!s.DOB) return; 
-                const dateClean = s.DOB.toString().trim().replace(/[\/\s]/g, "-");
+                const rawDob = s.DOB || s.dob || "";
+                if(!rawDob) return; 
+                const dateClean = rawDob.toString().trim().replace(/[\/\s]/g, "-");
                 const parts = dateClean.split('-');
                 if(parts.length < 2) return;
                 
@@ -1278,7 +1275,7 @@
                 if(parts[0].length < 4) { birthMonth = parts[1]; birthDay = parts[0]; }
                 
                 if(parseInt(birthMonth,10) === 7) {
-                    bdays.push(`🎂 <strong>${s.StudentName}</strong> - July ${parseInt(birthDay,10)} (Turning ${calculateExactAge(s.DOB)} Yrs)`);
+                    bdays.push(`🎂 <strong>${s.StudentName}</strong> - July ${parseInt(birthDay,10)} (Turning ${calculateExactAge(rawDob)} Yrs)`);
                 }
             });
             c.innerHTML = bdays.length ? bdays.join('<br>') : "✨ No birthdays recorded for July.";
@@ -1287,6 +1284,12 @@
         function renderCalendarAgenda() {
             const stream = document.getElementById('calendarAgendaStream'); stream.innerHTML = '';
             if(!globalAppState.events.length) { stream.innerHTML = '<p class="text-xs text-slate-400">No events found.</p>'; return; }
+            globalAppState.events.forEach(e => stream.insertAdjacentHTML('beforeend', `<div class="p-3 border-l-4 border-indigo-500 bg-indigo-50 text-slate-900 text-xs font-semibold flex justify-between"><div><h5 class="font-black">${e.Title}</h5><span>🗓️ ${e.Date ? e.Date.toString().substring(0,10) : ''}</span></div></div>`));
+        }
+
+        function renderCalendarAgenda() {
+            const stream = document.getElementById('calendarAgendaStream'); stream.innerHTML = '';
+            if(!globalAppState.events.length) { stream.innerHTML = '<p class="text-xs text-slate-400">No events posted on the schedule matching current filters.</p>'; return; }
             globalAppState.events.forEach(e => stream.insertAdjacentHTML('beforeend', `<div class="p-3 border-l-4 border-indigo-500 bg-indigo-50 text-slate-900 text-xs font-semibold flex justify-between"><div><h5 class="font-black">${e.Title}</h5><span>🗓️ ${e.Date ? e.Date.toString().substring(0,10) : ''}</span></div></div>`));
         }
 
@@ -1346,7 +1349,7 @@
             ];
 
             try {
-                await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Students", rowData: studentRow })});
+                await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Students", rowId: sid, rowData: studentRow })});
                 const pRow = ["PAY-"+sid+"-"+activeSystemMonthContext, sid, activeSystemMonthContext, 0, "", "Cash", "Admission Record Initialized", "Active", ""];
                 await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: pRow })});
                 
