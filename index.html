@@ -594,7 +594,7 @@
                 <button type="button" onclick="closeReceiptModal()" class="text-2xl text-slate-400 font-bold">&times;</button>
             </div>
             <div class="text-center">
-                <img src="lm-logo.png" alt="Little Millennium" class="mx-auto h-16 object-contain" onerror="this.style.display='none'">
+                <img src="lm-logo.png" alt="Little Millennium" class="mx-auto h-28 w-auto max-w-full object-contain" onerror="this.style.display='none'">
             </div>
             <pre id="receiptPreviewBody" class="text-[11px] leading-relaxed font-mono whitespace-pre-wrap bg-slate-50 border rounded-xl p-3 overflow-x-auto"></pre>
             <div class="flex gap-2">
@@ -1435,6 +1435,8 @@ function buildFeeReceiptText(data) {
 }
 
 let LM_LOGO_DATA_URL = "";
+let LM_LOGO_NAT_W = 1;
+let LM_LOGO_NAT_H = 1;
 function ensureLmLogoDataUrl() {
     if (LM_LOGO_DATA_URL) return Promise.resolve(LM_LOGO_DATA_URL);
     return new Promise((resolve) => {
@@ -1443,8 +1445,10 @@ function ensureLmLogoDataUrl() {
         img.onload = () => {
             try {
                 const canvas = document.createElement("canvas");
-                canvas.width = img.naturalWidth || img.width;
-                canvas.height = img.naturalHeight || img.height;
+                LM_LOGO_NAT_W = img.naturalWidth || img.width || 1;
+                LM_LOGO_NAT_H = img.naturalHeight || img.height || 1;
+                canvas.width = LM_LOGO_NAT_W;
+                canvas.height = LM_LOGO_NAT_H;
                 const ctx = canvas.getContext("2d");
                 ctx.fillStyle = "#ffffff";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1457,7 +1461,8 @@ function ensureLmLogoDataUrl() {
             }
         };
         img.onerror = () => resolve("");
-        img.src = "lm-logo.png";
+        // cache-bust so updated logo file is picked up after deploy
+        img.src = "lm-logo.png?v=2";
     });
 }
 
@@ -1475,7 +1480,7 @@ async function downloadReceiptPdf(receiptData, payId, studentName) {
     const rightX = pageW - margin;
     const midX = pageW / 2;
     const itemCount = (data.items || []).length;
-    const pageH = Math.max(130, 70 + itemCount * 6 + (data.balanceLabel != null ? 18 : 8) + (data.mode ? 6 : 0) + (data.note ? 6 : 0));
+    const pageH = Math.max(150, 95 + itemCount * 6 + (data.balanceLabel != null ? 18 : 8) + (data.mode ? 6 : 0) + (data.note ? 6 : 0));
     const doc = new JsPDF({ unit: "mm", format: [pageW, pageH] });
     let y = 5;
 
@@ -1490,8 +1495,16 @@ async function downloadReceiptPdf(receiptData, payId, studentName) {
 
     const logoData = await ensureLmLogoDataUrl();
     if (logoData) {
-        const logoW = 48;
-        const logoH = 17;
+        // Preserve natural aspect ratio (do not squash height)
+        const maxW = 46;
+        const maxH = 40;
+        const aspect = (LM_LOGO_NAT_W || 1) / (LM_LOGO_NAT_H || 1);
+        let logoW = maxW;
+        let logoH = logoW / aspect;
+        if (logoH > maxH) {
+            logoH = maxH;
+            logoW = logoH * aspect;
+        }
         doc.addImage(logoData, "PNG", (pageW - logoW) / 2, y, logoW, logoH);
         y += logoH + 3;
     } else {
