@@ -203,6 +203,7 @@
                                 </div>
                             </div>
                             <label class="flex items-center gap-2 font-bold"><input type="checkbox" id="chkSteamKit" onchange="refreshIntakeAmountPanel()"><span>Steam Kit</span></label>
+                            <label class="flex items-center gap-2 font-bold"><input type="checkbox" id="chkEducationKit" onchange="refreshIntakeAmountPanel()"><span>Education Kit</span></label>
                         </div>
                     </div>
 
@@ -211,56 +212,48 @@
                         <h4 class="font-black text-indigo-950 text-sm">Fee amounts</h4>
 
                         <div id="rowAnnualTuition">
-                            <label class="block mb-1 text-slate-500">Annual Tuition (₹)</label>
-                            <input type="number" id="intakeAnnualTuition" min="0" placeholder="Enter amount" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
+                            <label class="block mb-1 text-slate-500">Fee agreed (₹)</label>
+                            <input type="number" id="intakeAnnualTuition" min="0" placeholder="Enter amount" oninput="updateIntakeTotalsSummary()" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
                         </div>
                         <div id="rowCustomMonthly" class="hidden">
                             <label class="block mb-1 text-slate-500">Custom Monthly (₹)</label>
-                            <input type="number" id="FormOptMonthlyFee" min="0" placeholder="Billed every month" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
+                            <input type="number" id="FormOptMonthlyFee" min="0" placeholder="Collect every month separately" oninput="updateIntakeTotalsSummary()" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
+                            <p class="text-[10px] text-slate-400 mt-1">Monthly fee is collected separately — not part of term package total.</p>
                         </div>
 
-                        <!-- Custom Monthly one-time block (shown for Monthly; 0/empty allowed) -->
                         <div id="blockMonthlyOneTimeFees" class="hidden space-y-3">
                             <p class="text-[10px] font-black uppercase text-slate-400">Custom Monthly — one-time fees</p>
-                            <div id="rowAdmissionFee"><label class="block mb-1 text-slate-500">Admission Fee (₹)</label><input type="number" id="intakeAdmissionFee" min="0" value="0" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
-                            <div id="rowKitFee"><label class="block mb-1 text-slate-500">Kit Fee (₹)</label><input type="number" id="intakeKitFee" min="0" value="0" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
-                            <div id="rowUniformFee"><label class="block mb-1 text-slate-500">Uniform Fee (₹)</label><input type="number" id="intakeUniformFee" min="0" value="0" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                            <div id="rowAdmissionFee"><label class="block mb-1 text-slate-500">Admission Fee (₹)</label><input type="number" id="intakeAdmissionFee" min="0" value="0" oninput="updateIntakeTotalsSummary()" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
                         </div>
 
-                        <div id="amtVanRow" class="hidden"><label class="block mb-1 text-slate-500">Van monthly (₹)</label><input type="number" id="FormVanFee" min="0" placeholder="Amount" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
-                        <div id="amtDayCareRow" class="hidden"><label class="block mb-1 text-slate-500">Day Care monthly (₹)</label><input type="number" id="FormDayCareFee" min="0" placeholder="Amount" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
-                        <div id="amtSportsRow" class="hidden"><label class="block mb-1 text-slate-500">Sports Uniform rate each (₹)</label><input type="number" id="intakeSportsUniformRate" min="0" placeholder="Per piece" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
-                        <div id="amtRegularUniformRow" class="hidden"><label class="block mb-1 text-slate-500">Regular Uniform (Extra) rate each (₹)</label><input type="number" id="intakeRegularUniformRate" min="0" placeholder="Per piece" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
-                        <div id="amtSteamKitRow" class="hidden"><label class="block mb-1 text-slate-500">Steam Kit (₹)</label><input type="number" id="intakeSteamKitFee" min="0" placeholder="Amount" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div id="amtVanRow" class="hidden"><label class="block mb-1 text-slate-500">Van monthly (₹)</label><input type="number" id="FormVanFee" min="0" placeholder="Amount" oninput="updateIntakeTotalsSummary()" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div id="amtDayCareRow" class="hidden"><label class="block mb-1 text-slate-500">Day Care monthly (₹)</label><input type="number" id="FormDayCareFee" min="0" placeholder="Amount" oninput="updateIntakeTotalsSummary()" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div id="amtSportsRow" class="hidden"><label class="block mb-1 text-slate-500">Sports Uniform rate each (₹)</label><input type="number" id="intakeSportsUniformRate" min="0" placeholder="Per piece" oninput="updateIntakeTotalsSummary()" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div id="amtRegularUniformRow" class="hidden"><label class="block mb-1 text-slate-500">Regular Uniform (Extra) rate each (₹)</label><input type="number" id="intakeRegularUniformRate" min="0" placeholder="Per piece" oninput="updateIntakeTotalsSummary()" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div id="amtSteamKitRow" class="hidden"><label class="block mb-1 text-slate-500">Steam Kit (₹)</label><input type="number" id="intakeSteamKitFee" min="0" placeholder="Amount" oninput="updateIntakeTotalsSummary()" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div id="amtEducationKitRow" class="hidden"><label class="block mb-1 text-slate-500">Education Kit (₹)</label><input type="number" id="intakeEducationKitFee" min="0" placeholder="Amount" oninput="updateIntakeTotalsSummary()" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+
+                        <div id="intakeTotalsBox" class="bg-indigo-50 border border-indigo-100 rounded-2xl p-3 space-y-1.5 text-xs font-bold">
+                            <div class="flex justify-between"><span class="text-slate-600">Total fee to be paid</span><span id="lblIntakeTotalDue" class="text-indigo-950">₹0</span></div>
+                            <div class="flex justify-between"><span class="text-slate-600">1st term (paid now)</span><span id="lblIntakePaidNow" class="text-emerald-600">₹0</span></div>
+                            <div id="rowIntakeBalance" class="flex justify-between border-t border-indigo-100 pt-1.5"><span class="text-slate-600">Balance</span><span id="lblIntakeBalance" class="text-rose-600 font-black">₹0</span></div>
+                            <p id="lblIntakeMonthlyNote" class="hidden text-[10px] text-slate-500 font-semibold pt-1">Custom Monthly ₹<span id="lblIntakeMonthlyRate">0</span> / month — collect separately</p>
+                        </div>
                     </div>
 
                     <!-- Paid at admission -->
                     <div class="border-t pt-3 space-y-3" id="sectionPaidAtAdmission">
                         <h4 class="font-black text-indigo-950 text-sm">Paid at admission (optional)</h4>
-                        <p class="text-[10px] text-slate-500">Record any amount collected now. Leave blank if nothing paid.</p>
+                        <p class="text-[10px] text-slate-500">Amount paid now is recorded as <strong>1st term fee</strong> against the package total.</p>
                         <div class="grid grid-cols-1 gap-3">
-                            <div><label class="block mb-1 text-slate-500">Amount paid now (₹)</label><input type="number" id="intakePaidNowAmount" min="0" placeholder="0" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                            <div><label class="block mb-1 text-slate-500">Amount paid now (₹) — 1st term</label><input type="number" id="intakePaidNowAmount" min="0" placeholder="0" oninput="updateIntakeTotalsSummary()" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
                             <div>
                                 <label class="block mb-1 text-slate-500">Payment mode</label>
                                 <select id="intakePaidNowMode" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
                                     <option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Netbanking">Netbanking</option><option value="Other">Other</option>
                                 </select>
                             </div>
-                            <div>
-                                <label class="block mb-1 text-slate-500">Applies to</label>
-                                <select id="intakePaidNowFor" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
-                                    <option value="Tuition">Tuition / Main fee</option>
-                                    <option value="Van">Van</option>
-                                    <option value="DayCare">Day Care</option>
-                                    <option value="SportsUniform">Sports Uniform</option>
-                                    <option value="RegularUniform">Regular Uniform</option>
-                                    <option value="SteamKit">Steam Kit</option>
-                                    <option value="Admission">Admission Fee</option>
-                                    <option value="Kit">Kit Fee</option>
-                                    <option value="Uniform">Uniform Fee</option>
-                                </select>
-                            </div>
-                            <div><label class="block mb-1 text-slate-500">Remarks</label><input type="text" id="intakePaidNowRemarks" placeholder="Optional note" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                            <div><label class="block mb-1 text-slate-500">Remarks (optional)</label><input type="text" id="intakePaidNowRemarks" placeholder="Optional note" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
                         </div>
                     </div>
 
@@ -520,12 +513,15 @@
                 <button type="button" onclick="closePaymentModal()" class="text-2xl text-slate-400 font-bold">&times;</button>
             </div>
             <div class="bg-slate-50 p-4 rounded-2xl border space-y-2 text-xs font-bold">
-                <div class="flex justify-between"><span>Billed</span><span id="lblModalTotalBilled">₹0</span></div>
-                <div class="flex justify-between"><span>Paid</span><span id="lblModalTotalPaid" class="text-emerald-600">₹0</span></div>
-                <div class="flex justify-between border-t pt-2 text-sm"><span>Outstanding</span><span id="lblModalOutstandingBalance" class="text-rose-600 font-black">₹0</span></div>
+                <div class="flex justify-between"><span>Package total</span><span id="lblModalTotalBilled">₹0</span></div>
+                <div class="flex justify-between"><span>Term fees paid</span><span id="lblModalTotalPaid" class="text-emerald-600">₹0</span></div>
+                <div id="rowModalBalance" class="flex justify-between border-t pt-2 text-sm"><span>Balance</span><span id="lblModalOutstandingBalance" class="text-rose-600 font-black">₹0</span></div>
+                <p id="lblModalSettled" class="hidden text-emerald-700 text-[11px] pt-1">Package fully settled</p>
+                <p id="lblModalMonthlyInfo" class="hidden text-[10px] text-slate-500 font-semibold pt-1 border-t">Monthly fee: ₹<span id="lblModalMonthlyRate">0</span> / month — collect via Monthly Fee Check</p>
             </div>
             <form id="modalFeeParticularsForm" onsubmit="commitParticularsTransaction(event)" class="text-xs font-semibold space-y-3">
                 <input type="hidden" id="modalTargetStudentID">
+                <h4 class="font-black text-[10px] uppercase tracking-wider text-slate-400">Log term fee payment</h4>
                 <div><label class="block mb-1 text-slate-500">Amount (₹) *</label><input type="number" id="txAmountPaid" required class="w-full p-2.5 rounded-xl border bg-slate-50 font-bold"></div>
                 <div class="grid grid-cols-2 gap-3">
                     <div><label class="block mb-1 text-slate-500">Date *</label><input type="date" id="txPaymentDate" required class="w-full p-2 rounded-xl border bg-slate-50"></div>
@@ -536,8 +532,8 @@
                         </select>
                     </div>
                 </div>
-                <div><label class="block mb-1 text-slate-500">Remarks</label><input type="text" id="txRemarks" class="w-full p-2 rounded-xl border bg-slate-50"></div>
-                <div class="flex gap-2"><button type="button" onclick="closePaymentModal()" class="w-1/3 bg-slate-100 font-bold py-2.5 rounded-xl">Close</button><button type="submit" class="w-2/3 bg-emerald-600 text-white font-bold py-2.5 rounded-xl">Log Payment</button></div>
+                <div><label class="block mb-1 text-slate-500">Remarks (optional)</label><input type="text" id="txRemarks" class="w-full p-2 rounded-xl border bg-slate-50"></div>
+                <div class="flex gap-2"><button type="button" onclick="closePaymentModal()" class="w-1/3 bg-slate-100 font-bold py-2.5 rounded-xl">Close</button><button type="submit" class="w-2/3 bg-emerald-600 text-white font-bold py-2.5 rounded-xl">Log Term Fee</button></div>
             </form>
         </div>
     </div>
@@ -620,8 +616,7 @@ function isServicePayment(remarks, key) {
     return false;
 }
 function isTuitionPayment(remarks) {
-    const r = (remarks || "").toString();
-    return !r.includes("Van") && !r.includes("DayCare") && !r.includes("Day Care") && !r.includes("OptMonthly");
+    return isTermPayment(remarks);
 }
 function getElapsedMonthsToBill(student, periodLabel = activeSystemMonthContext) {
     let elapsed = 1;
@@ -640,8 +635,64 @@ function getElapsedMonthsToBill(student, periodLabel = activeSystemMonthContext)
     return elapsed;
 }
 function getOneTimeTuitionBilled(s) {
+    // Package / term total (excludes Van, DayCare, OptMonthly recurring)
     return (Number(s.CustomFee || s.customfee) || 0) + (Number(s.AdmissionFee || s.admissionfee) || 0) +
         (Number(s.StudentKitFee || s.studentkitfee) || 0) + (Number(s.SpareUniformFee || s.spareuniformfee) || 0);
+}
+function isTermPayment(remarks) {
+    const r = (remarks || "").toString();
+    if (!r || r.includes("Admission Record Initialized")) return false;
+    if (r.includes("Van") || r.includes("DayCare") || r.includes("Day Care") || r.includes("OptMonthly")) return false;
+    return true;
+}
+function getTermFeesPaid(sid) {
+    let total = 0;
+    getStudentPayments(sid).forEach(p => {
+        if (isTermPayment(p.Remarks || p.remarks)) total += Number(p.AmountPaid || p.amountpaid) || 0;
+    });
+    return total;
+}
+function computeIntakeServiceTotals() {
+    const sportsOn = document.getElementById("chkSportsUniform")?.checked;
+    const regUniOn = document.getElementById("chkRegularUniform")?.checked;
+    const steamOn = document.getElementById("chkSteamKit")?.checked;
+    const eduOn = document.getElementById("chkEducationKit")?.checked;
+    const sportsQty = Math.max(1, Number(document.getElementById("intakeSportsUniformQty")?.value) || 1);
+    const regQty = Math.max(1, Number(document.getElementById("intakeRegularUniformQty")?.value) || 1);
+    return {
+        sportsTotal: sportsOn ? sportsQty * (Number(document.getElementById("intakeSportsUniformRate")?.value) || 0) : 0,
+        regUniTotal: regUniOn ? regQty * (Number(document.getElementById("intakeRegularUniformRate")?.value) || 0) : 0,
+        steamFee: steamOn ? (Number(document.getElementById("intakeSteamKitFee")?.value) || 0) : 0,
+        eduFee: eduOn ? (Number(document.getElementById("intakeEducationKitFee")?.value) || 0) : 0,
+        vanFee: document.getElementById("chkFormVanOpted")?.checked ? (Number(document.getElementById("FormVanFee")?.value) || 0) : 0,
+        dayCareFee: document.getElementById("chkFormDayCareOpted")?.checked ? (Number(document.getElementById("FormDayCareFee")?.value) || 0) : 0
+    };
+}
+function getIntakePackageTotal() {
+    const isMonthly = getIntakeBillingModel() === "Monthly";
+    const svc = computeIntakeServiceTotals();
+    const optedOneTime = svc.sportsTotal + svc.regUniTotal + svc.steamFee + svc.eduFee;
+    if (isMonthly) return (Number(document.getElementById("intakeAdmissionFee")?.value) || 0) + optedOneTime;
+    return (Number(document.getElementById("intakeAnnualTuition")?.value) || 0) + optedOneTime;
+}
+function updateIntakeTotalsSummary() {
+    const isMonthly = getIntakeBillingModel() === "Monthly";
+    const total = getIntakePackageTotal();
+    const paid = Number(document.getElementById("intakePaidNowAmount")?.value) || 0;
+    const balance = Math.max(0, total - paid);
+    const setT = (id, t) => { const el = document.getElementById(id); if (el) el.innerText = t; };
+    setT("lblIntakeTotalDue", `₹${total}`);
+    setT("lblIntakePaidNow", `₹${paid}`);
+    setT("lblIntakeBalance", `₹${balance}`);
+    const balRow = document.getElementById("rowIntakeBalance");
+    if (balRow) balRow.classList.toggle("hidden", paid > 0 && balance === 0);
+    const monthlyNote = document.getElementById("lblIntakeMonthlyNote");
+    const monthlyRate = Number(document.getElementById("FormOptMonthlyFee")?.value) || 0;
+    if (monthlyNote) {
+        monthlyNote.classList.toggle("hidden", !isMonthly);
+        const rateEl = document.getElementById("lblIntakeMonthlyRate");
+        if (rateEl) rateEl.innerText = String(monthlyRate);
+    }
 }
 function getStudentReceivables(s) {
     const elapsed = getElapsedMonthsToBill(s);
@@ -775,12 +826,14 @@ function refreshIntakeAmountPanel() {
     const sportsOn = document.getElementById("chkSportsUniform")?.checked;
     const regUniOn = document.getElementById("chkRegularUniform")?.checked;
     const steamOn = document.getElementById("chkSteamKit")?.checked;
+    const eduOn = document.getElementById("chkEducationKit")?.checked;
 
     show("amtVanRow", !!vanOn);
     show("amtDayCareRow", !!dcOn);
     show("amtSportsRow", !!sportsOn);
     show("amtRegularUniformRow", !!regUniOn);
     show("amtSteamKitRow", !!steamOn);
+    show("amtEducationKitRow", !!eduOn);
     show("qtySportsUniformWrap", !!sportsOn);
     show("qtyRegularUniformWrap", !!regUniOn);
 
@@ -789,6 +842,9 @@ function refreshIntakeAmountPanel() {
     if (!sportsOn) { const el = document.getElementById("intakeSportsUniformRate"); if (el) el.value = ""; }
     if (!regUniOn) { const el = document.getElementById("intakeRegularUniformRate"); if (el) el.value = ""; }
     if (!steamOn) { const el = document.getElementById("intakeSteamKitFee"); if (el) el.value = ""; }
+    if (!eduOn) { const el = document.getElementById("intakeEducationKitFee"); if (el) el.value = ""; }
+
+    updateIntakeTotalsSummary();
 }
 
 function handleFormBillingTypeChange(type) {
@@ -800,11 +856,8 @@ function handleFormBillingTypeChange(type) {
     } else {
         const t = document.getElementById("intakeAnnualTuition");
         if (t) t.value = "";
-        // Custom Monthly one-time fees: default 0, do NOT block save if left 0/empty
-        ["intakeAdmissionFee", "intakeKitFee", "intakeUniformFee"].forEach(id => {
-            const el = document.getElementById(id);
-            if (el && el.value === "") el.value = "0";
-        });
+        const adm = document.getElementById("intakeAdmissionFee");
+        if (adm && adm.value === "") adm.value = "0";
     }
     onIntakeClassChange();
     refreshIntakeAmountPanel();
@@ -855,53 +908,29 @@ function updateEditClassFeeDefault() {
 
 function buildIntakeFeePayload() {
     const isMonthly = getIntakeBillingModel() === "Monthly";
-    const vanOn = document.getElementById("chkFormVanOpted")?.checked;
-    const dcOn = document.getElementById("chkFormDayCareOpted")?.checked;
-    const sportsOn = document.getElementById("chkSportsUniform")?.checked;
-    const regUniOn = document.getElementById("chkRegularUniform")?.checked;
-    const steamOn = document.getElementById("chkSteamKit")?.checked;
-
-    const sportsQty = Math.max(1, Number(document.getElementById("intakeSportsUniformQty")?.value) || 1);
-    const regQty = Math.max(1, Number(document.getElementById("intakeRegularUniformQty")?.value) || 1);
-    const sportsTotal = sportsOn ? sportsQty * (Number(document.getElementById("intakeSportsUniformRate")?.value) || 0) : 0;
-    const regUniTotal = regUniOn ? regQty * (Number(document.getElementById("intakeRegularUniformRate")?.value) || 0) : 0;
-    const steamFee = steamOn ? (Number(document.getElementById("intakeSteamKitFee")?.value) || 0) : 0;
-    const vanFee = vanOn ? (Number(document.getElementById("FormVanFee")?.value) || 0) : 0;
-    const dayCareFee = dcOn ? (Number(document.getElementById("FormDayCareFee")?.value) || 0) : 0;
-
+    const svc = computeIntakeServiceTotals();
     let customFee = 0, admissionFee = 0, kitFee = 0, uniformFee = 0, optMonthly = 0;
 
     if (isMonthly) {
-        // Custom Monthly main fee; Admission/Kit/Uniform may be 0 — do not block
         optMonthly = Number(document.getElementById("FormOptMonthlyFee")?.value) || 0;
         admissionFee = Number(document.getElementById("intakeAdmissionFee")?.value) || 0;
-        kitFee = (Number(document.getElementById("intakeKitFee")?.value) || 0) + steamFee;
-        uniformFee = (Number(document.getElementById("intakeUniformFee")?.value) || 0) + regUniTotal;
-        customFee = sportsTotal; // sports uniform total in CustomFee for monthly
+        kitFee = svc.steamFee + svc.eduFee;
+        uniformFee = svc.regUniTotal;
+        customFee = svc.sportsTotal;
     } else {
+        // Fee agreed + one-time services
         customFee = Number(document.getElementById("intakeAnnualTuition")?.value) || 0;
-        admissionFee = sportsTotal;
-        kitFee = steamFee;
-        uniformFee = regUniTotal;
+        admissionFee = svc.sportsTotal;
+        kitFee = svc.steamFee + svc.eduFee;
+        uniformFee = svc.regUniTotal;
         optMonthly = 0;
     }
 
-    return { isMonthly, customFee, admissionFee, kitFee, uniformFee, vanFee, dayCareFee, optMonthly };
-}
-
-function paidNowRemarkTag(forKey) {
-    const map = {
-        Tuition: "Tuition Admission Payment",
-        Van: "Van Settlement",
-        DayCare: "DayCare Settlement",
-        SportsUniform: "SportsUniform Admission",
-        RegularUniform: "RegularUniform Admission",
-        SteamKit: "SteamKit Admission",
-        Admission: "Admission Fee Payment",
-        Kit: "Kit Fee Payment",
-        Uniform: "Uniform Fee Payment"
+    return {
+        isMonthly, customFee, admissionFee, kitFee, uniformFee,
+        vanFee: svc.vanFee, dayCareFee: svc.dayCareFee, optMonthly,
+        packageTotal: getIntakePackageTotal()
     };
-    return map[forKey] || "Admission Payment";
 }
 
 async function refreshApplicationState(showUserAlert) {
@@ -956,15 +985,14 @@ function renderStudentCards() {
             : `<div class="w-full h-full ${color} text-white font-black flex items-center justify-center text-xl uppercase">${name.charAt(0)}</div>`;
         const guard = s.GuardianName || s.guardianname || "N/A";
         const phone = s.Contact || s.contact || "N/A";
-        const action = isRegular
-            ? `<button type="button" onclick="openPaymentModal('${sid}')" class="bg-indigo-50 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-[11px]">Fee Particulars</button>`
-            : `<span class="text-[10px] bg-slate-100 px-2 py-1 rounded text-slate-400 font-bold">Monthly</span>`;
+        const action = `<button type="button" onclick="openPaymentModal('${sid}')" class="bg-indigo-50 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-[11px]">Fee Particulars</button>`;
         grid.insertAdjacentHTML("beforeend", `
             <div class="bg-white rounded-2xl p-4 border shadow-sm">
                 <div class="flex items-start gap-3">
                     <div class="w-14 h-14 rounded-xl overflow-hidden border flex-shrink-0">${img}</div>
                     <div class="min-w-0 flex-1">
                         <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded uppercase">${s.Class === "DayCare" ? "DayCare" : s.Class}</span>
+                        ${!isRegular ? '<span class="ml-1 bg-slate-100 text-slate-500 text-[9px] font-black px-2 py-0.5 rounded uppercase">Monthly</span>' : ''}
                         <h4 class="font-black text-sm mt-1 truncate">${name}</h4>
                         <p class="text-[11px] text-slate-600 font-bold mt-1">Guardian: ${guard}</p>
                         <p class="text-[11px] text-indigo-700 font-mono font-bold">${phone}</p>
@@ -1097,17 +1125,39 @@ function renderFrontPageReminders() {
 function openPaymentModal(sid) {
     const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
     if (!s) return;
-    const logs = getStudentPayments(sid);
+    const isMonthly = (s.BillingModel === "Monthly" || s.billingmodel === "Monthly");
     const totalBilled = getOneTimeTuitionBilled(s);
-    let totalPaid = 0;
-    logs.forEach(p => { if (isTuitionPayment(p.Remarks || p.remarks)) totalPaid += Number(p.AmountPaid || p.amountpaid) || 0; });
+    const totalPaid = getTermFeesPaid(sid);
     const outstanding = Math.max(0, totalBilled - totalPaid);
+    const monthlyRate = Number(s.OptMonthlyFee || s.optmonthlyfee) || 0;
+
     document.getElementById("modalTargetStudentID").value = sid;
     document.getElementById("modalStudentTitleName").innerText = s.StudentName || "Fee Particulars";
-    document.getElementById("modalStudentCohortSubtitle").innerText = `${s.Class || ""} Balance`;
+    document.getElementById("modalStudentCohortSubtitle").innerText = `${s.Class || ""} · ${isMonthly ? "Custom Monthly" : "Regular Base"}`;
     document.getElementById("lblModalTotalBilled").innerText = `₹${totalBilled}`;
     document.getElementById("lblModalTotalPaid").innerText = `₹${totalPaid}`;
     document.getElementById("lblModalOutstandingBalance").innerText = `₹${outstanding}`;
+
+    const balRow = document.getElementById("rowModalBalance");
+    const settled = document.getElementById("lblModalSettled");
+    if (outstanding <= 0 && totalBilled > 0) {
+        if (balRow) balRow.classList.add("hidden");
+        if (settled) settled.classList.remove("hidden");
+    } else if (outstanding <= 0 && totalBilled === 0) {
+        if (balRow) balRow.classList.add("hidden");
+        if (settled) settled.classList.add("hidden");
+    } else {
+        if (balRow) balRow.classList.remove("hidden");
+        if (settled) settled.classList.add("hidden");
+    }
+
+    const monthlyInfo = document.getElementById("lblModalMonthlyInfo");
+    const monthlyRateEl = document.getElementById("lblModalMonthlyRate");
+    if (monthlyInfo) {
+        monthlyInfo.classList.toggle("hidden", !isMonthly);
+        if (monthlyRateEl) monthlyRateEl.innerText = String(monthlyRate);
+    }
+
     document.getElementById("txAmountPaid").value = outstanding > 0 ? outstanding : "";
     document.getElementById("txPaymentDate").value = new Date().toISOString().substring(0, 10);
     document.getElementById("txPaymentMode").value = "Cash";
@@ -1121,11 +1171,13 @@ async function commitParticularsTransaction(e) {
     const sid = document.getElementById("modalTargetStudentID").value;
     const amount = Number(document.getElementById("txAmountPaid").value) || 0;
     if (amount <= 0) { alert("Enter a valid amount."); return; }
+    const note = document.getElementById("txRemarks").value.trim();
+    const remark = "Term Fee" + (note ? " — " + note : "");
     const row = ["PAY-" + sid + "-" + Date.now(), sid, activeSystemMonthContext, amount,
         document.getElementById("txPaymentDate").value, document.getElementById("txPaymentMode").value,
-        document.getElementById("txRemarks").value.trim() || "Tuition Installment", "Active", ""];
+        remark, "Active", ""];
     await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row }) });
-    alert("Payment logged!");
+    alert("Term fee logged!");
     closePaymentModal();
     await refreshApplicationState(false);
 }
@@ -1423,9 +1475,8 @@ async function handleStudentSubmission(event) {
         const paidNow = Number(document.getElementById("intakePaidNowAmount")?.value) || 0;
         if (paidNow > 0) {
             const mode = document.getElementById("intakePaidNowMode")?.value || "Cash";
-            const forKey = document.getElementById("intakePaidNowFor")?.value || "Tuition";
             const note = (document.getElementById("intakePaidNowRemarks")?.value || "").trim();
-            const remark = paidNowRemarkTag(forKey) + (note ? " — " + note : "");
+            const remark = "1st Term Fee" + (note ? " — " + note : "");
             const payRow = ["PAY-" + sid + "-ADM-" + Date.now(), sid, activeSystemMonthContext, paidNow,
                 new Date().toISOString().substring(0, 10), mode, remark, "Active", ""];
             await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: payRow }) });
