@@ -502,27 +502,27 @@
         </div>
     </div>
 
-    <!-- Payment Modal -->
+    <!-- Update Fee Modal -->
     <div id="paymentModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-[1.5rem] max-w-md w-full p-5 shadow-2xl space-y-4 border max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
                 <div>
-                    <h3 id="modalStudentTitleName" class="font-black text-indigo-950 text-sm">Fee Particulars</h3>
+                    <h3 id="modalStudentTitleName" class="font-black text-indigo-950 text-sm">Update Fee</h3>
                     <p id="modalStudentCohortSubtitle" class="text-[10px] font-bold text-amber-600 uppercase">Balance</p>
                 </div>
                 <button type="button" onclick="closePaymentModal()" class="text-2xl text-slate-400 font-bold">&times;</button>
             </div>
             <div class="bg-slate-50 p-4 rounded-2xl border space-y-2 text-xs font-bold">
-                <div class="flex justify-between"><span>Package total</span><span id="lblModalTotalBilled">₹0</span></div>
-                <div class="flex justify-between"><span>Term fees paid</span><span id="lblModalTotalPaid" class="text-emerald-600">₹0</span></div>
-                <div id="rowModalBalance" class="flex justify-between border-t pt-2 text-sm"><span>Balance</span><span id="lblModalOutstandingBalance" class="text-rose-600 font-black">₹0</span></div>
-                <p id="lblModalSettled" class="hidden text-emerald-700 text-[11px] pt-1">Package fully settled</p>
-                <p id="lblModalMonthlyInfo" class="hidden text-[10px] text-slate-500 font-semibold pt-1 border-t">Monthly fee: ₹<span id="lblModalMonthlyRate">0</span> / month — collect via Monthly Fee Check</p>
+                <div class="flex justify-between"><span id="lblModalPackageLabel">Package total</span><span id="lblModalTotalBilled">₹0</span></div>
+                <div class="flex justify-between"><span id="lblModalPaidLabel">Paid so far</span><span id="lblModalTotalPaid" class="text-emerald-600">₹0</span></div>
+                <div id="rowModalBalance" class="flex justify-between border-t pt-2 text-sm"><span>Pending balance</span><span id="lblModalOutstandingBalance" class="text-rose-600 font-black">₹0</span></div>
+                <p id="lblModalSettled" class="hidden text-emerald-700 text-[11px] font-black pt-1">Settled</p>
+                <p id="lblModalMonthlyInfo" class="hidden text-[10px] text-slate-500 font-semibold pt-1 border-t">Custom Monthly ₹<span id="lblModalMonthlyRate">0</span> / month — collect via Monthly Fee Check</p>
             </div>
             <form id="modalFeeParticularsForm" onsubmit="commitParticularsTransaction(event)" class="text-xs font-semibold space-y-3">
                 <input type="hidden" id="modalTargetStudentID">
-                <h4 class="font-black text-[10px] uppercase tracking-wider text-slate-400">Log term fee payment</h4>
-                <div><label class="block mb-1 text-slate-500">Amount (₹) *</label><input type="number" id="txAmountPaid" required class="w-full p-2.5 rounded-xl border bg-slate-50 font-bold"></div>
+                <h4 id="lblModalLogHeading" class="font-black text-[10px] uppercase tracking-wider text-slate-400">Log next term payment</h4>
+                <div><label class="block mb-1 text-slate-500">Amount (₹) *</label><input type="number" id="txAmountPaid" required min="1" class="w-full p-2.5 rounded-xl border bg-slate-50 font-bold"></div>
                 <div class="grid grid-cols-2 gap-3">
                     <div><label class="block mb-1 text-slate-500">Date *</label><input type="date" id="txPaymentDate" required class="w-full p-2 rounded-xl border bg-slate-50"></div>
                     <div>
@@ -533,8 +533,34 @@
                     </div>
                 </div>
                 <div><label class="block mb-1 text-slate-500">Remarks (optional)</label><input type="text" id="txRemarks" class="w-full p-2 rounded-xl border bg-slate-50"></div>
-                <div class="flex gap-2"><button type="button" onclick="closePaymentModal()" class="w-1/3 bg-slate-100 font-bold py-2.5 rounded-xl">Close</button><button type="submit" class="w-2/3 bg-emerald-600 text-white font-bold py-2.5 rounded-xl">Log Term Fee</button></div>
+                <div class="flex gap-2"><button type="button" onclick="closePaymentModal()" class="w-1/3 bg-slate-100 font-bold py-2.5 rounded-xl">Close</button><button type="submit" id="btnModalLogFee" class="w-2/3 bg-emerald-600 text-white font-bold py-2.5 rounded-xl">Update Fee</button></div>
             </form>
+        </div>
+    </div>
+
+    <!-- Term Payments History Modal -->
+    <div id="termPaymentsModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-[1.5rem] max-w-md w-full p-5 shadow-2xl space-y-4 border max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3">
+                <div>
+                    <h3 id="termPayTitleName" class="font-black text-indigo-950 text-sm">Term payments</h3>
+                    <p id="termPaySubtitle" class="text-[10px] font-bold text-amber-600 uppercase">History</p>
+                </div>
+                <button type="button" onclick="closeTermPaymentsModal()" class="text-2xl text-slate-400 font-bold">&times;</button>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-2xl border text-xs font-bold flex justify-between items-center">
+                <span>Package status</span>
+                <span id="termPayPackageStatus" class="text-rose-600">Pending ₹0</span>
+            </div>
+            <div id="termPayPackageSection" class="space-y-2">
+                <h4 class="font-black text-[10px] uppercase tracking-wider text-slate-400">Package / term payments</h4>
+                <div id="termPayPackageList" class="space-y-2"></div>
+            </div>
+            <div id="termPayMonthlySection" class="space-y-2 hidden">
+                <h4 class="font-black text-[10px] uppercase tracking-wider text-slate-400">Month-wise payments</h4>
+                <div id="termPayMonthlyList" class="space-y-2"></div>
+            </div>
+            <button type="button" onclick="closeTermPaymentsModal()" class="w-full bg-slate-100 font-bold py-2.5 rounded-xl text-xs">Close</button>
         </div>
     </div>
 
@@ -552,7 +578,14 @@
 
 <script>
 const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyaykhdrvyBUCNwruy0IGGpDK4zG14QaoHG1cYurVDww6qMsBIRuIfg7NxygrE6KLha8w/exec";
-let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "2026";
+// Must match SCRIPT_PASSWORD in Google Apps Script (original deploy key)
+const DEFAULT_GATE_PASSPHRASE = "ApexSullurpeta2026!";
+let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || DEFAULT_GATE_PASSPHRASE;
+// If Security was set to a short test value that breaks Sync, restore the working key
+if (CURRENT_GATE_PASSPHRASE === "2026" || CURRENT_GATE_PASSPHRASE === "2026!") {
+    CURRENT_GATE_PASSPHRASE = DEFAULT_GATE_PASSPHRASE;
+    localStorage.setItem("LM_PASSPHRASE", DEFAULT_GATE_PASSPHRASE);
+}
 let globalAppState = { students: [], payments: [], expenses: [], events: [], standardFees: { DR:41000, EW:42000, RTF1:43000, RTF2:44000 } };
 let currentActiveCohortFilter = "ALL";
 let currentExpenseTimeframeContext = "monthly";
@@ -968,7 +1001,8 @@ async function refreshApplicationState(showUserAlert) {
 
     try {
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 25000);
+        // Apps Script cold starts often take 30–70s; keep headroom
+        const timer = setTimeout(() => controller.abort(), 90000);
         const response = await fetch(
             `${APP_SHEET_API_URL}?action=getData&password=${encodeURIComponent(CURRENT_GATE_PASSPHRASE)}`,
             { signal: controller.signal, cache: "no-store" }
@@ -1002,11 +1036,16 @@ async function refreshApplicationState(showUserAlert) {
                 setTimeout(() => { if (syncBtn && !isAppSyncing) syncBtn.innerText = "Sync"; }, 800);
             }
         } else if (showUserAlert) {
-            alert("Sync returned no data.");
+            const apiErr = (result && (result.error || result.message)) ? String(result.error || result.message) : "";
+            if (/unauthor/i.test(apiErr)) {
+                alert("Sync failed: Google Apps Script still rejects password \"" + CURRENT_GATE_PASSPHRASE + "\".\n\nFix: Sheet → Extensions → Apps Script → set SCRIPT_PASSWORD = \"" + CURRENT_GATE_PASSPHRASE + "\" (see Code.gs in project folder) → Deploy → Manage deployments → Edit → New version → Deploy.\n\nChanging only the webpage Security passcode is not enough.");
+            } else {
+                alert("Sync failed" + (apiErr ? ": " + apiErr : " (no data)."));
+            }
         }
     } catch (err) {
         console.error("Database connection lost:", err);
-        if (showUserAlert) alert(err.name === "AbortError" ? "Sync timed out. Try again." : "Sync failed. Check connection.");
+        if (showUserAlert) alert(err.name === "AbortError" ? "Sync timed out after 90s. Redeploy Apps Script (New version) and try again." : "Sync failed. Check connection.");
     } finally {
         isAppSyncing = false;
         if (syncBtn) {
@@ -1110,6 +1149,45 @@ function renderCohortHeadcounts() {
     updateTileBadge("tileBadgeRosters", list.length);
 }
 
+function getPackageBalance(s) {
+    const sid = s.StudentID || s.studentid;
+    const total = getOneTimeTuitionBilled(s);
+    const paid = getTermFeesPaid(sid);
+    return { total, paid, balance: Math.max(0, total - paid) };
+}
+
+function formatPackageStatusChip(s) {
+    const { total, balance } = getPackageBalance(s);
+    if (total <= 0) return '<span class="text-[10px] font-bold text-slate-400">No package</span>';
+    if (balance <= 0) return '<span class="bg-emerald-50 text-emerald-700 text-[10px] font-black px-2 py-1 rounded-lg">Settled</span>';
+    return `<span class="bg-rose-50 text-rose-700 text-[10px] font-black px-2 py-1 rounded-lg">Pending ₹${balance}</span>`;
+}
+
+function isMeaningfulPayment(p) {
+    const amt = Number(p.AmountPaid || p.amountpaid) || 0;
+    const r = (p.Remarks || p.remarks || "").toString();
+    if (r.includes("Admission Record Initialized") || r.includes("Month Meta")) return false;
+    return amt > 0;
+}
+
+function isMonthlyServicePayment(remarks) {
+    const r = (remarks || "").toString();
+    return r.includes("OptMonthly") || r.includes("Van") || r.includes("DayCare") || r.includes("Day Care");
+}
+
+function paymentHistoryRowHtml(p) {
+    const amt = Number(p.AmountPaid || p.amountpaid) || 0;
+    const date = formatToInputDate(p.PaymentDate || p.paymentdate) || "—";
+    const month = (p.MonthYear || p.monthyear || "").toString() || "—";
+    const mode = (p.PaymentMode || p.paymentmode || "—").toString();
+    const rem = (p.Remarks || p.remarks || "").toString();
+    return `<div class="bg-slate-50 border rounded-xl p-3 text-[11px]">
+        <div class="flex justify-between font-black"><span>₹${amt}</span><span class="text-slate-500 font-bold">${date}</span></div>
+        <div class="flex justify-between mt-1 text-slate-600 font-semibold"><span>${month}</span><span>${mode}</span></div>
+        <p class="mt-1 text-slate-500 font-medium break-words">${rem || "—"}</p>
+    </div>`;
+}
+
 function renderStudentCards() {
     const grid = document.getElementById("studentCardsGrid");
     if (!grid) return;
@@ -1130,20 +1208,26 @@ function renderStudentCards() {
             : `<div class="w-full h-full ${color} text-white font-black flex items-center justify-center text-xl uppercase">${name.charAt(0)}</div>`;
         const guard = s.GuardianName || s.guardianname || "N/A";
         const phone = s.Contact || s.contact || "N/A";
-        const action = `<button type="button" onclick="openPaymentModal('${sid}')" class="bg-indigo-50 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-[11px]">Fee Particulars</button>`;
+        const statusChip = formatPackageStatusChip(s);
         grid.insertAdjacentHTML("beforeend", `
             <div class="bg-white rounded-2xl p-4 border shadow-sm">
                 <div class="flex items-start gap-3">
                     <div class="w-14 h-14 rounded-xl overflow-hidden border flex-shrink-0">${img}</div>
                     <div class="min-w-0 flex-1">
-                        <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded uppercase">${s.Class === "DayCare" ? "DayCare" : s.Class}</span>
-                        ${!isRegular ? '<span class="ml-1 bg-slate-100 text-slate-500 text-[9px] font-black px-2 py-0.5 rounded uppercase">Monthly</span>' : ''}
+                        <div class="flex flex-wrap items-center gap-1">
+                            <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded uppercase">${s.Class === "DayCare" ? "DayCare" : s.Class}</span>
+                            ${!isRegular ? '<span class="bg-slate-100 text-slate-500 text-[9px] font-black px-2 py-0.5 rounded uppercase">Monthly</span>' : ''}
+                            ${statusChip}
+                        </div>
                         <h4 class="font-black text-sm mt-1 truncate">${name}</h4>
                         <p class="text-[11px] text-slate-600 font-bold mt-1">Guardian: ${guard}</p>
                         <p class="text-[11px] text-indigo-700 font-mono font-bold">${phone}</p>
                     </div>
                 </div>
-                <div class="mt-3 pt-2 border-t flex justify-end">${action}</div>
+                <div class="mt-3 pt-2 border-t flex gap-2">
+                    <button type="button" onclick="openPaymentModal('${sid}')" class="flex-1 bg-indigo-50 text-indigo-700 font-bold px-2 py-1.5 rounded-xl text-[11px]">Update Fee</button>
+                    <button type="button" onclick="openTermPaymentsModal('${sid}')" class="flex-1 bg-slate-100 text-slate-700 font-bold px-2 py-1.5 rounded-xl text-[11px]">Term payments</button>
+                </div>
             </div>`);
     });
 }
@@ -1271,29 +1355,43 @@ function openPaymentModal(sid) {
     const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
     if (!s) return;
     const isMonthly = (s.BillingModel === "Monthly" || s.billingmodel === "Monthly");
-    const totalBilled = getOneTimeTuitionBilled(s);
-    const totalPaid = getTermFeesPaid(sid);
-    const outstanding = Math.max(0, totalBilled - totalPaid);
+    const { total: totalBilled, paid: totalPaid, balance: outstanding } = getPackageBalance(s);
     const monthlyRate = Number(s.OptMonthlyFee || s.optmonthlyfee) || 0;
 
     document.getElementById("modalTargetStudentID").value = sid;
-    document.getElementById("modalStudentTitleName").innerText = s.StudentName || "Fee Particulars";
+    document.getElementById("modalStudentTitleName").innerText = s.StudentName || "Update Fee";
     document.getElementById("modalStudentCohortSubtitle").innerText = `${s.Class || ""} · ${isMonthly ? "Custom Monthly" : "Regular Base"}`;
+    document.getElementById("lblModalPackageLabel").innerText = isMonthly ? "Initial package" : "Package total";
+    document.getElementById("lblModalPaidLabel").innerText = isMonthly ? "Initial paid" : "Term fees paid";
     document.getElementById("lblModalTotalBilled").innerText = `₹${totalBilled}`;
     document.getElementById("lblModalTotalPaid").innerText = `₹${totalPaid}`;
     document.getElementById("lblModalOutstandingBalance").innerText = `₹${outstanding}`;
 
     const balRow = document.getElementById("rowModalBalance");
     const settled = document.getElementById("lblModalSettled");
-    if (outstanding <= 0 && totalBilled > 0) {
+    const form = document.getElementById("modalFeeParticularsForm");
+    const isSettled = outstanding <= 0 && totalBilled > 0;
+
+    if (isSettled) {
         if (balRow) balRow.classList.add("hidden");
-        if (settled) settled.classList.remove("hidden");
-    } else if (outstanding <= 0 && totalBilled === 0) {
+        if (settled) { settled.classList.remove("hidden"); settled.innerText = "Settled"; }
+        if (form) form.classList.add("hidden");
+    } else if (totalBilled <= 0) {
         if (balRow) balRow.classList.add("hidden");
-        if (settled) settled.classList.add("hidden");
+        if (settled) { settled.classList.remove("hidden"); settled.innerText = "No package amount set"; }
+        if (form) form.classList.add("hidden");
     } else {
         if (balRow) balRow.classList.remove("hidden");
-        if (settled) settled.classList.add("hidden");
+        if (settled) { settled.classList.add("hidden"); settled.innerText = "Settled"; }
+        if (form) form.classList.remove("hidden");
+        document.getElementById("lblModalLogHeading").innerText = isMonthly
+            ? "Update pending initial balance"
+            : "Log next term payment (against package)";
+        document.getElementById("btnModalLogFee").innerText = isMonthly ? "Update Initial Balance" : "Update Term Fee";
+        document.getElementById("txAmountPaid").value = outstanding > 0 ? outstanding : "";
+        document.getElementById("txPaymentDate").value = new Date().toISOString().substring(0, 10);
+        document.getElementById("txPaymentMode").value = "Cash";
+        document.getElementById("txRemarks").value = "";
     }
 
     const monthlyInfo = document.getElementById("lblModalMonthlyInfo");
@@ -1303,17 +1401,66 @@ function openPaymentModal(sid) {
         if (monthlyRateEl) monthlyRateEl.innerText = String(monthlyRate);
     }
 
-    document.getElementById("txAmountPaid").value = outstanding > 0 ? outstanding : "";
-    document.getElementById("txPaymentDate").value = new Date().toISOString().substring(0, 10);
-    document.getElementById("txPaymentMode").value = "Cash";
-    document.getElementById("txRemarks").value = "";
     document.getElementById("paymentModalOverlay").classList.remove("hidden");
 }
 function closePaymentModal() { document.getElementById("paymentModalOverlay").classList.add("hidden"); }
 
+function openTermPaymentsModal(sid) {
+    const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+    if (!s) return;
+    const isMonthly = (s.BillingModel === "Monthly" || s.billingmodel === "Monthly");
+    const { total, balance } = getPackageBalance(s);
+    const logs = getStudentPayments(sid).filter(isMeaningfulPayment);
+
+    document.getElementById("termPayTitleName").innerText = s.StudentName || "Term payments";
+    document.getElementById("termPaySubtitle").innerText = `${s.Class || ""} · ${isMonthly ? "Custom Monthly" : "Regular Base"}`;
+    const statusEl = document.getElementById("termPayPackageStatus");
+    if (total <= 0) {
+        statusEl.innerText = "No package";
+        statusEl.className = "text-slate-500";
+    } else if (balance <= 0) {
+        statusEl.innerText = "Settled";
+        statusEl.className = "text-emerald-700";
+    } else {
+        statusEl.innerText = `Pending ₹${balance}`;
+        statusEl.className = "text-rose-600";
+    }
+
+    const packagePays = logs.filter(p => isTermPayment(p.Remarks || p.remarks))
+        .sort((a, b) => String(b.PaymentDate || b.paymentdate || "").localeCompare(String(a.PaymentDate || a.paymentdate || "")));
+    const pkgList = document.getElementById("termPayPackageList");
+    pkgList.innerHTML = packagePays.length
+        ? packagePays.map(paymentHistoryRowHtml).join("")
+        : '<p class="text-[11px] text-slate-400">No package / term payments yet.</p>';
+
+    const monthlySec = document.getElementById("termPayMonthlySection");
+    const monthlyList = document.getElementById("termPayMonthlyList");
+    if (isMonthly) {
+        monthlySec.classList.remove("hidden");
+        const monthlyPays = logs.filter(p => isMonthlyServicePayment(p.Remarks || p.remarks))
+            .sort((a, b) => {
+                const ma = String(a.MonthYear || a.monthyear || "");
+                const mb = String(b.MonthYear || b.monthyear || "");
+                if (ma !== mb) return mb.localeCompare(ma);
+                return String(b.PaymentDate || b.paymentdate || "").localeCompare(String(a.PaymentDate || a.paymentdate || ""));
+            });
+        monthlyList.innerHTML = monthlyPays.length
+            ? monthlyPays.map(paymentHistoryRowHtml).join("")
+            : '<p class="text-[11px] text-slate-400">No month-wise payments yet.</p>';
+    } else {
+        monthlySec.classList.add("hidden");
+        monthlyList.innerHTML = "";
+    }
+
+    document.getElementById("termPaymentsModalOverlay").classList.remove("hidden");
+}
+function closeTermPaymentsModal() { document.getElementById("termPaymentsModalOverlay").classList.add("hidden"); }
+
 async function commitParticularsTransaction(e) {
     e.preventDefault();
     const sid = document.getElementById("modalTargetStudentID").value;
+    const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+    const isMonthly = s && (s.BillingModel === "Monthly" || s.billingmodel === "Monthly");
     const amount = Number(document.getElementById("txAmountPaid").value) || 0;
     if (amount <= 0) { alert("Enter a valid amount."); return; }
     const note = document.getElementById("txRemarks").value.trim();
@@ -1322,7 +1469,7 @@ async function commitParticularsTransaction(e) {
         document.getElementById("txPaymentDate").value, document.getElementById("txPaymentMode").value,
         remark, "Active", ""];
     await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row }) });
-    alert("Term fee logged!");
+    alert(isMonthly ? "Initial balance payment logged!" : "Term fee logged!");
     closePaymentModal();
     await refreshApplicationState(false);
 }
