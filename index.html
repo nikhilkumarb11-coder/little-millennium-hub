@@ -1388,7 +1388,7 @@ function paymentHistoryRowHtml(p) {
 }
 
 function formatReceiptMoney(n) {
-    return "₹" + Number(n || 0).toLocaleString("en-IN") + "/-";
+    return "Rs. " + Number(n || 0).toLocaleString("en-IN") + "/-";
 }
 
 function formatReceiptDate(dateVal) {
@@ -1402,21 +1402,25 @@ function formatReceiptDate(dateVal) {
 }
 
 function receiptDivider() {
-    return "====================";
+    return "==============================";
 }
 
 function buildFeeReceiptText(data) {
-    // Logo is rendered separately in preview/PDF; body starts with campus line
+    // Preview text (logo shown separately above). Keep monospace-friendly layout.
+    const width = 32;
     const lines = [];
     lines.push("Little Millennium Preschool-Sullurpeta");
     lines.push(formatReceiptDate(data.date));
     lines.push(receiptDivider());
-    lines.push(`${data.serial || 1}  ${data.studentName || ""}  ${data.className || ""}`);
+    const leftStu = `${data.serial || 1}  ${data.studentName || ""}`.trim();
+    const rightStu = String(data.className || "");
+    const gap = Math.max(1, width - leftStu.length - rightStu.length);
+    lines.push(leftStu + " ".repeat(gap) + rightStu);
     lines.push(receiptDivider());
     (data.items || []).forEach(it => {
         const label = (it.label || "").toString();
         const amt = formatReceiptMoney(it.amount);
-        const pad = Math.max(1, 28 - label.length - amt.length);
+        const pad = Math.max(1, width - label.length - amt.length);
         lines.push(label + " ".repeat(pad) + amt);
     });
     if (data.mode) lines.push(`Mode: ${data.mode}`);
@@ -1457,48 +1461,100 @@ function ensureLmLogoDataUrl() {
     });
 }
 
-async function downloadReceiptPdf(text, payId, studentName) {
+async function downloadReceiptPdf(receiptData, payId, studentName) {
+    const data = (receiptData && receiptData.data) ? receiptData.data : (receiptData || {});
     const JsPDF = window.jspdf && window.jspdf.jsPDF;
     if (!JsPDF) {
-        // Fallback if CDN blocked
-        downloadReceiptTextFallback(text, payId, studentName);
+        downloadReceiptTextFallback(buildFeeReceiptText(data), payId, studentName || data.studentName);
         return;
     }
-    const doc = new JsPDF({ unit: "mm", format: [80, 140], hotfixes: ["px_scaling"] });
-    const pageW = doc.internal.pageSize.getWidth();
-    let y = 6;
+
+    const pageW = 80;
+    const margin = 6;
+    const leftX = margin;
+    const rightX = pageW - margin;
+    const midX = pageW / 2;
+    const itemCount = (data.items || []).length;
+    const pageH = Math.max(130, 70 + itemCount * 6 + (data.balanceLabel != null ? 18 : 8) + (data.mode ? 6 : 0) + (data.note ? 6 : 0));
+    const doc = new JsPDF({ unit: "mm", format: [pageW, pageH] });
+    let y = 5;
+
+    const drawDoubleLine = () => {
+        doc.setDrawColor(40);
+        doc.setLineWidth(0.25);
+        doc.line(leftX, y, rightX, y);
+        y += 0.9;
+        doc.line(leftX, y, rightX, y);
+        y += 4;
+    };
 
     const logoData = await ensureLmLogoDataUrl();
     if (logoData) {
-        const logoW = 52;
-        const logoH = 18;
+        const logoW = 48;
+        const logoH = 17;
         doc.addImage(logoData, "PNG", (pageW - logoW) / 2, y, logoW, logoH);
         y += logoH + 3;
     } else {
         doc.setFont("helvetica", "bold");
         doc.setFontSize(11);
-        doc.text("Little Millennium", pageW / 2, y + 4, { align: "center" });
-        doc.setFontSize(7);
-        doc.text("THE FIRST BIG STEP", pageW / 2, y + 8, { align: "center" });
-        y += 12;
+        doc.text("Little Millennium", midX, y + 3, { align: "center" });
+        doc.setFontSize(6.5);
+        doc.setFont("helvetica", "normal");
+        doc.text("THE FIRST BIG STEP", midX, y + 7, { align: "center" });
+        y += 11;
     }
 
-    doc.setFont("courier", "normal");
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.text("Little Millennium Preschool-Sullurpeta", midX, y, { align: "center" });
+    y += 4.5;
     doc.setFontSize(8);
-    const lines = (text || "").split("\n");
-    lines.forEach(line => {
-        if (y > doc.internal.pageSize.getHeight() - 8) {
-            doc.addPage([80, 140]);
-            y = 8;
-        }
-        // Center divider / thank you / campus header-ish short lines
-        const centered = line.startsWith("====") || line === "Thank you!" || line.startsWith("Little Millennium Preschool");
-        if (centered) doc.text(line, pageW / 2, y, { align: "center" });
-        else doc.text(line, 6, y);
-        y += 4.2;
-    });
+    doc.text(formatReceiptDate(data.date), midX, y, { align: "center" });
+    y += 4;
+    drawDoubleLine();
 
-    const safeName = (studentName || "student").toString().replace(/[^\w\-]+/g, "_").slice(0, 40);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    const stuLeft = `${data.serial || 1}  ${data.studentName || ""}`.trim();
+    doc.text(stuLeft, leftX, y);
+    doc.text(String(data.className || ""), rightX, y, { align: "right" });
+    y += 4.5;
+    drawDoubleLine();
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    (data.items || []).forEach(it => {
+        doc.text(String(it.label || ""), leftX, y);
+        doc.text(formatReceiptMoney(it.amount), rightX, y, { align: "right" });
+        y += 5.2;
+    });
+    if (data.mode) {
+        doc.setFontSize(8);
+        doc.text("Mode: " + data.mode, leftX, y);
+        y += 5;
+    }
+    if (data.note) {
+        doc.setFontSize(7.5);
+        const noteLines = doc.splitTextToSize("Note: " + data.note, pageW - margin * 2);
+        doc.text(noteLines, leftX, y);
+        y += noteLines.length * 4 + 1;
+    }
+
+    drawDoubleLine();
+    doc.setFontSize(8);
+    if (data.balanceLabel != null) {
+        const bal = `${data.balanceLabel}- ${formatReceiptMoney(data.balanceAmount)}`;
+        const balLines = doc.splitTextToSize(bal, pageW - margin * 2);
+        doc.text(balLines, midX, y, { align: "center" });
+        y += balLines.length * 4.2 + 1;
+    }
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text("Thank you!", midX, y, { align: "center" });
+    y += 4;
+    drawDoubleLine();
+
+    const safeName = (studentName || data.studentName || "student").toString().replace(/[^\w\-]+/g, "_").slice(0, 40);
     const filename = `LM_Receipt_${safeName}_${(payId || Date.now()).toString().slice(-8)}.pdf`;
     doc.save(filename);
 }
@@ -1517,17 +1573,21 @@ function downloadReceiptTextFallback(text, payId, studentName) {
     URL.revokeObjectURL(url);
 }
 
-function downloadReceiptText(text, payId, studentName) {
-    // Prefer PDF; keep name for older call sites
-    return downloadReceiptPdf(text, payId, studentName);
+function downloadReceiptText(receiptOrText, payId, studentName) {
+    if (receiptOrText && typeof receiptOrText === "object") {
+        return downloadReceiptPdf(receiptOrText, payId, studentName);
+    }
+    return downloadReceiptPdf({ data: currentReceiptData || {} }, payId, studentName);
 }
 
 let currentReceiptPayId = "";
 let currentReceiptText = "";
+let currentReceiptData = null;
 
-function openReceiptModal(payId, text) {
+function openReceiptModal(payId, text, data) {
     currentReceiptPayId = payId || "";
     currentReceiptText = text || "";
+    currentReceiptData = data || null;
     document.getElementById("receiptPreviewBody").innerText = currentReceiptText;
     document.getElementById("receiptModalOverlay").classList.remove("hidden");
     ensureLmLogoDataUrl();
@@ -1538,20 +1598,27 @@ function closeReceiptModal() {
 }
 
 async function downloadCurrentReceipt() {
-    if (!currentReceiptText) return;
     const store = getReceiptStore()[currentReceiptPayId] || {};
-    await downloadReceiptPdf(currentReceiptText, currentReceiptPayId, store.studentName || "");
+    const data = currentReceiptData || store.data;
+    if (data) {
+        await downloadReceiptPdf({ data }, currentReceiptPayId, store.studentName || data.studentName || "");
+        return;
+    }
+    if (!currentReceiptText) return;
+    downloadReceiptTextFallback(currentReceiptText, currentReceiptPayId, store.studentName || "");
 }
 
 function viewPaymentReceipt(payId) {
     const store = getReceiptStore();
-    if (store[payId] && store[payId].text) {
-        openReceiptModal(payId, store[payId].text);
+    if (store[payId] && (store[payId].data || store[payId].text)) {
+        const rec = store[payId];
+        const text = rec.text || (rec.data ? buildFeeReceiptText(rec.data) : "");
+        openReceiptModal(payId, text, rec.data || null);
         return;
     }
     const built = buildReceiptForPayment(payId);
-    saveReceiptRecord(payId, { text: built.text, ...built.meta, savedAt: Date.now() });
-    openReceiptModal(payId, built.text);
+    saveReceiptRecord(payId, { text: built.text, data: built.data, ...built.meta, savedAt: Date.now() });
+    openReceiptModal(payId, built.text, built.data);
 }
 
 function issueFeeReceipt(payId, extras) {
@@ -1569,9 +1636,9 @@ function issueFeeReceipt(payId, extras) {
         });
     }
     const built = buildReceiptForPayment(payId, extras || {});
-    saveReceiptRecord(payId, { text: built.text, ...built.meta, savedAt: Date.now() });
-    openReceiptModal(payId, built.text);
-    downloadReceiptPdf(built.text, payId, built.meta.studentName);
+    saveReceiptRecord(payId, { text: built.text, data: built.data, ...built.meta, savedAt: Date.now() });
+    openReceiptModal(payId, built.text, built.data);
+    downloadReceiptPdf(built, payId, built.meta.studentName);
     return built;
 }
 
@@ -1643,20 +1710,23 @@ function buildReceiptForPayment(payId, extras = {}) {
 
     const serial = Math.max(1, getStudentPayments(sid).filter(x => isMeaningfulPayment(x) && isTermPayment(x.Remarks || x.remarks)).length);
 
+    const data = {
+        serial: extras.serial || serial,
+        studentName: s.StudentName || s.studentname || extras.studentName || "",
+        className: s.Class || s.class || extras.className || "",
+        date,
+        items,
+        mode,
+        note: note || (String(remarks).includes("—") ? String(remarks).split("—").slice(1).join("—").trim() : ""),
+        balanceLabel: isMonthlySvc ? null : "Balance Payment (School Fee)",
+        balanceAmount: isMonthlySvc ? null : (balanceAfter != null ? balanceAfter : Math.max(0, packageTotal - amount))
+    };
+
     return {
         payId,
-        text: buildFeeReceiptText({
-            serial: extras.serial || serial,
-            studentName: s.StudentName || s.studentname || extras.studentName || "",
-            className: s.Class || s.class || extras.className || "",
-            date,
-            items,
-            mode,
-            note: note || (String(remarks).includes("—") ? String(remarks).split("—").slice(1).join("—").trim() : ""),
-            balanceLabel: isMonthlySvc ? null : "Balance Payment (School Fee)",
-            balanceAmount: isMonthlySvc ? null : (balanceAfter != null ? balanceAfter : Math.max(0, packageTotal - amount))
-        }),
-        meta: { sid, amount, date, mode, remarks, studentName: s.StudentName || s.studentname || "", className: s.Class || s.class || "" }
+        data,
+        text: buildFeeReceiptText(data),
+        meta: { sid, amount, date, mode, remarks, studentName: data.studentName, className: data.className }
     };
 }
 
