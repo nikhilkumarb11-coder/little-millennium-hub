@@ -11,9 +11,11 @@
         html, body { height: 100%; }
         body { overscroll-behavior: none; }
         .app-shell { min-height: 100dvh; padding-bottom: env(safe-area-inset-bottom); }
-        #view-home {
+        .view-screen { display: none !important; }
+        .view-screen.active { display: block !important; }
+        #view-home.active {
+            display: grid !important;
             height: calc(100dvh - var(--header-h) - env(safe-area-inset-bottom, 0px));
-            display: grid;
             grid-template-columns: 1fr 1fr;
             grid-template-rows: repeat(4, minmax(0, 1fr));
             gap: 0.5rem;
@@ -26,28 +28,27 @@
             box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
             transition: transform 0.15s ease;
             -webkit-tap-highlight-color: transparent; user-select: none; position: relative;
-            background: #fff;
+            background: #fff; cursor: pointer; border: 1px solid #e2e8f0;
+            width: 100%; height: 100%;
         }
         .home-tile:active { transform: scale(0.97); }
-        .home-tile .tile-icon { font-size: 1.45rem; line-height: 1; margin-bottom: 0.3rem; }
-        .home-tile .tile-label { font-size: 0.68rem; font-weight: 800; line-height: 1.15; }
+        .home-tile .tile-icon { font-size: 1.45rem; line-height: 1; margin-bottom: 0.3rem; pointer-events: none; }
+        .home-tile .tile-label { font-size: 0.68rem; font-weight: 800; line-height: 1.15; pointer-events: none; }
         .home-tile .tile-badge {
             position: absolute; top: 0.35rem; right: 0.35rem;
             min-width: 1.25rem; height: 1.25rem; padding: 0 0.3rem;
             border-radius: 999px; font-size: 0.6rem; font-weight: 800;
             display: none; align-items: center; justify-content: center;
-            background: #f43f5e; color: #fff;
+            background: #f43f5e; color: #fff; pointer-events: none;
         }
         .home-tile .tile-badge.show { display: flex; }
-        .view-screen { display: none; }
-        .view-screen.active { display: block; }
         .view-scroll {
             max-height: calc(100dvh - var(--header-h) - 3.25rem);
             overflow-y: auto; -webkit-overflow-scrolling: touch;
         }
         .view-back-bar { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
         @media (min-width: 768px) {
-            #view-home { max-width: 28rem; margin: 0 auto; }
+            #view-home.active { max-width: 28rem; margin: 0 auto; }
         }
     </style>
 </head>
@@ -90,30 +91,30 @@
 
         <!-- HOME TILES -->
         <section id="view-home" class="view-screen active">
-            <button type="button" class="home-tile border border-indigo-100" onclick="showView('intake')">
+            <button type="button" class="home-tile border-indigo-100" data-view="intake">
                 <span class="tile-icon">📝</span><span class="tile-label text-indigo-950">Admission Intake Form</span>
             </button>
-            <button type="button" class="home-tile border border-sky-100" onclick="showView('search')">
+            <button type="button" class="home-tile border-sky-100" data-view="search">
                 <span class="tile-icon">🔍</span><span class="tile-label text-sky-950">Search Student</span>
             </button>
-            <button type="button" class="home-tile border border-rose-100" onclick="showView('fees')">
+            <button type="button" class="home-tile border-rose-100" data-view="fees">
                 <span class="tile-icon">💰</span><span class="tile-label text-rose-950">Monthly Fee Check</span>
                 <span id="tileBadgeFees" class="tile-badge">0</span>
             </button>
-            <button type="button" class="home-tile border border-amber-100" onclick="showView('rosters')">
+            <button type="button" class="home-tile border-amber-100" data-view="rosters">
                 <span class="tile-icon">👥</span><span class="tile-label text-amber-950">Total Rosters</span>
                 <span id="tileBadgeRosters" class="tile-badge" style="background:#f59e0b">0</span>
             </button>
-            <button type="button" class="home-tile border border-orange-100" onclick="showView('expenses')">
+            <button type="button" class="home-tile border-orange-100" data-view="expenses">
                 <span class="tile-icon">🧾</span><span class="tile-label text-orange-950">Expenses Entry</span>
             </button>
-            <button type="button" class="home-tile border border-emerald-100" onclick="showView('events')">
+            <button type="button" class="home-tile border-emerald-100" data-view="events">
                 <span class="tile-icon">🗓️</span><span class="tile-label text-emerald-950">Events Entry</span>
             </button>
-            <button type="button" class="home-tile border border-violet-100" onclick="showView('edit')">
+            <button type="button" class="home-tile border-violet-100" data-view="edit">
                 <span class="tile-icon">✏️</span><span class="tile-label text-violet-950">Edit Student Data</span>
             </button>
-            <button type="button" class="home-tile border border-indigo-200" onclick="showView('finances')">
+            <button type="button" class="home-tile border-indigo-200" data-view="finances">
                 <span class="tile-icon">📊</span><span class="tile-label text-indigo-950">Finances</span>
             </button>
         </section>
@@ -622,7 +623,10 @@ function showView(viewId) {
     const target = document.getElementById("view-" + viewId);
     if (target) target.classList.add("active");
     const backBtn = document.getElementById("headerBackBtn");
-    if (backBtn) backBtn.classList.toggle("hidden", viewId === "home");
+    if (backBtn) {
+        if (viewId === "home") backBtn.classList.add("hidden");
+        else backBtn.classList.remove("hidden");
+    }
     window.scrollTo(0, 0);
     if (viewId === "search") renderStudentCards();
     if (viewId === "edit") renderEditStudentCards();
@@ -636,6 +640,22 @@ function showView(viewId) {
         handleFormBillingTypeChange("Regular");
     }
 }
+
+// Tile navigation (event delegation — reliable on mobile & desktop)
+document.addEventListener("click", (e) => {
+    const tile = e.target.closest(".home-tile[data-view]");
+    if (tile) {
+        e.preventDefault();
+        showView(tile.getAttribute("data-view"));
+        return;
+    }
+    const menu = document.getElementById("headerMenu");
+    if (menu && !menu.classList.contains("hidden")) {
+        if (!e.target.closest("#headerMenu") && !e.target.closest("button[onclick*='toggleHeaderMenu']")) {
+            menu.classList.add("hidden");
+        }
+    }
+});
 
 function openChangePasswordModal() {
     document.getElementById("newPasscodeInput").value = CURRENT_GATE_PASSPHRASE;
@@ -1266,12 +1286,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const doj = document.getElementById("intakeDOJ");
     if (doj) doj.value = now.toISOString().substring(0, 10);
     handleFormBillingTypeChange("Regular");
-});
-
-document.addEventListener("click", (e) => {
-    const menu = document.getElementById("headerMenu");
-    if (!menu || menu.classList.contains("hidden")) return;
-    if (!e.target.closest("#headerMenu") && !e.target.closest("button[onclick*='toggleHeaderMenu']")) menu.classList.add("hidden");
 });
 </script>
 </body>
