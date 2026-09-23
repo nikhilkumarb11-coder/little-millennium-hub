@@ -33,8 +33,8 @@
             width: 100%; height: 100%;
         }
         .home-tile:active { transform: scale(0.97); }
-        .home-tile .tile-icon { font-size: 1.45rem; line-height: 1; margin-bottom: 0.3rem; pointer-events: none; }
-        .home-tile .tile-label { font-size: 0.68rem; font-weight: 800; line-height: 1.15; pointer-events: none; }
+        .home-tile .tile-icon { font-size: 1.85rem; line-height: 1; margin-bottom: 0.35rem; pointer-events: none; }
+        .home-tile .tile-label { font-size: 0.78rem; font-weight: 800; line-height: 1.2; pointer-events: none; }
         .home-tile .tile-badge {
             position: absolute; top: 0.35rem; right: 0.35rem;
             min-width: 1.25rem; height: 1.25rem; padding: 0 0.3rem;
@@ -96,7 +96,7 @@
                 <span class="tile-icon">📝</span><span class="tile-label text-indigo-950">Admission Intake Form</span>
             </button>
             <button type="button" class="home-tile border-sky-100" data-view="search">
-                <span class="tile-icon">🔍</span><span class="tile-label text-sky-950">Search Student</span>
+                <span class="tile-icon">🔍</span><span class="tile-label text-sky-950">Student Details</span>
             </button>
             <button type="button" class="home-tile border-rose-100" data-view="fees">
                 <span class="tile-icon">💰</span><span class="tile-label text-rose-950">Monthly Fee Check</span>
@@ -267,7 +267,7 @@
         <section id="view-search" class="view-screen px-3 pb-6 pt-2">
             <div class="view-back-bar">
                 <button type="button" onclick="goAppBack()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Back</button>
-                <h3 class="font-black text-sm text-indigo-950">Search Student</h3>
+                <h3 class="font-black text-sm text-indigo-950">Student Details</h3>
             </div>
             <div class="view-scroll space-y-3">
                 <input type="text" id="rosterSearch" oninput="renderStudentCards()" placeholder="Search student name..." class="w-full px-3 py-3 rounded-xl text-sm border bg-white shadow-sm">
@@ -579,7 +579,7 @@
                 <div id="termPayPackageList" class="space-y-2"></div>
             </div>
             <div id="termPayMonthlySection" class="space-y-2 hidden">
-                <h4 class="font-black text-[10px] uppercase tracking-wider text-slate-400">Month-wise payments</h4>
+                <h4 class="font-black text-[10px] uppercase tracking-wider text-slate-400">Month-wise (Monthly Fee Check)</h4>
                 <div id="termPayMonthlyList" class="space-y-2"></div>
             </div>
             <button type="button" onclick="closeTermPaymentsModal()" class="w-full bg-slate-100 font-bold py-2.5 rounded-xl text-xs">Close</button>
@@ -644,13 +644,31 @@ function parseMonthYearLabel(label) {
 let activeSystemMonthContext = getMonthYearLabel();
 
 function formatToInputDate(dateVal) {
-    if (!dateVal) return "";
-    let cleanStr = dateVal.toString().trim().split("T")[0].replace(/[\/\s]/g, "-");
+    if (!dateVal && dateVal !== 0) return "";
+    if (dateVal instanceof Date && !isNaN(dateVal.getTime())) {
+        return `${dateVal.getFullYear()}-${String(dateVal.getMonth() + 1).padStart(2, "0")}-${String(dateVal.getDate()).padStart(2, "0")}`;
+    }
+    const raw = dateVal.toString().trim();
+    // Sheets sometimes returns "Tue Sep 01 2026 00:00:00 GMT+0530 (India Standard Time)"
+    if (/GMT|[A-Za-z]{3}\s+[A-Za-z]{3}\s+\d{1,2}/.test(raw)) {
+        const d = new Date(raw);
+        if (!isNaN(d.getTime())) {
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        }
+    }
+    let cleanStr = raw.split("T")[0].replace(/[\/\s]/g, "-");
     let parts = cleanStr.split("-");
     if (parts.length < 3) return "";
-    if (parts[0].length === 4) return `${parts[0]}-${parts[1].padStart(2,"0")}-${parts[2].padStart(2,"0")}`;
-    if (parts[2].length === 4) return `${parts[2]}-${parts[1].padStart(2,"0")}-${parts[0].padStart(2,"0")}`;
+    if (parts[0].length === 4) return `${parts[0]}-${parts[1].padStart(2, "0")}-${parts[2].padStart(2, "0")}`;
+    if (parts[2].length === 4) return `${parts[2]}-${parts[1].padStart(2, "0")}-${parts[0].padStart(2, "0")}`;
     return "";
+}
+
+function formatDisplayDate(dateVal) {
+    const iso = formatToInputDate(dateVal);
+    if (!iso) return "—";
+    const [y, m, d] = iso.split("-");
+    return `${d}/${m}/${y}`;
 }
 
 function calculateExactAge(dateVal) {
@@ -1368,22 +1386,37 @@ function isMonthlyServicePayment(remarks) {
     return r.includes("OptMonthly") || r.includes("Van") || r.includes("DayCare") || r.includes("Day Care");
 }
 
+function friendlyPaymentLabel(remarks, month) {
+    const r = (remarks || "").toString();
+    const m = (month && month !== "—") ? ` · ${month}` : "";
+    if (/1st\s*Term/i.test(r)) return "1st Term Fee";
+    if (/Term Fee/i.test(r)) return "Term / Package Fee";
+    if (/OptMonthly/i.test(r)) return "Custom Monthly" + m;
+    if (/Van/i.test(r)) return "Van Fee" + m;
+    if (/DayCare|Day Care/i.test(r)) return "Day Care" + m;
+    return r.replace(/^Settled reminder stream segment:\s*/i, "").slice(0, 42) || "Payment";
+}
+
 function paymentHistoryRowHtml(p) {
     const payId = (p.PaymentID || p.paymentid || "").toString().replace(/'/g, "");
     const amt = Number(p.AmountPaid || p.amountpaid) || 0;
-    const date = formatToInputDate(p.PaymentDate || p.paymentdate) || "—";
+    const date = formatDisplayDate(p.PaymentDate || p.paymentdate);
     const month = (p.MonthYear || p.monthyear || "").toString() || "—";
     const mode = (p.PaymentMode || p.paymentmode || "—").toString();
     const rem = (p.Remarks || p.remarks || "").toString();
+    const label = friendlyPaymentLabel(rem, month);
     const canReceipt = payId && (isTermPayment(rem) || isMonthlyServicePayment(rem));
     const receiptBtn = canReceipt
-        ? `<button type="button" onclick="viewPaymentReceipt('${payId}')" class="mt-2 w-full bg-indigo-50 text-indigo-700 font-bold py-1.5 rounded-lg text-[10px]">View / Download Receipt</button>`
+        ? `<button type="button" onclick="viewPaymentReceipt('${payId}')" class="shrink-0 bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded text-[9px]">Receipt</button>`
         : "";
-    return `<div class="bg-slate-50 border rounded-xl p-3 text-[11px]">
-        <div class="flex justify-between font-black"><span>₹${amt}</span><span class="text-slate-500 font-bold">${date}</span></div>
-        <div class="flex justify-between mt-1 text-slate-600 font-semibold"><span>${month}</span><span>${mode}</span></div>
-        <p class="mt-1 text-slate-500 font-medium break-words">${rem || "—"}</p>
-        ${receiptBtn}
+    return `<div class="bg-slate-50 border rounded-lg px-2.5 py-1.5 text-[10px]">
+        <div class="flex items-center justify-between gap-2">
+            <span class="font-black text-slate-900">₹${amt.toLocaleString("en-IN")}</span>
+            <span class="text-slate-500 font-bold">${date}</span>
+            <span class="text-slate-600 font-semibold">${mode}</span>
+            ${receiptBtn}
+        </div>
+        <p class="mt-0.5 text-slate-500 font-medium truncate">${label}</p>
     </div>`;
 }
 
@@ -1470,7 +1503,7 @@ async function downloadReceiptPdf(receiptData, payId, studentName) {
     const data = (receiptData && receiptData.data) ? receiptData.data : (receiptData || {});
     const JsPDF = window.jspdf && window.jspdf.jsPDF;
     if (!JsPDF) {
-        downloadReceiptTextFallback(buildFeeReceiptText(data), payId, studentName || data.studentName);
+        alert("PDF library not loaded. Check internet connection and try again.");
         return;
     }
 
@@ -1573,17 +1606,8 @@ async function downloadReceiptPdf(receiptData, payId, studentName) {
 }
 
 function downloadReceiptTextFallback(text, payId, studentName) {
-    const safeName = (studentName || "student").toString().replace(/[^\w\-]+/g, "_").slice(0, 40);
-    const filename = `LM_Receipt_${safeName}_${(payId || Date.now()).toString().slice(-8)}.txt`;
-    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+    // Kept for compatibility — always prefer PDF path above
+    console.warn("TXT receipt fallback disabled; PDF only.");
 }
 
 function downloadReceiptText(receiptOrText, payId, studentName) {
@@ -1612,13 +1636,17 @@ function closeReceiptModal() {
 
 async function downloadCurrentReceipt() {
     const store = getReceiptStore()[currentReceiptPayId] || {};
-    const data = currentReceiptData || store.data;
-    if (data) {
-        await downloadReceiptPdf({ data }, currentReceiptPayId, store.studentName || data.studentName || "");
+    let data = currentReceiptData || store.data;
+    if (!data && currentReceiptPayId) {
+        const built = buildReceiptForPayment(currentReceiptPayId);
+        data = built.data;
+        currentReceiptData = data;
+    }
+    if (!data) {
+        alert("Unable to build PDF receipt for this payment.");
         return;
     }
-    if (!currentReceiptText) return;
-    downloadReceiptTextFallback(currentReceiptText, currentReceiptPayId, store.studentName || "");
+    await downloadReceiptPdf({ data }, currentReceiptPayId, store.studentName || data.studentName || "");
 }
 
 function viewPaymentReceipt(payId) {
@@ -1712,10 +1740,11 @@ function buildReceiptForPayment(payId, extras = {}) {
 
     const items = [];
     if (isMonthlySvc) {
+        const my = (p && (p.MonthYear || p.monthyear)) || extras.monthYear || activeSystemMonthContext;
         let label = "Fee Collected";
-        if (String(remarks).includes("Van")) label = `Van Fee- ${(p && (p.MonthYear || p.monthyear)) || activeSystemMonthContext}`;
-        else if (String(remarks).includes("DayCare") || String(remarks).includes("Day Care")) label = `Day Care- ${(p && (p.MonthYear || p.monthyear)) || activeSystemMonthContext}`;
-        else if (String(remarks).includes("OptMonthly")) label = `Monthly Fee- ${(p && (p.MonthYear || p.monthyear)) || activeSystemMonthContext}`;
+        if (String(remarks).includes("Van")) label = `Van Fee- ${String(my).split("-")[0] || my}`;
+        else if (String(remarks).includes("DayCare") || String(remarks).includes("Day Care")) label = `Day Care- ${String(my).split("-")[0] || my}`;
+        else if (String(remarks).includes("OptMonthly")) label = `Monthly Fee- ${String(my).split("-")[0] || my}`;
         items.push({ label, amount });
     } else {
         items.push({ label: "Fee Collected", amount });
@@ -2068,11 +2097,24 @@ async function commitReminderSettlement(sid, serviceKey, dueAmount) {
     if (serviceKey === "DayCare") modeElId = "mode-dc-" + sid;
     if (serviceKey === "OptMonthly") modeElId = "mode-opt-" + sid;
     const mode = document.getElementById(modeElId)?.value || "Cash";
-    const tag = serviceKey === "DayCare" ? "DayCare Settlement" : (serviceKey === "OptMonthly" ? "OptMonthly Settlement" : "Van Settlement");
-    const row = ["PAY-" + sid + "-" + serviceKey + "-" + Date.now(), sid, activeSystemMonthContext, amount, new Date().toISOString().substring(0, 10), mode, tag, "Active", ""];
+    const payId = "PAY-" + sid + "-" + serviceKey + "-" + Date.now();
+    const payDate = new Date().toISOString().substring(0, 10);
+    const remark = serviceKey === "DayCare"
+        ? ("DayCare — " + activeSystemMonthContext)
+        : (serviceKey === "OptMonthly"
+            ? ("OptMonthly — " + activeSystemMonthContext)
+            : ("Van — " + activeSystemMonthContext));
+    const row = [payId, sid, activeSystemMonthContext, amount, payDate, mode, remark, "Active", ""];
     await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row }) });
-    alert(`${serviceKey} settled (₹${amount})`);
-    await refreshApplicationState(false);
+    issueFeeReceipt(payId, {
+        sid,
+        amount,
+        date: payDate,
+        mode,
+        remarks: remark,
+        monthYear: activeSystemMonthContext
+    });
+    refreshApplicationState(false);
 }
 
 function openStudentDetailModal(sid) {
