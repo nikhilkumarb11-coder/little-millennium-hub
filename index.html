@@ -7,13 +7,46 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .gamified-card { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-        .gamified-card:hover { transform: translateY(-4px); }
+        :root { --header-h: 56px; }
+        html, body { height: 100%; }
+        body { overscroll-behavior: none; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .app-shell { min-height: 100dvh; padding-bottom: env(safe-area-inset-bottom); }
+        #view-home {
+            height: calc(100dvh - var(--header-h) - env(safe-area-inset-bottom, 0px));
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: repeat(4, minmax(0, 1fr));
+            gap: 0.5rem;
+            padding: 0.5rem;
+            overflow: hidden;
+        }
+        .home-tile {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; border-radius: 1rem; padding: 0.5rem; min-height: 0;
+            box-shadow: 0 1px 3px rgb(0 0 0 / 0.08); transition: transform 0.15s ease, box-shadow 0.15s ease;
+            -webkit-tap-highlight-color: transparent; user-select: none; position: relative;
+        }
+        .home-tile:active { transform: scale(0.97); }
+        .home-tile .tile-icon { font-size: 1.5rem; line-height: 1; margin-bottom: 0.35rem; }
+        .home-tile .tile-label { font-size: 0.7rem; font-weight: 800; line-height: 1.15; letter-spacing: 0.01em; }
+        .home-tile .tile-badge {
+            position: absolute; top: 0.35rem; right: 0.35rem;
+            min-width: 1.25rem; height: 1.25rem; padding: 0 0.3rem;
+            border-radius: 999px; font-size: 0.6rem; font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .view-screen { display: none; }
+        .view-screen.active { display: block; }
+        .view-scroll { max-height: calc(100dvh - var(--header-h) - 3rem); overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .view-back-bar { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+        @media (min-width: 768px) {
+            #view-home { max-width: 28rem; margin: 0 auto; height: calc(100dvh - var(--header-h) - 1rem); }
+        }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-16">
+<body class="bg-slate-100 text-slate-800 font-sans app-shell">
 
     <!-- Auth Shield Screen -->
     <div id="authShield" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-4">
@@ -22,124 +55,83 @@
             <p class="text-[10px] font-bold uppercase tracking-widest text-amber-600 mb-6">Sullurpeta Campus Management</p>
             <input type="password" id="gateKey" placeholder="Enter Passcode" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-center text-lg font-mono focus:outline-none focus:border-indigo-600 mb-4">
             <button onclick="attemptAuthentication()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition duration-200">Unlock Master ERP</button>
-            <p id="authError" class="text-rose-600 text-sm mt-3 hidden font-semibold">❌ Access Key Verification Failed.</p>
+            <p id="authError" class="text-rose-600 text-sm mt-3 hidden font-semibold">Access Key Verification Failed.</p>
         </div>
     </div>
 
-    <!-- Main Navigation Bar -->
-    <header class="bg-indigo-950 text-white shadow-xl sticky top-0 z-40 px-4 py-3">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="goToHome()">
-                <div class="bg-amber-400 p-2 rounded-xl text-indigo-950 text-xl font-black shadow-inner">LM</div>
-                <div>
-                    <h2 class="text-base font-black leading-none tracking-tight">Little Millennium</h2>
-                    <span class="text-[10px] text-amber-300 font-bold uppercase tracking-wider">Sullurpeta Hub</span>
+    <!-- Compact Mobile Header -->
+    <header id="appHeader" class="bg-indigo-950 text-white sticky top-0 z-40 px-3 hidden" style="height: var(--header-h); padding-top: env(safe-area-inset-top);">
+        <div class="h-full max-w-3xl mx-auto flex justify-between items-center gap-2">
+            <button type="button" onclick="goToHome()" class="flex items-center space-x-2 min-w-0">
+                <div class="bg-amber-400 w-9 h-9 rounded-xl text-indigo-950 text-sm font-black shadow-inner flex items-center justify-center flex-shrink-0">LM</div>
+                <div class="min-w-0 text-left">
+                    <h2 class="text-sm font-black leading-none tracking-tight truncate">Little Millennium</h2>
+                    <span class="text-[9px] text-amber-300 font-bold uppercase tracking-wider">Sullurpeta</span>
                 </div>
+            </button>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+                <button type="button" id="headerBackBtn" onclick="goToHome()" class="hidden bg-indigo-900 px-2.5 py-1.5 rounded-lg text-[11px] font-bold">← Back</button>
+                <button type="button" onclick="refreshApplicationState(true)" class="bg-indigo-800 px-2.5 py-1.5 rounded-lg text-[11px] font-bold">Sync</button>
+                <button type="button" onclick="toggleHeaderMenu()" class="bg-indigo-900 px-2.5 py-1.5 rounded-lg text-[11px] font-bold">⋯</button>
             </div>
-            <div class="flex items-center space-x-2">
-                <button onclick="goToHome()" class="bg-indigo-900 hover:bg-indigo-800 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">🏠 Home</button>
-                <button onclick="openChangePasswordModal()" class="bg-indigo-900 hover:bg-indigo-800 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">🔑 Security</button>
-                <button onclick="refreshApplicationState(true)" class="bg-indigo-800 hover:bg-indigo-700 p-1.5 rounded-lg text-xs font-bold transition">🔄 Sync</button>
-                <button onclick="triggerSystemLogout()" class="bg-rose-700 hover:bg-rose-600 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">🚪 Logout</button>
-            </div>
+        </div>
+        <div id="headerMenu" class="hidden absolute right-2 top-[calc(var(--header-h)-4px)] bg-white text-slate-800 rounded-xl shadow-xl border p-2 w-40 z-50">
+            <button type="button" onclick="openChangePasswordModal(); toggleHeaderMenu(false)" class="w-full text-left px-3 py-2 text-xs font-bold rounded-lg hover:bg-slate-50">Security</button>
+            <button type="button" onclick="triggerSystemLogout(); toggleHeaderMenu(false)" class="w-full text-left px-3 py-2 text-xs font-bold rounded-lg hover:bg-rose-50 text-rose-600">Logout</button>
         </div>
     </header>
 
-    <!-- Main Workspace Container -->
-    <main id="appWorkspace" class="max-w-7xl mx-auto p-4 space-y-6 hidden">
-        
-        <!-- Cohort Headcount Tracker Panels -->
-        <section class="grid grid-cols-2 md:grid-cols-6 gap-4">
-            <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-indigo-600">
-                <span class="text-[10px] uppercase font-bold text-slate-400">DR Count</span>
-                <h4 class="text-lg font-black text-indigo-950 mt-1" id="countCohortDR">0 Kids</h4>
-            </div>
-            <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-rose-500">
-                <span class="text-[10px] uppercase font-bold text-slate-400">EW Count</span>
-                <h4 class="text-lg font-black text-indigo-950 mt-1" id="countCohortEW">0 Kids</h4>
-            </div>
-            <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-amber-500">
-                <span class="text-[10px] uppercase font-bold text-slate-400">RTF1 Count</span>
-                <h4 class="text-lg font-black text-indigo-950 mt-1" id="countCohortRTF1">0 Kids</h4>
-            </div>
-            <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-emerald-500">
-                <span class="text-[10px] uppercase font-bold text-slate-400">RTF2 Count</span>
-                <h4 class="text-lg font-black text-indigo-950 mt-1" id="countCohortRTF2">0 Kids</h4>
-            </div>
-            <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-purple-500">
-                <span class="text-[10px] uppercase font-bold text-slate-400">Day Care Only</span>
-                <h4 class="text-lg font-black text-indigo-950 mt-1" id="countCohortDC">0 Kids</h4>
-            </div>
-            <div class="bg-gradient-to-br from-indigo-950 to-slate-900 p-4 rounded-2xl shadow-md text-white col-span-2 md:col-span-1">
-                <span class="text-[10px] uppercase font-bold text-indigo-300">Total Rosters</span>
-                <h4 class="text-lg font-black text-amber-300 mt-1" id="countCohortTotal">0 Active</h4>
-            </div>
+    <!-- Main Workspace -->
+    <main id="appWorkspace" class="max-w-3xl mx-auto hidden">
+
+        <!-- HOME: 8 tiles, one mobile screen -->
+        <section id="view-home" class="view-screen active">
+            <button type="button" class="home-tile bg-white border border-indigo-100" onclick="showView('intake')">
+                <span class="tile-icon">📝</span>
+                <span class="tile-label text-indigo-950">Admission Intake Form</span>
+            </button>
+            <button type="button" class="home-tile bg-white border border-sky-100" onclick="showView('search')">
+                <span class="tile-icon">🔍</span>
+                <span class="tile-label text-sky-950">Search Student</span>
+            </button>
+            <button type="button" class="home-tile bg-white border border-rose-100" onclick="showView('fees')">
+                <span class="tile-icon">💰</span>
+                <span class="tile-label text-rose-950">Monthly Fee Check</span>
+                <span id="tileBadgeFees" class="tile-badge bg-rose-500 text-white hidden">0</span>
+            </button>
+            <button type="button" class="home-tile bg-white border border-amber-100" onclick="showView('rosters')">
+                <span class="tile-icon">👥</span>
+                <span class="tile-label text-amber-950">Total Rosters</span>
+                <span id="tileBadgeRosters" class="tile-badge bg-amber-500 text-white hidden">0</span>
+            </button>
+            <button type="button" class="home-tile bg-white border border-orange-100" onclick="showView('expenses')">
+                <span class="tile-icon">🧾</span>
+                <span class="tile-label text-orange-950">Expenses Entry</span>
+            </button>
+            <button type="button" class="home-tile bg-white border border-emerald-100" onclick="showView('events')">
+                <span class="tile-icon">🗓️</span>
+                <span class="tile-label text-emerald-950">Events Entry</span>
+            </button>
+            <button type="button" class="home-tile bg-white border border-violet-100" onclick="showView('edit')">
+                <span class="tile-icon">✏️</span>
+                <span class="tile-label text-violet-950">Edit Student Data</span>
+            </button>
+            <button type="button" class="home-tile bg-white border border-indigo-200" onclick="showView('finances')">
+                <span class="tile-icon">📊</span>
+                <span class="tile-label text-indigo-950">Finances</span>
+            </button>
         </section>
 
-        <!-- Live Outstanding Monthly Reminders Panel -->
-        <section class="bg-white p-5 rounded-3xl shadow-sm border border-indigo-100 space-y-4">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-black text-sm text-indigo-950 uppercase tracking-wider flex items-center space-x-2">
-                    <span>⏰</span> <span>Live Outstanding Monthly Reminders</span>
-                </h3>
-                <span id="reminderPeriodBadge" class="bg-indigo-100 text-indigo-800 text-[11px] font-black px-3 py-1 rounded-full">July-2026 Context View</span>
+        <!-- VIEW: Admission Intake -->
+        <section id="view-intake" class="view-screen px-3 pb-6 pt-2">
+            <div class="view-back-bar">
+                <button type="button" onclick="goToHome()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Home</button>
+                <h3 class="font-black text-sm text-indigo-950">Admission Intake</h3>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                    <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
-                        <span>Transit (Van)</span>
-                        <span id="countVanDues" class="bg-rose-100 text-rose-700 rounded-full px-2 text-[10px]">0</span>
-                    </h4>
-                    <div id="containerVanReminders" class="space-y-2 max-h-56 overflow-y-auto text-[11px] font-semibold pr-1"></div>
-                </div>
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                    <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
-                        <span>Day Care Operations</span>
-                        <span id="countDayCareDues" class="bg-rose-100 text-rose-700 rounded-full px-2 text-[10px]">0</span>
-                    </h4>
-                    <div id="containerDayCareReminders" class="space-y-2 max-h-56 overflow-y-auto text-[11px] font-semibold pr-1"></div>
-                </div>
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                    <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
-                        <span>Custom Monthly Opt / Base</span>
-                        <span id="countOptDues" class="bg-rose-100 text-rose-700 rounded-full px-2 text-[10px]">0</span>
-                    </h4>
-                    <div id="containerOptReminders" class="space-y-2 max-h-56 overflow-y-auto text-[11px] font-semibold pr-1"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Birthday Calendar & System Operations Panel -->
-        <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-gradient-to-br from-amber-400 to-orange-500 rounded-3xl p-5 text-white shadow-lg relative overflow-hidden">
-                <div class="absolute -right-6 -bottom-6 text-8xl opacity-10">🎂</div>
-                <h3 class="font-black text-lg flex items-center space-x-2"><span>🎈</span> <span id="birthdayTitleMonth">Active July Birthday Desk</span></h3>
-                <div id="birthdayRosterContainer" class="mt-3 space-y-2 text-sm font-bold max-h-36 overflow-y-auto pr-1"></div>
-            </div>
-            <div class="bg-gradient-to-br from-indigo-900 to-slate-900 rounded-3xl p-5 text-indigo-100 shadow-lg relative overflow-hidden">
-                <div class="absolute -right-6 -bottom-6 text-8xl opacity-10">💡</div>
-                <h3 class="font-black text-lg flex items-center space-x-2 text-amber-300"><span>🧠</span> <span>System Guidance Dashboard</span></h3>
-                <div id="insightsBox" class="mt-2 text-xs leading-relaxed space-y-1 opacity-90 font-semibold text-slate-200 max-h-36 overflow-y-auto"></div>
-            </div>
-        </section>
-
-        <!-- Navigation Tabs -->
-        <nav class="flex space-x-2 bg-slate-200 p-1.5 rounded-xl overflow-x-auto hide-scrollbar">
-            <button id="btn-studentsTab" onclick="switchTab('studentsTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold bg-white text-indigo-950 shadow-sm flex-1 text-center">👶 Student Registry</button>
-            <button id="btn-financeTab" onclick="switchTab('financeTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-300 flex-1 text-center">📊 Financial Ledger & Metrics</button>
-            <button id="btn-calendarTab" onclick="switchTab('calendarTab')" class="tab-btn px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-300 flex-1 text-center">🗓️ Academic Calendar</button>
-        </nav>
-
-        <!-- Tab Content Viewport 1: Student Registry -->
-        <div id="studentsTab" class="tab-pane space-y-6">
-            <!-- Intake Form Entry -->
-            <details id="intakeFormDetailsContainer" class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden group">
-                <summary class="p-5 font-black text-sm tracking-wide text-indigo-950 cursor-pointer hover:bg-slate-50 list-none flex justify-between items-center">
-                    <span class="flex items-center space-x-2"><span>➕</span> <span>New Complete Admissions Intake Form</span></span>
-                </summary>
-                <form id="studentEnrollmentForm" onsubmit="handleStudentSubmission(event)" class="p-5 border-t border-slate-100 space-y-4 text-xs font-semibold">
-                    <div id="formModelWrapper" class="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 flex items-center space-x-6">
-                        <span class="font-black text-indigo-950">Select Billing Pipeline Model:</span>
+            <div class="view-scroll">
+                <form id="studentEnrollmentForm" onsubmit="handleStudentSubmission(event)" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-4 text-xs font-semibold">
+                    <div id="formModelWrapper" class="bg-indigo-50 p-3 rounded-2xl border border-indigo-100 flex flex-col gap-2">
+                        <span class="font-black text-indigo-950">Billing Model</span>
                         <label class="flex items-center space-x-2 cursor-pointer text-slate-700">
                             <input type="radio" name="BillingModel" value="Regular" checked onchange="handleFormBillingTypeChange('Regular')">
                             <span class="font-bold">Regular Base Model</span>
@@ -258,93 +250,127 @@
                                 <option value="Girl">Girl</option>
                             </select>
                         </div>
+                        <div class="md:col-span-2">
+                            <label class="block mb-1 text-slate-500">Profile Photo (optional)</label>
+                            <input type="file" accept="image/*" onchange="processImageUpload(this)" class="w-full text-xs">
+                            <input type="hidden" id="base64PayloadCache" value="N/A">
+                        </div>
                     </div>
 
                     <div class="flex justify-end pt-2">
-                        <button type="submit" class="bg-indigo-600 text-white font-bold px-6 py-2.5 rounded-xl shadow">Save Admission Profile</button>
+                        <button type="submit" class="w-full bg-indigo-600 text-white font-bold px-6 py-3 rounded-xl shadow">Save Admission Profile</button>
                     </div>
                 </form>
-            </details>
+            </div>
+        </section>
 
-            <!-- Filters Desk -->
-            <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+        <!-- VIEW: Search Student -->
+        <section id="view-search" class="view-screen px-3 pb-6 pt-2">
+            <div class="view-back-bar">
+                <button type="button" onclick="goToHome()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Home</button>
+                <h3 class="font-black text-sm text-indigo-950">Search Student</h3>
+            </div>
+            <div class="view-scroll space-y-3">
+                <input type="text" id="rosterSearch" oninput="executeSearchFilter()" placeholder="Search student name..." class="w-full px-3 py-3 rounded-xl text-sm font-medium border bg-white shadow-sm">
                 <div class="flex flex-wrap gap-1.5">
-                    <button onclick="filterCohort('ALL')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white">All Rosters</button>
-                    <button onclick="filterCohort('DR')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">DR</button>
-                    <button onclick="filterCohort('EW')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">EW</button>
-                    <button onclick="filterCohort('RTF1')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">RTF1</button>
-                    <button onclick="filterCohort('RTF2')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">RTF2</button>
-                    <button onclick="filterCohort('DayCare')" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">Day Care Only</button>
+                    <button type="button" onclick="filterCohort('ALL', this)" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white">All</button>
+                    <button type="button" onclick="filterCohort('DR', this)" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">DR</button>
+                    <button type="button" onclick="filterCohort('EW', this)" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">EW</button>
+                    <button type="button" onclick="filterCohort('RTF1', this)" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">RTF1</button>
+                    <button type="button" onclick="filterCohort('RTF2', this)" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">RTF2</button>
+                    <button type="button" onclick="filterCohort('DayCare', this)" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">Day Care</button>
                 </div>
-                <input type="text" id="rosterSearch" oninput="executeSearchFilter()" placeholder="🔍 Search student name..." class="px-3 py-2 rounded-xl text-xs font-medium border bg-slate-50 w-full md:w-64">
+                <div id="studentCardsGrid" class="grid grid-cols-1 gap-3"></div>
             </div>
+        </section>
 
-            <div id="studentCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-        </div>
-
-        <!-- Tab Content Viewport 2: Finance Ledger Dashboard -->
-        <div id="financeTab" class="tab-pane hidden space-y-6">
-            <div class="bg-white p-4 rounded-2xl shadow-sm border flex flex-wrap items-center gap-4 text-xs font-bold">
-                <span class="text-indigo-950 uppercase tracking-wider text-[10px]">Filter Expenses Target Period:</span>
-                <select id="expensePeriodMonth" onchange="renderFinanceLedger()" class="p-2 border rounded-xl bg-slate-50 focus:outline-none">
-                    <option value="0">January</option><option value="1">February</option><option value="2">March</option>
-                    <option value="3">April</option><option value="4">May</option><option value="5">June</option>
-                    <option value="6" selected>July</option><option value="7">August</option><option value="8">September</option>
-                    <option value="9">October</option><option value="10">November</option><option value="11">December</option>
-                </select>
-                <select id="expensePeriodYear" onchange="renderFinanceLedger()" class="p-2 border rounded-xl bg-slate-50 focus:outline-none">
-                    <option value="2026" selected>2026</option>
-                    <option value="2027">2027</option>
-                </select>
+        <!-- VIEW: Monthly Fee Check -->
+        <section id="view-fees" class="view-screen px-3 pb-6 pt-2">
+            <div class="view-back-bar">
+                <button type="button" onclick="goToHome()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Home</button>
+                <h3 class="font-black text-sm text-indigo-950 flex-1">Monthly Fee Check</h3>
+                <span id="reminderPeriodBadge" class="bg-indigo-100 text-indigo-800 text-[10px] font-black px-2 py-1 rounded-full">...</span>
             </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-                    <span class="text-[10px] uppercase font-bold text-slate-400">Total Billed Receivables</span>
-                    <h4 class="text-xl font-black text-indigo-950 mt-1" id="kpiGrossRevenue">₹0</h4>
+            <div class="view-scroll space-y-3">
+                <div class="bg-white p-3 rounded-2xl border border-slate-200">
+                    <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
+                        <span>Van</span>
+                        <span id="countVanDues" class="bg-rose-100 text-rose-700 rounded-full px-2 text-[10px]">0</span>
+                    </h4>
+                    <div id="containerVanReminders" class="space-y-2 text-[11px] font-semibold"></div>
                 </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-                    <span class="text-[10px] uppercase font-bold text-slate-400">Total Revenue Collected</span>
-                    <h4 class="text-xl font-black text-emerald-600 mt-1" id="kpiCollectedRevenue">₹0</h4>
+                <div class="bg-white p-3 rounded-2xl border border-slate-200">
+                    <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
+                        <span>Day Care</span>
+                        <span id="countDayCareDues" class="bg-rose-100 text-rose-700 rounded-full px-2 text-[10px]">0</span>
+                    </h4>
+                    <div id="containerDayCareReminders" class="space-y-2 text-[11px] font-semibold"></div>
                 </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-                    <span class="text-[10px] uppercase font-bold text-slate-400">Outstanding Pending Dues</span>
-                    <h4 class="text-xl font-black text-amber-600 mt-1" id="kpiDuesPending">₹0</h4>
-                </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-                    <span class="text-[10px] uppercase font-bold text-slate-400">Operational Outflows Logged</span>
-                    <h4 class="text-xl font-black text-rose-600 mt-1" id="kpiTotalExpenses">₹0</h4>
+                <div class="bg-white p-3 rounded-2xl border border-slate-200">
+                    <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
+                        <span>Custom Monthly Opt / Base</span>
+                        <span id="countOptDues" class="bg-rose-100 text-rose-700 rounded-full px-2 text-[10px]">0</span>
+                    </h4>
+                    <div id="containerOptReminders" class="space-y-2 text-[11px] font-semibold"></div>
                 </div>
             </div>
+        </section>
 
-            <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 space-y-4">
-                <div class="flex justify-between items-center flex-wrap gap-2 border-b pb-2">
-                    <h4 class="font-black text-sm text-indigo-950 uppercase tracking-wide">Expense Analytics Matrix</h4>
-                    <div class="flex space-x-1 bg-slate-100 p-1 rounded-xl text-xs font-bold">
-                        <button onclick="setExpenseGraphTimeframe('monthly')" id="btnExpTime-monthly" class="px-3 py-1.5 rounded-lg bg-white text-indigo-950 shadow-sm">Monthly Target View</button>
-                        <button onclick="setExpenseGraphTimeframe('currentYear')" id="btnExpTime-currentYear" class="px-3 py-1.5 rounded-lg text-slate-600">Financial Year (From June)</button>
-                        <button onclick="setExpenseGraphTimeframe('overall')" id="btnExpTime-overall" class="px-3 py-1.5 rounded-lg text-slate-600">Overall Historical</button>
+        <!-- VIEW: Total Rosters -->
+        <section id="view-rosters" class="view-screen px-3 pb-6 pt-2">
+            <div class="view-back-bar">
+                <button type="button" onclick="goToHome()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Home</button>
+                <h3 class="font-black text-sm text-indigo-950">Total Rosters</h3>
+            </div>
+            <div class="view-scroll space-y-3">
+                <div class="bg-gradient-to-br from-indigo-950 to-slate-900 p-5 rounded-2xl text-white">
+                    <span class="text-[10px] uppercase font-bold text-indigo-300">Total Active</span>
+                    <h4 class="text-3xl font-black text-amber-300 mt-1" id="countCohortTotal">0 Active</h4>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-indigo-600">
+                        <span class="text-[10px] uppercase font-bold text-slate-400">DR</span>
+                        <h4 class="text-xl font-black text-indigo-950 mt-1" id="countCohortDR">0 Kids</h4>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-rose-500">
+                        <span class="text-[10px] uppercase font-bold text-slate-400">EW</span>
+                        <h4 class="text-xl font-black text-indigo-950 mt-1" id="countCohortEW">0 Kids</h4>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-amber-500">
+                        <span class="text-[10px] uppercase font-bold text-slate-400">RTF1</span>
+                        <h4 class="text-xl font-black text-indigo-950 mt-1" id="countCohortRTF1">0 Kids</h4>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-emerald-500">
+                        <span class="text-[10px] uppercase font-bold text-slate-400">RTF2</span>
+                        <h4 class="text-xl font-black text-indigo-950 mt-1" id="countCohortRTF2">0 Kids</h4>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-purple-500 col-span-2">
+                        <span class="text-[10px] uppercase font-bold text-slate-400">Day Care Only</span>
+                        <h4 class="text-xl font-black text-indigo-950 mt-1" id="countCohortDC">0 Kids</h4>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="max-h-64 flex justify-center"><canvas id="collectionsBalanceChart"></canvas></div>
-                    <div class="max-h-64 flex justify-center"><canvas id="expenseCategoryChart"></canvas></div>
-                </div>
             </div>
+        </section>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                    <h4 class="font-black text-sm text-slate-700 mb-3" id="expenseFormHeader">Commit Operational Expenditure Row</h4>
+        <!-- VIEW: Expenses Entry -->
+        <section id="view-expenses" class="view-screen px-3 pb-6 pt-2">
+            <div class="view-back-bar">
+                <button type="button" onclick="goToHome()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Home</button>
+                <h3 class="font-black text-sm text-indigo-950">Expenses Entry</h3>
+            </div>
+            <div class="view-scroll space-y-4">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                    <h4 class="font-black text-sm text-slate-700 mb-3" id="expenseFormHeader">Add Expense</h4>
                     <form id="expenseForm" onsubmit="handleExpenseSubmission(event)" class="space-y-3 text-xs font-semibold">
                         <input type="hidden" id="expenseFormID" name="ExpenseID">
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 gap-3">
                             <div>
-                                <label class="block mb-1 text-slate-500">Outflow Date *</label>
-                                <input type="date" id="expenseInputDate" name="Date" required class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                                <label class="block mb-1 text-slate-500">Date *</label>
+                                <input type="date" id="expenseInputDate" name="Date" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
                             </div>
                             <div>
-                                <label class="block mb-1 text-slate-500">Category Bucket *</label>
-                                <select id="expenseInputCategory" name="Category" required class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                                <label class="block mb-1 text-slate-500">Category *</label>
+                                <select id="expenseInputCategory" name="Category" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
                                     <option value="Salaries">Staff Salaries</option>
                                     <option value="Rent">Infrastructure Rent</option>
                                     <option value="Utilities">Utilities & Power</option>
@@ -353,79 +379,139 @@
                                     <option value="Maintenance">General Asset Repairs</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block mb-1 text-slate-500">Debit Outflow Value (₹) *</label>
-                                <input type="number" id="expenseInputAmount" name="Amount" required class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                                <label class="block mb-1 text-slate-500">Amount (₹) *</label>
+                                <input type="number" id="expenseInputAmount" name="Amount" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
                             </div>
                             <div>
-                                <label class="block mb-1 text-slate-500">Commitment Character *</label>
-                                <select id="expenseInputType" name="Type" required class="w-full px-3 py-2 rounded-xl border bg-slate-50">
-                                    <option value="Fixed">Fixed Operational Commitment</option>
-                                    <option value="Variable">Variable Running Cost</option>
+                                <label class="block mb-1 text-slate-500">Type *</label>
+                                <select id="expenseInputType" name="Type" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
+                                    <option value="Fixed">Fixed</option>
+                                    <option value="Variable">Variable</option>
                                 </select>
                             </div>
-                        </div>
-                        <div>
-                            <label class="block mb-1 text-slate-500">Ledger Entry Description</label>
-                            <input type="text" id="expenseInputDescription" name="Description" placeholder="Provide contextual comments" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
+                            <div>
+                                <label class="block mb-1 text-slate-500">Description</label>
+                                <input type="text" id="expenseInputDescription" name="Description" placeholder="Notes" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
+                            </div>
                         </div>
                         <div class="flex space-x-2 pt-1" id="expenseFormActions">
-                            <button type="submit" class="w-full bg-rose-600 text-white font-bold py-2.5 rounded-xl shadow hover:bg-rose-700 transition">Save Ledger Entry</button>
+                            <button type="submit" class="w-full bg-rose-600 text-white font-bold py-3 rounded-xl shadow">Save Expense</button>
                         </div>
                     </form>
                 </div>
-
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 flex flex-col justify-between">
-                    <div>
-                        <h4 class="font-black text-sm text-slate-700 mb-3">Itemized Operational Expenditure Stream</h4>
-                        <div id="containerRunningExpensesList" class="space-y-2 max-h-52 overflow-y-auto pr-1 text-xs"></div>
-                    </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                    <h4 class="font-black text-sm text-slate-700 mb-3">Recent Expenses</h4>
+                    <div id="containerRunningExpensesList" class="space-y-2 text-xs"></div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Tab Content Viewport 3: Calendar Tab -->
-        <div id="calendarTab" class="tab-pane hidden space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 text-xs font-semibold">
-                    <h4 class="font-black text-sm text-slate-700 mb-3">Log Calendar Event Entry</h4>
+        <!-- VIEW: Events Entry -->
+        <section id="view-events" class="view-screen px-3 pb-6 pt-2">
+            <div class="view-back-bar">
+                <button type="button" onclick="goToHome()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Home</button>
+                <h3 class="font-black text-sm text-indigo-950">Events Entry</h3>
+            </div>
+            <div class="view-scroll space-y-4">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 text-xs font-semibold">
                     <form id="eventForm" onsubmit="handleEventSubmission(event)" class="space-y-3">
                         <div>
-                            <label class="block mb-1 text-slate-500">Event Title Summary *</label>
-                            <input type="text" name="Title" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                            <label class="block mb-1 text-slate-500">Event Title *</label>
+                            <input type="text" name="Title" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block mb-1 text-slate-500">Execution Date *</label>
-                                <input type="date" name="Date" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                                <label class="block mb-1 text-slate-500">Date *</label>
+                                <input type="date" name="Date" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
                             </div>
                             <div>
-                                <label class="block mb-1 text-slate-500">Scheduled Time</label>
-                                <input type="time" name="Time" class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
+                                <label class="block mb-1 text-slate-500">Time</label>
+                                <input type="time" name="Time" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
                             </div>
                         </div>
                         <div>
-                            <label class="block mb-1 text-slate-500">Calendar Classification Group *</label>
-                            <select name="Category" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
-                                <option value="Holiday">Official Academic Holiday</option>
-                                <option value="Meeting">Parent-Teacher Conference</option>
-                                <option value="Celebration">Theme Party/Celebration</option>
+                            <label class="block mb-1 text-slate-500">Category *</label>
+                            <select name="Category" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
+                                <option value="Holiday">Holiday</option>
+                                <option value="Meeting">Parent-Teacher Meeting</option>
+                                <option value="Celebration">Celebration</option>
                             </select>
                         </div>
-                        <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-xl shadow transition">Pin to Shared Calendar</button>
+                        <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl shadow">Save Event</button>
                     </form>
                 </div>
-
-                <div class="md:col-span-2 bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
-                    <h4 class="font-black text-sm text-slate-700 mb-4" id="calendarAgendaHeader">Active Event Agenda Timeline</h4>
-                    <div id="calendarAgendaStream" class="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-                        <p class="text-xs text-slate-400 font-medium">No events posted on the schedule matching current filters.</p>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                    <h4 class="font-black text-sm text-slate-700 mb-3" id="calendarAgendaHeader">Agenda</h4>
+                    <div id="calendarAgendaStream" class="space-y-3">
+                        <p class="text-xs text-slate-400 font-medium">No events yet.</p>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- VIEW: Edit Student -->
+        <section id="view-edit" class="view-screen px-3 pb-6 pt-2">
+            <div class="view-back-bar">
+                <button type="button" onclick="goToHome()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Home</button>
+                <h3 class="font-black text-sm text-indigo-950">Edit Student Data</h3>
+            </div>
+            <div class="view-scroll space-y-3">
+                <input type="text" id="editStudentSearch" oninput="renderEditStudentCards()" placeholder="Search by student name..." class="w-full px-3 py-3 rounded-xl text-sm font-medium border bg-white shadow-sm">
+                <p class="text-[11px] text-slate-500 font-semibold">Tap a student to edit their profile.</p>
+                <div id="editStudentCardsGrid" class="grid grid-cols-1 gap-3"></div>
+            </div>
+        </section>
+
+        <!-- VIEW: Finances (stats only) -->
+        <section id="view-finances" class="view-screen px-3 pb-6 pt-2">
+            <div class="view-back-bar">
+                <button type="button" onclick="goToHome()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Home</button>
+                <h3 class="font-black text-sm text-indigo-950">Finances</h3>
+            </div>
+            <div class="view-scroll space-y-4">
+                <div class="bg-white p-3 rounded-2xl shadow-sm border flex flex-wrap items-center gap-2 text-xs font-bold">
+                    <select id="expensePeriodMonth" onchange="renderFinanceLedger()" class="p-2 border rounded-xl bg-slate-50 flex-1">
+                        <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+                        <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+                        <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+                        <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+                    </select>
+                    <select id="expensePeriodYear" onchange="renderFinanceLedger()" class="p-2 border rounded-xl bg-slate-50">
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-white p-3 rounded-2xl shadow-sm border">
+                        <span class="text-[10px] uppercase font-bold text-slate-400">Billed</span>
+                        <h4 class="text-lg font-black text-indigo-950 mt-1" id="kpiGrossRevenue">₹0</h4>
+                    </div>
+                    <div class="bg-white p-3 rounded-2xl shadow-sm border">
+                        <span class="text-[10px] uppercase font-bold text-slate-400">Collected</span>
+                        <h4 class="text-lg font-black text-emerald-600 mt-1" id="kpiCollectedRevenue">₹0</h4>
+                    </div>
+                    <div class="bg-white p-3 rounded-2xl shadow-sm border">
+                        <span class="text-[10px] uppercase font-bold text-slate-400">Pending</span>
+                        <h4 class="text-lg font-black text-amber-600 mt-1" id="kpiDuesPending">₹0</h4>
+                    </div>
+                    <div class="bg-white p-3 rounded-2xl shadow-sm border">
+                        <span class="text-[10px] uppercase font-bold text-slate-400">Expenses</span>
+                        <h4 class="text-lg font-black text-rose-600 mt-1" id="kpiTotalExpenses">₹0</h4>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border space-y-3">
+                    <h4 class="font-black text-sm text-indigo-950">Analytics</h4>
+                    <div class="flex flex-wrap gap-1 bg-slate-100 p-1 rounded-xl text-[10px] font-bold">
+                        <button type="button" onclick="setExpenseGraphTimeframe('monthly')" id="btnExpTime-monthly" class="px-2 py-1.5 rounded-lg bg-white text-indigo-950 shadow-sm flex-1">Monthly</button>
+                        <button type="button" onclick="setExpenseGraphTimeframe('currentYear')" id="btnExpTime-currentYear" class="px-2 py-1.5 rounded-lg text-slate-600 flex-1">FY</button>
+                        <button type="button" onclick="setExpenseGraphTimeframe('overall')" id="btnExpTime-overall" class="px-2 py-1.5 rounded-lg text-slate-600 flex-1">Overall</button>
+                    </div>
+                    <div class="max-h-52 flex justify-center"><canvas id="collectionsBalanceChart"></canvas></div>
+                    <div class="max-h-52 flex justify-center"><canvas id="expenseCategoryChart"></canvas></div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Student Profile Edit Modal Container -->
@@ -449,11 +535,11 @@
                 <div id="editModelWrapper" class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 flex items-center space-x-6">
                     <span class="font-black text-indigo-950">Billing Pipeline Model:</span>
                     <label class="flex items-center space-x-1 cursor-pointer">
-                        <input type="radio" id="editModelRegular" name="EditBillingModel" value="Regular">
+                        <input type="radio" id="editModelRegular" name="EditBillingModel" value="Regular" onchange="handleEditFormBillingTypeChange('Regular')">
                         <span>Regular Base Model</span>
                     </label>
                     <label class="flex items-center space-x-1 cursor-pointer">
-                        <input type="radio" id="editModelMonthly" name="EditBillingModel" value="Monthly">
+                        <input type="radio" id="editModelMonthly" name="EditBillingModel" value="Monthly" onchange="handleEditFormBillingTypeChange('Monthly')">
                         <span>Custom Monthly Model</span>
                     </label>
                 </div>
@@ -643,13 +729,220 @@
         let globalAppState = { students: [], payments: [], expenses: [], events: [], standardFees: { "DR":41000, "EW":42000, "RTF1":43000, "RTF2":44000 } };
         let currentActiveCohortFilter = 'ALL';
         let currentExpenseTimeframeContext = 'monthly';
-        let activeSystemMonthContext = "July-2026";
+        const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
         const AVATAR_COLORS = ['bg-indigo-500', 'bg-rose-500', 'bg-emerald-500', 'bg-amber-500', 'bg-purple-500', 'bg-sky-500'];
+
+        function getMonthYearLabel(dateObj = new Date()) {
+            return `${MONTH_NAMES[dateObj.getMonth()]}-${dateObj.getFullYear()}`;
+        }
+
+        function parseMonthYearLabel(label) {
+            const parts = (label || "").split("-");
+            if (parts.length < 2) return null;
+            const monthIdx = MONTH_NAMES.indexOf(parts[0]);
+            const year = parseInt(parts[1], 10);
+            if (monthIdx < 0 || isNaN(year)) return null;
+            return { month: monthIdx, year };
+        }
+
+        let activeSystemMonthContext = getMonthYearLabel();
+
+        function calculateExactAge(dateVal) {
+            if (!dateVal) return 0;
+            const iso = formatToInputDate(dateVal);
+            if (!iso) return 0;
+            const [y, m, d] = iso.split("-").map(Number);
+            const birth = new Date(y, m - 1, d);
+            const today = new Date();
+            let age = today.getFullYear() - birth.getFullYear();
+            const beforeBirthday = today.getMonth() < birth.getMonth() ||
+                (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate());
+            if (beforeBirthday) age -= 1;
+            return Math.max(0, age);
+        }
+
+        function calculateIntakeDiscount() {
+            const cls = document.getElementById('intakeClassSelect')?.value;
+            const standard = Number(globalAppState.standardFees[cls]) || 0;
+            const agreed = Number(document.getElementById('intakeAnnualTuition')?.value) || 0;
+            const discount = Math.max(0, standard - agreed);
+            const badge = document.getElementById('intakeDiscountBadge');
+            if (badge) badge.innerText = `₹${discount} Offered Discount`;
+            return discount;
+        }
+
+        function calculateEditDiscount() {
+            const cls = document.getElementById('editClass')?.value;
+            const standard = Number(globalAppState.standardFees[cls]) || 0;
+            const agreed = Number(document.getElementById('editCustomFee')?.value) || 0;
+            const discount = Math.max(0, standard - agreed);
+            const badge = document.getElementById('editDiscountBadge');
+            if (badge) badge.innerText = `₹${discount} Offered Discount`;
+            return discount;
+        }
+
+        function getStudentPayments(sid) {
+            return globalAppState.payments.filter(p => (p.StudentID || p.studentid) === sid);
+        }
+
+        function isServicePayment(remarks, serviceKey) {
+            const r = (remarks || "").toString();
+            if (serviceKey === "Van") return r.includes("Van");
+            if (serviceKey === "DayCare") return r.includes("DayCare") || r.includes("Day Care");
+            if (serviceKey === "OptMonthly") return r.includes("OptMonthly");
+            return false;
+        }
+
+        function isTuitionPayment(remarks) {
+            const r = (remarks || "").toString();
+            return !r.includes("Van") && !r.includes("DayCare") && !r.includes("Day Care") && !r.includes("OptMonthly");
+        }
+
+        function getElapsedMonthsToBill(student, periodLabel = activeSystemMonthContext) {
+            let elapsed = 1;
+            const rawDoj = student.DOJ || student.doj || "";
+            const dateClean = rawDoj.toString().trim().replace(/[\/\s]/g, "-");
+            const period = parseMonthYearLabel(periodLabel);
+            if (!period || !dateClean.includes("-")) return elapsed;
+            const parts = dateClean.split("-");
+            let jYear = parseInt(parts[0], 10);
+            let jMonth = parseInt(parts[1], 10) - 1;
+            if (parts[0].length < 4) { jYear = parseInt(parts[2], 10); jMonth = parseInt(parts[1], 10) - 1; }
+            if (isNaN(jYear) || isNaN(jMonth)) return elapsed;
+            const joinDate = new Date(jYear, jMonth, 1);
+            const currentPeriodDate = new Date(period.year, period.month, 1);
+            const diffMonths = (currentPeriodDate.getFullYear() - joinDate.getFullYear()) * 12 +
+                (currentPeriodDate.getMonth() - joinDate.getMonth());
+            if (diffMonths > 0) elapsed += diffMonths;
+            return elapsed;
+        }
+
+        function getOneTimeTuitionBilled(student) {
+            return (Number(student.CustomFee || student.customfee) || 0) +
+                (Number(student.AdmissionFee || student.admissionfee) || 0) +
+                (Number(student.StudentKitFee || student.studentkitfee) || 0) +
+                (Number(student.SpareUniformFee || student.spareuniformfee) || 0);
+        }
+
+        function getStudentReceivables(student) {
+            const elapsed = getElapsedMonthsToBill(student);
+            const oneTime = getOneTimeTuitionBilled(student);
+            const van = Number(student.VanFee || student.vanfee) || 0;
+            const isDayCareTrack = (student.Class || student.class) === "DayCare";
+            const dayCareMonthly = isDayCareTrack
+                ? (Number(student.OptMonthlyFee || student.optmonthlyfee) || 0)
+                : (Number(student.DayCareFee || student.daycarefee) || 0);
+            const optMonthly = (!isDayCareTrack && (student.BillingModel === "Monthly" || student.billingmodel === "Monthly"))
+                ? (Number(student.OptMonthlyFee || student.optmonthlyfee) || 0)
+                : 0;
+            return oneTime + ((van + dayCareMonthly + optMonthly) * elapsed);
+        }
+
+        function getOrCreateMonthPaymentMeta(sid, periodLabel = activeSystemMonthContext) {
+            const logs = getStudentPayments(sid);
+            return logs.find(x => (x.MonthYear || x.monthyear) === periodLabel) || null;
+        }
+
+        function openPaymentModal(sid) {
+            const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+            if (!s) return;
+            const logs = getStudentPayments(sid);
+            const totalBilled = getOneTimeTuitionBilled(s);
+            let totalPaid = 0;
+            logs.forEach(p => {
+                if (isTuitionPayment(p.Remarks || p.remarks)) {
+                    totalPaid += Number(p.AmountPaid || p.amountpaid) || 0;
+                }
+            });
+            const outstanding = Math.max(0, totalBilled - totalPaid);
+
+            document.getElementById('modalTargetStudentID').value = sid;
+            document.getElementById('modalStudentTitleName').innerText = s.StudentName || s.studentname || "Fee Particulars";
+            document.getElementById('modalStudentCohortSubtitle').innerText = `${s.Class || s.class || ""} Balance Monitoring Sheet`;
+            document.getElementById('lblModalTotalBilled').innerText = `₹${totalBilled}`;
+            document.getElementById('lblModalTotalPaid').innerText = `₹${totalPaid}`;
+            document.getElementById('lblModalOutstandingBalance').innerText = `₹${outstanding}`;
+            document.getElementById('txAmountPaid').value = outstanding > 0 ? outstanding : "";
+            document.getElementById('txPaymentDate').value = new Date().toISOString().substring(0, 10);
+            document.getElementById('txPaymentMode').value = "Cash";
+            document.getElementById('txRemarks').value = "";
+            document.getElementById('paymentModalOverlay').classList.remove('hidden');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModalOverlay').classList.add('hidden');
+        }
+
+        async function commitParticularsTransaction(e) {
+            e.preventDefault();
+            const sid = document.getElementById('modalTargetStudentID').value;
+            const amount = Number(document.getElementById('txAmountPaid').value) || 0;
+            if (amount <= 0) { alert("Enter a valid payment amount."); return; }
+            const payDate = document.getElementById('txPaymentDate').value;
+            const mode = document.getElementById('txPaymentMode').value;
+            const remarks = document.getElementById('txRemarks').value.trim() || "Tuition Installment";
+            const payId = "PAY-" + sid + "-" + Date.now();
+            const row = [payId, sid, activeSystemMonthContext, amount, payDate, mode, remarks, "Active", ""];
+            await fetch(APP_SHEET_API_URL, {
+                method: "POST", mode: "no-cors",
+                body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })
+            });
+            alert("✅ Tuition installment logged!");
+            closePaymentModal();
+            await refreshApplicationState(false);
+        }
+
+        async function toggleReminderNullify(sid, serviceKey, isChecked) {
+            const period = activeSystemMonthContext;
+            const existing = getOrCreateMonthPaymentMeta(sid, period);
+            let flags = (existing?.NullifiedServices || existing?.nullifiedservices || "").toString()
+                .split(",").map(x => x.trim()).filter(Boolean);
+            if (isChecked) {
+                if (!flags.includes(serviceKey)) flags.push(serviceKey);
+            } else {
+                flags = flags.filter(f => f !== serviceKey);
+            }
+            const nullified = flags.join(",");
+            const payId = (existing && (existing.PaymentID || existing.paymentid)) || ("PAY-" + sid + "-" + period);
+            const amount = Number(existing?.AmountPaid || existing?.amountpaid) || 0;
+            const mode = existing?.PaymentMode || existing?.paymentmode || "Cash";
+            const remarks = existing?.Remarks || existing?.remarks || "Month Meta";
+            const status = existing?.Status || existing?.status || "Active";
+            const payDate = existing?.PaymentDate || existing?.paymentdate || new Date().toISOString().substring(0, 10);
+            const row = [payId, sid, period, amount, payDate, mode, remarks, status, nullified];
+            const actionType = existing ? "updateRow" : "addRow";
+            await fetch(APP_SHEET_API_URL, {
+                method: "POST", mode: "no-cors",
+                body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: actionType, targetSheet: "Fee_Payments", rowId: payId, rowData: row })
+            });
+            await refreshApplicationState(false);
+        }
+
+        async function commitReminderSettlement(sid, serviceKey, dueAmount) {
+            const amount = Number(dueAmount) || 0;
+            if (amount <= 0) { alert("Nothing outstanding to settle."); return; }
+            let modeElId = "mode-van-" + sid;
+            if (serviceKey === "DayCare") modeElId = "mode-dc-" + sid;
+            if (serviceKey === "OptMonthly") modeElId = "mode-opt-" + sid;
+            const mode = document.getElementById(modeElId)?.value || "Cash";
+            const remarkTag = serviceKey === "DayCare" ? "DayCare Settlement" :
+                (serviceKey === "OptMonthly" ? "OptMonthly Settlement" : "Van Settlement");
+            const payId = "PAY-" + sid + "-" + serviceKey + "-" + Date.now();
+            const row = [payId, sid, activeSystemMonthContext, amount, new Date().toISOString().substring(0, 10), mode, remarkTag, "Active", ""];
+            await fetch(APP_SHEET_API_URL, {
+                method: "POST", mode: "no-cors",
+                body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })
+            });
+            alert(`✅ ${serviceKey} dues settled (₹${amount})`);
+            await refreshApplicationState(false);
+        }
 
         function attemptAuthentication() {
             if (document.getElementById('gateKey').value === CURRENT_GATE_PASSPHRASE) {
                 document.getElementById('authShield').classList.add('hidden');
                 document.getElementById('appWorkspace').classList.remove('hidden');
+                document.getElementById('appHeader').classList.remove('hidden');
+                showView('home');
                 refreshApplicationState(false);
             } else {
                 document.getElementById('authError').classList.remove('hidden');
@@ -659,11 +952,38 @@
         function triggerSystemLogout() {
             document.getElementById('authShield').classList.remove('hidden');
             document.getElementById('appWorkspace').classList.add('hidden');
+            document.getElementById('appHeader').classList.add('hidden');
             document.getElementById('gateKey').value = "";
+            toggleHeaderMenu(false);
             window.scrollTo(0,0);
         }
 
-        function goToHome() { switchTab('studentsTab'); }
+        function toggleHeaderMenu(force) {
+            const menu = document.getElementById('headerMenu');
+            if (!menu) return;
+            if (force === false) menu.classList.add('hidden');
+            else if (force === true) menu.classList.remove('hidden');
+            else menu.classList.toggle('hidden');
+        }
+
+        function goToHome() { showView('home'); }
+
+        function showView(viewId) {
+            toggleHeaderMenu(false);
+            document.querySelectorAll('.view-screen').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById('view-' + viewId);
+            if (target) target.classList.add('active');
+            const backBtn = document.getElementById('headerBackBtn');
+            if (backBtn) backBtn.classList.toggle('hidden', viewId === 'home');
+            window.scrollTo(0, 0);
+            if (viewId === 'search') renderStudentCards();
+            if (viewId === 'edit') renderEditStudentCards();
+            if (viewId === 'fees') renderFrontPageReminders();
+            if (viewId === 'rosters') renderCohortHeadcounts();
+            if (viewId === 'finances' || viewId === 'expenses') renderFinanceLedger();
+            if (viewId === 'events') renderCalendarAgenda();
+        }
+
         function openChangePasswordModal() {
             document.getElementById('newPasscodeInput').value = CURRENT_GATE_PASSPHRASE;
             document.getElementById('changePasswordModalOverlay').classList.remove('hidden');
@@ -793,17 +1113,12 @@
             calculateEditDiscount();
         }
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-white', 'text-indigo-950', 'shadow-sm');
-                btn.classList.add('text-slate-600', 'hover:bg-slate-300');
-            });
-            document.getElementById(tabId).classList.remove('hidden');
-            const b = document.getElementById('btn-' + tabId); if(b) b.classList.add('bg-white', 'text-indigo-950', 'shadow-sm');
-            if (tabId === 'financeTab') { renderFinanceLedger(); }
-            window.scrollTo(0,0);
+        function showViewLegacyCompat(tabId) {
+            if (tabId === 'financeTab') showView('finances');
+            else if (tabId === 'calendarTab') showView('events');
+            else showView('home');
         }
+        function switchTab(tabId) { showViewLegacyCompat(tabId); }
 
         async function refreshApplicationState(showUserAlert) {
             try {
@@ -817,65 +1132,121 @@
                     
                     try { renderCohortHeadcounts(); } catch(e){console.error("Headcount Error:", e);}
                     try { renderStudentCards(); } catch(e){console.error("Cards Error:", e);}
+                    try { renderEditStudentCards(); } catch(e){console.error("Edit Cards Error:", e);}
                     try { renderFrontPageReminders(); } catch(e){console.error("Reminders Error:", e);}
-                    try { renderBirthdayWidget(); } catch(e){console.error("Birthday Error:", e);}
                     try { renderCalendarAgenda(); } catch(e){console.error("Calendar Error:", e);}
                     try { renderFinanceLedger(); } catch(e){console.error("Finance Error:", e);}
-                    try { renderInsightsPanel(); } catch(e){console.error("Insights Error:", e);}
                     
-                    if(showUserAlert) { alert("🔄 Cloud database sheets synchronized successfully!"); }
+                    if(showUserAlert) { alert("Synced successfully!"); }
                 }
             } catch (err) { console.error("Database connection lost:", err); }
         }
 
+        function updateTileBadge(id, count) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (count > 0) {
+                el.innerText = count > 99 ? "99+" : String(count);
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        }
+
         function renderCohortHeadcounts() {
             const list = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED");
-            document.getElementById('countCohortDR').innerText = `${list.filter(s=>s.Class==='DR').length} Kids`;
-            document.getElementById('countCohortEW').innerText = `${list.filter(s=>s.Class==='EW').length} Kids`;
-            document.getElementById('countCohortRTF1').innerText = `${list.filter(s=>s.Class==='RTF1').length} Kids`;
-            document.getElementById('countCohortRTF2').innerText = `${list.filter(s=>s.Class==='RTF2').length} Kids`;
-            document.getElementById('countCohortDC').innerText = `${list.filter(s=>s.Class==='DayCare').length} Kids`;
-            document.getElementById('countCohortTotal').innerText = `${list.length} Active`;
+            const setTxt = (id, text) => { const el = document.getElementById(id); if (el) el.innerText = text; };
+            setTxt('countCohortDR', `${list.filter(s=>s.Class==='DR').length} Kids`);
+            setTxt('countCohortEW', `${list.filter(s=>s.Class==='EW').length} Kids`);
+            setTxt('countCohortRTF1', `${list.filter(s=>s.Class==='RTF1').length} Kids`);
+            setTxt('countCohortRTF2', `${list.filter(s=>s.Class==='RTF2').length} Kids`);
+            setTxt('countCohortDC', `${list.filter(s=>s.Class==='DayCare').length} Kids`);
+            setTxt('countCohortTotal', `${list.length} Active`);
+            updateTileBadge('tileBadgeRosters', list.length);
         }
 
         function renderStudentCards() {
-            const grid = document.getElementById('studentCardsGrid'); grid.innerHTML = '';
+            const grid = document.getElementById('studentCardsGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
             let list = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED");
             if (currentActiveCohortFilter !== 'ALL') list = list.filter(s => s.Class === currentActiveCohortFilter);
-            const search = document.getElementById('rosterSearch').value.toLowerCase();
-            if (search) list = list.filter(s => s.StudentName.toLowerCase().includes(search));
+            const searchEl = document.getElementById('rosterSearch');
+            const search = (searchEl?.value || "").toLowerCase();
+            if (search) list = list.filter(s => (s.StudentName || s.studentname || "").toLowerCase().includes(search));
+
+            if (!list.length) {
+                grid.innerHTML = '<p class="text-xs text-slate-400 font-medium py-6 text-center">No students found.</p>';
+                return;
+            }
 
             list.forEach((s, index) => {
+                const sid = s.StudentID || s.studentid;
                 const isRegularModel = (s.BillingModel === "Regular" || s.billingmodel === "Regular");
+                const colorClass = AVATAR_COLORS[index % AVATAR_COLORS.length];
+                const name = s.StudentName || s.studentname || "";
+                const imageContent = (s.PhotoBase64 && s.PhotoBase64 !== "N/A" && s.PhotoBase64.length > 50) 
+                    ? `<img src="${s.PhotoBase64}" class="w-full h-full object-cover">` 
+                    : `<div class="w-full h-full ${colorClass} text-white font-black flex items-center justify-center text-xl shadow-inner uppercase">${name.charAt(0)}</div>`;
+                const phoneNumVal = s.Contact || s.contact || "N/A";
+                const guardNameVal = s.GuardianName || s.guardianname || "N/A";
+                const trackingActionBtn = isRegularModel 
+                    ? `<button type="button" onclick="openPaymentModal('${sid}')" class="bg-indigo-50 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-[11px]">Fee Particulars</button>`
+                    : `<span class="text-[10px] bg-slate-100 px-2 py-1 rounded text-slate-400 font-bold">Monthly</span>`;
+
+                grid.insertAdjacentHTML('beforeend', `
+                    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-14 h-14 rounded-xl bg-indigo-50 border flex-shrink-0 overflow-hidden">${imageContent}</div>
+                            <div class="flex-1 min-w-0">
+                                <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded uppercase">${s.Class === 'DayCare' ? 'DayCare' : s.Class}</span>
+                                <h4 class="font-black text-slate-900 text-sm truncate mt-1">${name}</h4>
+                                <p class="text-[11px] text-slate-600 font-bold mt-1">Guardian: ${guardNameVal}</p>
+                                <p class="text-[11px] text-indigo-700 font-mono font-bold mt-0.5">${phoneNumVal}</p>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-2 border-t flex justify-end">${trackingActionBtn}</div>
+                    </div>
+                `);
+            });
+        }
+
+        function renderEditStudentCards() {
+            const grid = document.getElementById('editStudentCardsGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            let list = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED");
+            const search = (document.getElementById('editStudentSearch')?.value || "").toLowerCase().trim();
+            if (search) list = list.filter(s => (s.StudentName || s.studentname || "").toLowerCase().includes(search));
+            else list = list.slice(0, 40);
+
+            if (!list.length) {
+                grid.innerHTML = '<p class="text-xs text-slate-400 font-medium py-6 text-center">No matching students.</p>';
+                return;
+            }
+
+            list.forEach((s, index) => {
+                const sid = s.StudentID || s.studentid;
+                const name = s.StudentName || s.studentname || "";
                 const colorClass = AVATAR_COLORS[index % AVATAR_COLORS.length];
                 const imageContent = (s.PhotoBase64 && s.PhotoBase64 !== "N/A" && s.PhotoBase64.length > 50) 
                     ? `<img src="${s.PhotoBase64}" class="w-full h-full object-cover">` 
-                    : `<div class="w-full h-full ${colorClass} text-white font-black flex items-center justify-center text-xl shadow-inner uppercase">${s.StudentName.charAt(0)}</div>`;
-
+                    : `<div class="w-full h-full ${colorClass} text-white font-black flex items-center justify-center text-lg uppercase">${name.charAt(0)}</div>`;
                 const phoneNumVal = s.Contact || s.contact || "N/A";
                 const guardNameVal = s.GuardianName || s.guardianname || "N/A";
 
-                const trackingActionBtn = isRegularModel 
-                    ? `<button onclick="openPaymentModal('${s.StudentID || s.studentid}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-[11px]">Fee Particulars</button>`
-                    : `<span class="text-[10px] bg-slate-100 px-2 py-1 rounded text-slate-400 font-bold">Monthly Account</span>`;
-
                 grid.insertAdjacentHTML('beforeend', `
-                    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm gamified-card flex flex-col justify-between cursor-pointer" onclick="openStudentDetailModal('${s.StudentID || s.studentid}')">
-                        <div class="flex items-start space-x-4">
-                            <div class="w-16 h-16 rounded-2xl bg-indigo-50 border flex-shrink-0 flex items-center justify-center overflow-hidden font-black text-xl text-indigo-500">
-                                ${imageContent}
+                    <button type="button" onclick="openStudentDetailModal('${sid}')" class="w-full text-left bg-white rounded-2xl p-4 border border-violet-100 shadow-sm active:scale-[0.99] transition">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 border">${imageContent}</div>
+                            <div class="min-w-0 flex-1">
+                                <h4 class="font-black text-sm text-slate-900 truncate">${name}</h4>
+                                <p class="text-[10px] font-bold text-violet-700 uppercase mt-0.5">${s.Class || s.class || ""}</p>
+                                <p class="text-[11px] text-slate-600 font-semibold mt-1">${guardNameVal} · ${phoneNumVal}</p>
                             </div>
-                            <div class="flex-1 min-w-0">
-                                <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded uppercase">${s.Class === 'DayCare' ? 'DayCare Track' : s.Class}</span>
-                                <h4 class="font-black text-slate-900 text-sm truncate mt-1">${s.StudentName || s.studentname}</h4>
-                                <p class="text-[11px] text-slate-600 font-bold mt-1">👤 Guard: ${guardNameVal}</p>
-                                <p class="text-[11px] text-indigo-700 font-mono font-bold mt-0.5">📞 Phone: ${phoneNumVal}</p>
-                            </div>
+                            <span class="text-violet-600 text-xs font-black self-center">Edit →</span>
                         </div>
-                        <div class="mt-4 pt-3 border-t flex justify-end items-center" onclick="event.stopPropagation();">
-                            ${trackingActionBtn}
-                        </div>
-                    </div>
+                    </button>
                 `);
             });
         }
@@ -902,36 +1273,22 @@
             const optBox = document.getElementById('containerOptReminders'); if(optBox) optBox.innerHTML = '';
             let vCount = 0, dCount = 0, oCount = 0;
 
-            const targetPeriodMonthStr = "July-2026";
+            const targetPeriodMonthStr = activeSystemMonthContext;
             if(document.getElementById('reminderPeriodBadge')) document.getElementById('reminderPeriodBadge').innerText = `${targetPeriodMonthStr} Context View`;
 
             globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED").forEach(s => {
-                const studentPaymentsLog = globalAppState.payments.filter(x => x.StudentID === s.StudentID || x.studentid === s.StudentID) || [];
-                const activeMonthPaymentRow = studentPaymentsLog.find(x => x.MonthYear === targetPeriodMonthStr || x.monthyear === targetPeriodMonthStr) || {};
-                const activeNullifiedFlags = (activeMonthPaymentRow.NullifiedServices || activeMonthPaymentRow.nullifiedservices || "").toString().split(',');
+                const sid = s.StudentID || s.studentid;
+                const studentPaymentsLog = getStudentPayments(sid);
+                const activeMonthPaymentRow = getOrCreateMonthPaymentMeta(sid, targetPeriodMonthStr) || {};
+                const activeNullifiedFlags = (activeMonthPaymentRow.NullifiedServices || activeMonthPaymentRow.nullifiedservices || "").toString().split(',').map(x => x.trim());
 
-                let elapsedMonthsToBillCount = 1;
-                const rawDoj = s.DOJ || s.doj || "";
-                const dateClean = rawDoj.toString().trim().replace(/[\/\s]/g, "-");
-                if(dateClean.includes("-")) {
-                    const parts = dateClean.split('-');
-                    let jYear = parseInt(parts[0], 10);
-                    let jMonth = parseInt(parts[1], 10) - 1;
-                    if (parts[0].length < 4) { jYear = parseInt(parts[2], 10); jMonth = parseInt(parts[1], 10) - 1; }
-                    
-                    if(!isNaN(jYear) && !isNaN(jMonth)) {
-                        const joinDate = new Date(jYear, jMonth, 1);
-                        const currentPeriodDate = new Date(2026, 6, 1);
-                        const diffMonths = (currentPeriodDate.getFullYear() - joinDate.getFullYear()) * 12 + (currentPeriodDate.getMonth() - joinDate.getMonth());
-                        if(diffMonths > 0) elapsedMonthsToBillCount += diffMonths;
-                    }
-                }
+                const elapsedMonthsToBillCount = getElapsedMonthsToBill(s, targetPeriodMonthStr);
 
                 if (Number(s.VanFee || s.vanfee) > 0) {
                     let totalBilledVan = elapsedMonthsToBillCount * Number(s.VanFee || s.vanfee);
                     let totalPaidVan = 0;
                     studentPaymentsLog.forEach(p => {
-                        if((p.Remarks || p.remarks || "").toString().includes("Van")) {
+                        if(isServicePayment(p.Remarks || p.remarks, "Van")) {
                             totalPaidVan += Number(p.AmountPaid || p.amountpaid) || 0;
                         }
                     });
@@ -970,7 +1327,7 @@
                     let totalBilledDC = elapsedMonthsToBillCount * monthlyBaseRateValue;
                     let totalPaidDC = 0;
                     studentPaymentsLog.forEach(p => {
-                        if(((p.Remarks || p.remarks || "").toString().includes("DayCare") || (p.Remarks || p.remarks || "").toString().includes("Day Care"))) {
+                        if(isServicePayment(p.Remarks || p.remarks, "DayCare")) {
                             totalPaidDC += Number(p.AmountPaid || p.amountpaid) || 0;
                         }
                     });
@@ -1007,7 +1364,7 @@
                     let totalBilledOpt = elapsedMonthsToBillCount * Number(s.OptMonthlyFee || s.optmonthlyfee);
                     let totalPaidOpt = 0;
                     studentPaymentsLog.forEach(p => {
-                        if((p.Remarks || p.remarks || "").toString().includes("OptMonthly")) {
+                        if(isServicePayment(p.Remarks || p.remarks, "OptMonthly")) {
                             totalPaidOpt += Number(p.AmountPaid || p.amountpaid) || 0;
                         }
                     });
@@ -1044,6 +1401,7 @@
             if(document.getElementById('countVanDues')) document.getElementById('countVanDues').innerText = vCount;
             if(document.getElementById('countDayCareDues')) document.getElementById('countDayCareDues').innerText = dCount;
             if(document.getElementById('countOptDues')) document.getElementById('countOptDues').innerText = oCount;
+            updateTileBadge('tileBadgeFees', vCount + dCount + oCount);
         }
 
         // Safe Defensive Modal populator wraps element target mapping securely to prevent runtime locks
@@ -1153,15 +1511,18 @@
             let totalReceivables = 0, totalCollected = 0, totalExpenses = 0; const cats = {};
             const expenseStreamBox = document.getElementById('containerRunningExpensesList'); if(expenseStreamBox) expenseStreamBox.innerHTML = '';
             
-            const selectedMonth = parseInt(document.getElementById('expensePeriodMonth').value, 10);
-            const selectedYear = parseInt(document.getElementById('expensePeriodYear').value, 10);
+            const selectedMonthEl = document.getElementById('expensePeriodMonth');
+            const selectedYearEl = document.getElementById('expensePeriodYear');
+            const now = new Date();
+            const selectedMonth = selectedMonthEl ? parseInt(selectedMonthEl.value, 10) : now.getMonth();
+            const selectedYear = selectedYearEl ? parseInt(selectedYearEl.value, 10) : now.getFullYear();
 
             globalAppState.payments.forEach(p => {
                 totalCollected += (Number(p.amountpaid || p.AmountPaid) || 0);
             });
 
-            globalAppState.students.filter(s=>s.StudentName.toString().trim() !== "DELETED").forEach(s => {
-                totalReceivables += (Number(s.CustomFee || s.customfee)||0) + (Number(s.AdmissionFee || s.admissionfee)||0) + (Number(s.StudentKitFee || s.studentkitfee)||0) + (Number(s.SpareUniformFee || s.spareuniformfee)||0) + (Number(s.VanFee || s.vanfee)||0) + (Number(s.DayCareFee || s.daycarefee)||0) + (Number(s.OptMonthlyFee || s.optmonthlyfee)||0);
+            globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED").forEach(s => {
+                totalReceivables += getStudentReceivables(s);
             });
 
             let filteredExpenses = globalAppState.expenses.filter(x => x && (x.Date || x.date));
@@ -1211,6 +1572,7 @@
         }
 
         function loadExpenseToEditForm(expId) {
+            showView('expenses');
             const e = globalAppState.expenses.find(x => (x.expenseid || x.ExpenseID) === expId);
             if(!e) return;
             if(document.getElementById('expenseFormID')) document.getElementById('expenseFormID').value = expId;
@@ -1250,54 +1612,47 @@
             }
         }
 
-        function renderBirthdayWidget() {
-            const c = document.getElementById('birthdayRosterContainer'); const bdays = [];
-            globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED").forEach(s => {
-                const rawDob = s.DOB || s.dob || "";
-                if(!rawDob) return; 
-                const dateClean = rawDob.toString().trim().replace(/[\/\s]/g, "-");
-                const parts = dateClean.split('-');
-                if(parts.length < 2) return;
-                
-                let birthMonth = parts[1]; let birthDay = parts[2];
-                if(parts[0].length < 4) { birthMonth = parts[1]; birthDay = parts[0]; }
-                
-                if(parseInt(birthMonth,10) === 7) {
-                    bdays.push(`🎂 <strong>${s.StudentName || s.studentname}</strong> - July ${parseInt(birthDay,10)} (Turning ${calculateExactAge(rawDob)} Yrs)`);
-                }
-            });
-            if(c) c.innerHTML = bdays.length ? bdays.join('<br>') : "✨ No birthdays recorded for July.";
-        }
-
         function renderCalendarAgenda() {
             const stream = document.getElementById('calendarAgendaStream'); if(!stream) return; stream.innerHTML = '';
-            if(!globalAppState.events.length) { stream.innerHTML = '<p class="text-xs text-slate-400">No events posted on the schedule matching current filters.</p>'; return; }
-            globalAppState.events.forEach(e => {
+            if(!globalAppState.events.length) { stream.innerHTML = '<p class="text-xs text-slate-400">No events yet.</p>'; return; }
+            const sorted = [...globalAppState.events].sort((a, b) => {
+                const da = formatToInputDate(a.Date || a.date || "") || "";
+                const db = formatToInputDate(b.Date || b.date || "") || "";
+                return da.localeCompare(db);
+            });
+            sorted.forEach(e => {
                 const titleVal = e.Title || e.title || "";
                 const dateVal = e.Date || e.date || "";
-                stream.insertAdjacentHTML('beforeend', `<div class="p-3 border-l-4 border-indigo-500 bg-indigo-50 text-slate-900 text-xs font-semibold flex justify-between"><div><h5 class="font-black">${titleVal}</h5><span>🗓️ ${dateVal.toString().substring(0,10)}</span></div></div>`);
+                const timeVal = e.Time || e.time || "";
+                const catVal = e.Category || e.category || "";
+                stream.insertAdjacentHTML('beforeend', `<div class="p-3 border-l-4 border-indigo-500 bg-indigo-50 text-slate-900 text-xs font-semibold"><h5 class="font-black">${titleVal}</h5><span>${dateVal.toString().substring(0,10)}${timeVal ? " · " + timeVal : ""}</span>${catVal ? `<p class="text-[10px] text-indigo-700 font-bold mt-1 uppercase">${catVal}</p>` : ""}</div>`);
             });
-        }
-
-        function renderInsightsPanel() { 
-            const insBox = document.getElementById('insightsBox'); if(!insBox) return;
-            let hints = [`<li>🟢 Database synchronization channels operational.</li>`];
-            let list = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED" && s.Class === "DayCare");
-            if(list.length > 0) hints.push(`<li>💼 Isolated track verification active for ${list.length} pure Day Care enrollments.</li>`);
-            insBox.innerHTML = `<ul class="list-disc pl-4 space-y-0.5">${hints.join('')}</ul>`; 
         }
 
         function triggerDeleteStudent() {
             const sid = document.getElementById('detailStudentID').value;
             if(confirm("Permanently wipe out student enrollment data row?")) {
-                fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: [sid, "DELETED", "", "", "", "", "", "", "", "N/A"] })}).then(() => {
+                const deletedRow = [sid, "DELETED", "", "", "", "", "", "", "", "N/A", "Regular", 0, 0, 0, 0, 0, 0, 0, "", ""];
+                fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: deletedRow })}).then(() => {
                     alert("Profile Terminated!"); closeStudentDetailModal(); refreshApplicationState(false);
                 });
             }
         }
 
         function executeSearchFilter() { renderStudentCards(); }
-        function filterCohort(type) { currentActiveCohortFilter = type; document.querySelectorAll('.cohort-filter-btn').forEach(b => b.classList.replace('bg-indigo-600', 'bg-slate-100')); event.target.classList.replace('bg-slate-100', 'bg-indigo-600'); renderStudentCards(); }
+        function filterCohort(type, btn) {
+            currentActiveCohortFilter = type;
+            document.querySelectorAll('.cohort-filter-btn').forEach(b => {
+                b.classList.remove('bg-indigo-600', 'text-white');
+                b.classList.add('bg-slate-100', 'text-slate-700');
+            });
+            const target = btn || (typeof event !== 'undefined' ? event?.target : null);
+            if (target) {
+                target.classList.remove('bg-slate-100', 'text-slate-700');
+                target.classList.add('bg-indigo-600', 'text-white');
+            }
+            renderStudentCards();
+        }
         function processImageUpload(input) { const file = input.files[0]; if (!file) return; const r = new FileReader(); r.onloadend = () => { const cache = document.getElementById('base64PayloadCache'); if(cache) cache.value = r.result; }; r.readAsDataURL(file); }
         function processEditImageUpload(input) { const file = input.files[0]; if (!file) return; const r = new FileReader(); r.onloadend = () => { const cache = document.getElementById('detailPhotoBase64'); if(cache) cache.value = r.result; }; r.readAsDataURL(file); }
         
@@ -1337,13 +1692,12 @@
                 const pRow = ["PAY-"+sid+"-"+activeSystemMonthContext, sid, activeSystemMonthContext, 0, "", "Cash", "Admission Record Initialized", "Active", ""];
                 await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: pRow })});
                 
-                alert("🎉 Admissions Intake Logged & Saved Safely!");
+                alert("Admissions Intake Saved!");
                 event.target.reset();
-                
-                const detailsEl = document.getElementById('intakeFormDetailsContainer');
-                if(detailsEl) detailsEl.removeAttribute('open');
-                
+                const cacheReset = document.getElementById('base64PayloadCache');
+                if (cacheReset) cacheReset.value = "N/A";
                 await refreshApplicationState(false);
+                showView('home');
             } catch(e) { console.error(e); }
         }
 
@@ -1356,9 +1710,31 @@
                     clearInterval(checkFormInpExistLoop);
                     dojInp.value = new Date().toISOString().substring(0,10);
                     handleFormBillingTypeChange('Regular');
+                    const now = new Date();
+                    const monthSel = document.getElementById('expensePeriodMonth');
+                    const yearSel = document.getElementById('expensePeriodYear');
+                    if (monthSel) monthSel.value = String(now.getMonth());
+                    if (yearSel) {
+                        const y = String(now.getFullYear());
+                        if (![...yearSel.options].some(o => o.value === y)) {
+                            yearSel.insertAdjacentHTML('beforeend', `<option value="${y}">${y}</option>`);
+                        }
+                        yearSel.value = y;
+                    }
+                    if (document.getElementById('reminderPeriodBadge')) {
+                        document.getElementById('reminderPeriodBadge').innerText = activeSystemMonthContext;
+                    }
                 }
             }, 50);
         })();
+
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('headerMenu');
+            if (!menu || menu.classList.contains('hidden')) return;
+            if (!e.target.closest('#headerMenu') && !e.target.closest('button[onclick*="toggleHeaderMenu"]')) {
+                menu.classList.add('hidden');
+            }
+        });
     </script>
 </body>
 </html>
