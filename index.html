@@ -77,7 +77,7 @@
             </button>
             <div class="flex items-center gap-1.5 flex-shrink-0">
                 <button type="button" id="headerBackBtn" onclick="goToHome()" class="hidden bg-indigo-900 px-2.5 py-1.5 rounded-lg text-[11px] font-bold">← Back</button>
-                <button type="button" onclick="refreshApplicationState(true)" class="bg-indigo-800 px-2.5 py-1.5 rounded-lg text-[11px] font-bold">Sync</button>
+                <button type="button" id="btnSyncHeader" onclick="refreshApplicationState(true)" class="bg-indigo-800 px-2.5 py-1.5 rounded-lg text-[11px] font-bold disabled:opacity-60">Sync</button>
                 <button type="button" onclick="toggleHeaderMenu()" class="bg-indigo-900 px-2.5 py-1.5 rounded-lg text-[11px] font-bold">⋯</button>
             </div>
         </div>
@@ -203,7 +203,7 @@
                                 </div>
                             </div>
                             <label class="flex items-center gap-2 font-bold"><input type="checkbox" id="chkSteamKit" onchange="refreshIntakeAmountPanel()"><span>Steam Kit</span></label>
-                            <label class="flex items-center gap-2 font-bold"><input type="checkbox" id="chkEducationKit" onchange="refreshIntakeAmountPanel()"><span>Education Kit</span></label>
+                            <label id="wrapEducationKitCheck" class="hidden flex items-center gap-2 font-bold"><input type="checkbox" id="chkEducationKit" onchange="refreshIntakeAmountPanel()"><span>Education Kit</span></label>
                         </div>
                     </div>
 
@@ -257,7 +257,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl shadow">Save Admission</button>
+                    <button type="submit" id="btnSaveAdmission" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl shadow disabled:opacity-60 disabled:cursor-not-allowed">Save Admission</button>
                 </form>
             </div>
         </section>
@@ -552,7 +552,7 @@
 
 <script>
 const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyaykhdrvyBUCNwruy0IGGpDK4zG14QaoHG1cYurVDww6qMsBIRuIfg7NxygrE6KLha8w/exec";
-let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "ApexSullurpeta2026!";
+let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "2026!";
 let globalAppState = { students: [], payments: [], expenses: [], events: [], standardFees: { DR:41000, EW:42000, RTF1:43000, RTF2:44000 } };
 let currentActiveCohortFilter = "ALL";
 let currentExpenseTimeframeContext = "monthly";
@@ -653,10 +653,11 @@ function getTermFeesPaid(sid) {
     return total;
 }
 function computeIntakeServiceTotals() {
+    const isMonthly = getIntakeBillingModel() === "Monthly";
     const sportsOn = document.getElementById("chkSportsUniform")?.checked;
     const regUniOn = document.getElementById("chkRegularUniform")?.checked;
     const steamOn = document.getElementById("chkSteamKit")?.checked;
-    const eduOn = document.getElementById("chkEducationKit")?.checked;
+    const eduOn = isMonthly && document.getElementById("chkEducationKit")?.checked;
     const sportsQty = Math.max(1, Number(document.getElementById("intakeSportsUniformQty")?.value) || 1);
     const regQty = Math.max(1, Number(document.getElementById("intakeRegularUniformQty")?.value) || 1);
     return {
@@ -821,12 +822,25 @@ function refreshIntakeAmountPanel() {
     show("rowCustomMonthly", isMonthly);
     show("blockMonthlyOneTimeFees", isMonthly);
 
+    const eduWrap = document.getElementById("wrapEducationKitCheck");
+    if (eduWrap) {
+        eduWrap.classList.toggle("hidden", !isMonthly);
+        eduWrap.classList.toggle("flex", isMonthly);
+    }
+
+    if (!isMonthly) {
+        const eduChk = document.getElementById("chkEducationKit");
+        if (eduChk) eduChk.checked = false;
+        const eduFee = document.getElementById("intakeEducationKitFee");
+        if (eduFee) eduFee.value = "";
+    }
+
     const vanOn = document.getElementById("chkFormVanOpted")?.checked;
     const dcOn = document.getElementById("chkFormDayCareOpted")?.checked;
     const sportsOn = document.getElementById("chkSportsUniform")?.checked;
     const regUniOn = document.getElementById("chkRegularUniform")?.checked;
     const steamOn = document.getElementById("chkSteamKit")?.checked;
-    const eduOn = document.getElementById("chkEducationKit")?.checked;
+    const eduOn = isMonthly && document.getElementById("chkEducationKit")?.checked;
 
     show("amtVanRow", !!vanOn);
     show("amtDayCareRow", !!dcOn);
@@ -918,10 +932,10 @@ function buildIntakeFeePayload() {
         uniformFee = svc.regUniTotal;
         customFee = svc.sportsTotal;
     } else {
-        // Fee agreed + one-time services
+        // Fee agreed + one-time services (Education Kit is Custom Monthly only)
         customFee = Number(document.getElementById("intakeAnnualTuition")?.value) || 0;
         admissionFee = svc.sportsTotal;
-        kitFee = svc.steamFee + svc.eduFee;
+        kitFee = svc.steamFee;
         uniformFee = svc.regUniTotal;
         optMonthly = 0;
     }
@@ -933,24 +947,155 @@ function buildIntakeFeePayload() {
     };
 }
 
+let isAppSyncing = false;
+let isAdmissionSaving = false;
+
+function postSheetRow(payload) {
+    // Fire-and-forget friendly: no-cors cannot read response; keep timeout short feedback via UI locks
+    return fetch(APP_SHEET_API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify(payload)
+    }).catch(err => console.error("POST failed:", err));
+}
+
 async function refreshApplicationState(showUserAlert) {
+    if (isAppSyncing) return;
+    isAppSyncing = true;
+    const syncBtn = document.getElementById("btnSyncHeader");
+    const prevLabel = syncBtn ? syncBtn.innerText : "Sync";
+    if (syncBtn) { syncBtn.disabled = true; syncBtn.innerText = "…"; }
+
     try {
-        const response = await fetch(`${APP_SHEET_API_URL}?action=getData&password=${encodeURIComponent(CURRENT_GATE_PASSPHRASE)}`);
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 25000);
+        const response = await fetch(
+            `${APP_SHEET_API_URL}?action=getData&password=${encodeURIComponent(CURRENT_GATE_PASSPHRASE)}`,
+            { signal: controller.signal, cache: "no-store" }
+        );
+        clearTimeout(timer);
         const result = await response.json();
         if (result.success) {
             globalAppState.students = result.data.students || [];
             globalAppState.payments = result.data.payments || [];
             globalAppState.expenses = result.data.expenses || [];
             globalAppState.events = result.data.events || [];
+            // Render only what’s needed for current view first for snappier feel
             try { renderCohortHeadcounts(); } catch (e) { console.error(e); }
-            try { renderStudentCards(); } catch (e) { console.error(e); }
-            try { renderEditStudentCards(); } catch (e) { console.error(e); }
             try { renderFrontPageReminders(); } catch (e) { console.error(e); }
-            try { renderCalendarAgenda(); } catch (e) { console.error(e); }
-            try { renderFinanceLedger(); } catch (e) { console.error(e); }
-            if (showUserAlert) alert("Synced successfully!");
+            const active = document.querySelector(".view-screen.active")?.id || "";
+            if (active === "view-search" || active === "view-home") { try { renderStudentCards(); } catch (e) {} }
+            if (active === "view-edit") { try { renderEditStudentCards(); } catch (e) {} }
+            if (active === "view-events") { try { renderCalendarAgenda(); } catch (e) {} }
+            if (active === "view-finances" || active === "view-expenses") { try { renderFinanceLedger(); } catch (e) {} }
+            // Warm remaining renders in idle time
+            const warm = () => {
+                try { renderStudentCards(); } catch (e) {}
+                try { renderEditStudentCards(); } catch (e) {}
+                try { renderCalendarAgenda(); } catch (e) {}
+                try { renderFinanceLedger(); } catch (e) {}
+            };
+            if (window.requestIdleCallback) requestIdleCallback(warm, { timeout: 1500 });
+            else setTimeout(warm, 0);
+            if (showUserAlert) {
+                if (syncBtn) syncBtn.innerText = "✓";
+                setTimeout(() => { if (syncBtn && !isAppSyncing) syncBtn.innerText = "Sync"; }, 800);
+            }
+        } else if (showUserAlert) {
+            alert("Sync returned no data.");
         }
-    } catch (err) { console.error("Database connection lost:", err); alert("Sync failed. Check connection."); }
+    } catch (err) {
+        console.error("Database connection lost:", err);
+        if (showUserAlert) alert(err.name === "AbortError" ? "Sync timed out. Try again." : "Sync failed. Check connection.");
+    } finally {
+        isAppSyncing = false;
+        if (syncBtn) {
+            syncBtn.disabled = false;
+            if (syncBtn.innerText === "…") syncBtn.innerText = prevLabel || "Sync";
+        }
+    }
+}
+
+async function handleStudentSubmission(event) {
+    event.preventDefault();
+    if (isAdmissionSaving) return;
+    isAdmissionSaving = true;
+
+    const saveBtn = document.getElementById("btnSaveAdmission");
+    if (saveBtn) { saveBtn.disabled = true; saveBtn.innerText = "Saving…"; }
+
+    try {
+        const bModel = getIntakeBillingModel();
+        const photo = document.getElementById("base64PayloadCache")?.value || "N/A";
+        const sid = "STU-" + Date.now();
+        const fees = buildIntakeFeePayload();
+        const alt = (document.getElementById("intakeAltContact").value || "").trim() || "N/A";
+
+        const studentRow = [
+            sid,
+            document.getElementById("intakeStudentName").value,
+            document.getElementById("intakeDOB").value,
+            document.getElementById("intakeGender").value,
+            document.getElementById("intakeClassSelect").value,
+            document.getElementById("intakeGuardianName").value,
+            document.getElementById("intakeContact").value,
+            alt,
+            document.getElementById("intakeAddress").value,
+            photo,
+            bModel,
+            fees.customFee,
+            fees.admissionFee,
+            fees.kitFee,
+            fees.uniformFee,
+            fees.vanFee,
+            fees.dayCareFee,
+            fees.optMonthly,
+            document.getElementById("intakeBloodGroup").value,
+            document.getElementById("intakeDOJ").value
+        ];
+
+        const posts = [
+            postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Students", rowData: studentRow }),
+            postSheetRow({
+                password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments",
+                rowData: ["PAY-" + sid + "-" + activeSystemMonthContext, sid, activeSystemMonthContext, 0, "", "Cash", "Admission Record Initialized", "Active", ""]
+            })
+        ];
+
+        const paidNow = Number(document.getElementById("intakePaidNowAmount")?.value) || 0;
+        if (paidNow > 0) {
+            const mode = document.getElementById("intakePaidNowMode")?.value || "Cash";
+            const note = (document.getElementById("intakePaidNowRemarks")?.value || "").trim();
+            const remark = "1st Term Fee" + (note ? " — " + note : "");
+            posts.push(postSheetRow({
+                password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments",
+                rowData: ["PAY-" + sid + "-ADM-" + Date.now(), sid, activeSystemMonthContext, paidNow,
+                    new Date().toISOString().substring(0, 10), mode, remark, "Active", ""]
+            }));
+        }
+
+        // Optimistic UI: leave intake immediately; network continues in background
+        event.target.reset();
+        document.getElementById("base64PayloadCache").value = "N/A";
+        const reg = document.querySelector('input[name="BillingModel"][value="Regular"]');
+        if (reg) reg.checked = true;
+        handleFormBillingTypeChange("Regular");
+        showView("home");
+
+        Promise.all(posts).then(() => refreshApplicationState(false)).catch(() => refreshApplicationState(false));
+    } catch (e) {
+        console.error(e);
+        alert("Save failed. Try again.");
+        isAdmissionSaving = false;
+        if (saveBtn) { saveBtn.disabled = false; saveBtn.innerText = "Save Admission"; }
+        return;
+    }
+
+    // Keep locked briefly so a second tap cannot create another row
+    setTimeout(() => {
+        isAdmissionSaving = false;
+        if (saveBtn) { saveBtn.disabled = false; saveBtn.innerText = "Save Admission"; }
+    }, 2000);
 }
 
 function renderCohortHeadcounts() {
@@ -1434,63 +1579,6 @@ function processEditImageUpload(input) {
     const r = new FileReader();
     r.onloadend = () => { const c = document.getElementById("detailPhotoBase64"); if (c) c.value = r.result; };
     r.readAsDataURL(file);
-}
-
-async function handleStudentSubmission(event) {
-    event.preventDefault();
-    const bModel = getIntakeBillingModel();
-    const photo = document.getElementById("base64PayloadCache")?.value || "N/A";
-    const sid = "STU-" + Date.now();
-    const fees = buildIntakeFeePayload();
-    const alt = (document.getElementById("intakeAltContact").value || "").trim() || "N/A";
-
-    const studentRow = [
-        sid,
-        document.getElementById("intakeStudentName").value,
-        document.getElementById("intakeDOB").value,
-        document.getElementById("intakeGender").value,
-        document.getElementById("intakeClassSelect").value,
-        document.getElementById("intakeGuardianName").value,
-        document.getElementById("intakeContact").value,
-        alt,
-        document.getElementById("intakeAddress").value,
-        photo,
-        bModel,
-        fees.customFee,
-        fees.admissionFee,
-        fees.kitFee,
-        fees.uniformFee,
-        fees.vanFee,
-        fees.dayCareFee,
-        fees.optMonthly,
-        document.getElementById("intakeBloodGroup").value,
-        document.getElementById("intakeDOJ").value
-    ];
-
-    try {
-        await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Students", rowData: studentRow }) });
-        const pRow = ["PAY-" + sid + "-" + activeSystemMonthContext, sid, activeSystemMonthContext, 0, "", "Cash", "Admission Record Initialized", "Active", ""];
-        await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: pRow }) });
-
-        const paidNow = Number(document.getElementById("intakePaidNowAmount")?.value) || 0;
-        if (paidNow > 0) {
-            const mode = document.getElementById("intakePaidNowMode")?.value || "Cash";
-            const note = (document.getElementById("intakePaidNowRemarks")?.value || "").trim();
-            const remark = "1st Term Fee" + (note ? " — " + note : "");
-            const payRow = ["PAY-" + sid + "-ADM-" + Date.now(), sid, activeSystemMonthContext, paidNow,
-                new Date().toISOString().substring(0, 10), mode, remark, "Active", ""];
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: payRow }) });
-        }
-
-        alert("Admission saved!");
-        event.target.reset();
-        document.getElementById("base64PayloadCache").value = "N/A";
-        const reg = document.querySelector('input[name="BillingModel"][value="Regular"]');
-        if (reg) reg.checked = true;
-        handleFormBillingTypeChange("Regular");
-        await refreshApplicationState(false);
-        showView("home");
-    } catch (e) { console.error(e); }
 }
 
 async function handleEventSubmission(e) {
