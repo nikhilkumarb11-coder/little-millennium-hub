@@ -127,53 +127,42 @@
             </div>
             <div class="view-scroll">
                 <form id="studentEnrollmentForm" onsubmit="handleStudentSubmission(event)" class="bg-white rounded-2xl shadow-sm border p-4 space-y-4 text-xs font-semibold">
+
                     <div id="formModelWrapper" class="bg-indigo-50 p-3 rounded-2xl border border-indigo-100 flex flex-col gap-2">
                         <span class="font-black text-indigo-950">Billing Model</span>
                         <label class="flex items-center gap-2"><input type="radio" name="BillingModel" value="Regular" checked onchange="handleFormBillingTypeChange('Regular')"><span class="font-bold">Regular Base</span></label>
                         <label class="flex items-center gap-2"><input type="radio" name="BillingModel" value="Monthly" onchange="handleFormBillingTypeChange('Monthly')"><span class="font-bold">Custom Monthly</span></label>
                     </div>
-                    <div class="grid grid-cols-1 gap-3">
+
+                    <!-- Profile -->
+                    <div class="space-y-3">
                         <div><label class="block mb-1 text-slate-500">Student Name *</label><input type="text" id="intakeStudentName" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
                         <div><label class="block mb-1 text-slate-500">Date of Birth *</label><input type="date" id="intakeDOB" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
                         <div><label class="block mb-1 text-slate-500">Date of Joining *</label><input type="date" id="intakeDOJ" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
                         <div>
                             <label class="block mb-1 text-slate-500">Class *</label>
-                            <select id="intakeClassSelect" onchange="updateIntakeClassFeeDefault()" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
+                            <select id="intakeClassSelect" onchange="onIntakeClassChange()" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
                                 <option value="DR">DR</option><option value="EW">EW</option><option value="RTF1">RTF1</option><option value="RTF2">RTF2</option><option value="DayCare">Day Care Only</option>
                             </select>
                         </div>
-                    </div>
-                    <div id="sectionIntakeFees" class="border-t pt-3 space-y-3">
-                        <div class="flex justify-between items-center"><h4 class="font-black text-indigo-950 text-sm">Fees</h4><span id="intakeDiscountBadge" class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-[11px] font-black">₹0 Discount</span></div>
-                        <div id="rowAnnualTuition"><label class="block mb-1 text-slate-500">Annual Tuition (₹)</label><input type="number" id="intakeAnnualTuition" value="41000" oninput="calculateIntakeDiscount()" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
-                        <div id="rowAdmissionFee" class="hidden"><label class="block mb-1 text-slate-500">Admission Fee (₹)</label><input type="number" id="intakeAdmissionFee" value="0" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
-                        <div id="rowKitFee" class="hidden"><label class="block mb-1 text-slate-500">Kit Fee (₹)</label><input type="number" id="intakeKitFee" value="0" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
-                        <div id="rowUniformFee"><label class="block mb-1 text-slate-500">Uniform Fee (₹)</label><input type="number" id="intakeUniformFee" value="0" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
-                    </div>
-                    <div id="sectionIntakeServices" class="border-t pt-3 space-y-3">
-                        <h4 class="font-black text-indigo-950 text-sm">Monthly Services</h4>
-                        <div id="boxFormVan" class="bg-slate-50 p-3 rounded-xl border">
-                            <label class="flex items-center gap-2 font-bold"><input type="checkbox" id="chkFormVanOpted" onchange="toggleFormFeeInput(this,'FormVanFee')"><span>Van</span></label>
-                            <input type="number" id="FormVanFee" value="0" disabled class="w-full mt-2 px-3 py-2 rounded-lg border bg-white">
-                        </div>
-                        <div id="boxFormDayCare" class="bg-slate-50 p-3 rounded-xl border">
-                            <label class="flex items-center gap-2 font-bold"><input type="checkbox" id="chkFormDayCareOpted" onchange="toggleFormFeeInput(this,'FormDayCareFee')"><span>Day Care</span></label>
-                            <input type="number" id="FormDayCareFee" value="0" disabled class="w-full mt-2 px-3 py-2 rounded-lg border bg-white">
-                        </div>
-                        <div id="boxFormOptMonthly" class="bg-slate-50 p-3 rounded-xl border hidden">
-                            <label class="flex items-center gap-2 font-bold"><input type="checkbox" id="chkOptMonthly" onchange="toggleFormFeeInput(this,'FormOptMonthlyFee')"><span>Custom Monthly</span></label>
-                            <input type="number" id="FormOptMonthlyFee" value="0" disabled class="w-full mt-2 px-3 py-2 rounded-lg border bg-white">
-                        </div>
-                    </div>
-                    <div class="border-t pt-3 grid grid-cols-1 gap-3">
                         <div><label class="block mb-1 text-slate-500">Guardian Name *</label><input type="text" id="intakeGuardianName" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
                         <div><label class="block mb-1 text-slate-500">Mobile *</label><input type="tel" id="intakeContact" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
-                        <div><label class="block mb-1 text-slate-500">Alt Contact</label><input type="tel" id="intakeAltContact" value="N/A" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
-                        <div><label class="block mb-1 text-slate-500">Address</label><input type="text" id="intakeAddress" value="N/A" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
-                        <div><label class="block mb-1 text-slate-500">Blood Group</label><input type="text" id="intakeBloodGroup" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div><label class="block mb-1 text-slate-500">Alt Contact</label><input type="tel" id="intakeAltContact" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50" placeholder="Optional"></div>
+                        <div><label class="block mb-1 text-slate-500">Address *</label><input type="text" id="intakeAddress" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div>
+                            <label class="block mb-1 text-slate-500">Blood Group *</label>
+                            <select id="intakeBloodGroup" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
+                                <option value="">Select</option>
+                                <option value="A+">A+</option><option value="A-">A-</option>
+                                <option value="B+">B+</option><option value="B-">B-</option>
+                                <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                                <option value="O+">O+</option><option value="O-">O-</option>
+                                <option value="Unknown">Unknown</option>
+                            </select>
+                        </div>
                         <div>
                             <label class="block mb-1 text-slate-500">Gender *</label>
-                            <select id="intakeGender" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"><option value="Boy">Boy</option><option value="Girl">Girl</option></select>
+                            <select id="intakeGender" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"><option value="Boy">Boy</option><option value="Girl">Girl</option></select>
                         </div>
                         <div>
                             <label class="block mb-1 text-slate-500">Photo (optional)</label>
@@ -181,6 +170,100 @@
                             <input type="hidden" id="base64PayloadCache" value="N/A">
                         </div>
                     </div>
+
+                    <!-- Services checklist -->
+                    <div class="border-t pt-3 space-y-3" id="sectionIntakeServices">
+                        <h4 class="font-black text-indigo-950 text-sm">Services</h4>
+                        <p class="text-[10px] text-slate-500 font-semibold">Check services first. Amount fields appear below.</p>
+
+                        <div class="bg-slate-50 p-3 rounded-xl border space-y-2">
+                            <p class="text-[10px] font-black uppercase text-slate-400">Monthly services</p>
+                            <label class="flex items-center gap-2 font-bold"><input type="checkbox" id="chkFormVanOpted" onchange="refreshIntakeAmountPanel()"><span>Van</span></label>
+                            <label class="flex items-center gap-2 font-bold"><input type="checkbox" id="chkFormDayCareOpted" onchange="refreshIntakeAmountPanel()"><span>Day Care</span></label>
+                        </div>
+
+                        <div class="bg-slate-50 p-3 rounded-xl border space-y-3">
+                            <p class="text-[10px] font-black uppercase text-slate-400">Other opted services</p>
+                            <div>
+                                <label class="flex items-center gap-2 font-bold"><input type="checkbox" id="chkSportsUniform" onchange="refreshIntakeAmountPanel()"><span>Sports Uniform</span></label>
+                                <div id="qtySportsUniformWrap" class="hidden mt-2 flex items-center gap-2">
+                                    <span class="text-slate-500">Qty</span>
+                                    <button type="button" onclick="stepQty('intakeSportsUniformQty',-1)" class="w-8 h-8 rounded-lg bg-white border font-bold">−</button>
+                                    <input type="number" id="intakeSportsUniformQty" min="1" value="1" oninput="refreshIntakeAmountPanel()" class="w-14 text-center px-2 py-1.5 rounded-lg border bg-white">
+                                    <button type="button" onclick="stepQty('intakeSportsUniformQty',1)" class="w-8 h-8 rounded-lg bg-white border font-bold">+</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="flex items-center gap-2 font-bold"><input type="checkbox" id="chkRegularUniform" onchange="refreshIntakeAmountPanel()"><span>Regular Uniform (Extra)</span></label>
+                                <div id="qtyRegularUniformWrap" class="hidden mt-2 flex items-center gap-2">
+                                    <span class="text-slate-500">Qty</span>
+                                    <button type="button" onclick="stepQty('intakeRegularUniformQty',-1)" class="w-8 h-8 rounded-lg bg-white border font-bold">−</button>
+                                    <input type="number" id="intakeRegularUniformQty" min="1" value="1" oninput="refreshIntakeAmountPanel()" class="w-14 text-center px-2 py-1.5 rounded-lg border bg-white">
+                                    <button type="button" onclick="stepQty('intakeRegularUniformQty',1)" class="w-8 h-8 rounded-lg bg-white border font-bold">+</button>
+                                </div>
+                            </div>
+                            <label class="flex items-center gap-2 font-bold"><input type="checkbox" id="chkSteamKit" onchange="refreshIntakeAmountPanel()"><span>Steam Kit</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Amounts (dynamic) -->
+                    <div class="border-t pt-3 space-y-3" id="sectionIntakeAmounts">
+                        <h4 class="font-black text-indigo-950 text-sm">Fee amounts</h4>
+
+                        <div id="rowAnnualTuition">
+                            <label class="block mb-1 text-slate-500">Annual Tuition (₹)</label>
+                            <input type="number" id="intakeAnnualTuition" min="0" placeholder="Enter amount" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
+                        </div>
+                        <div id="rowCustomMonthly" class="hidden">
+                            <label class="block mb-1 text-slate-500">Custom Monthly (₹)</label>
+                            <input type="number" id="FormOptMonthlyFee" min="0" placeholder="Billed every month" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
+                        </div>
+
+                        <!-- Custom Monthly one-time block (shown for Monthly; 0/empty allowed) -->
+                        <div id="blockMonthlyOneTimeFees" class="hidden space-y-3">
+                            <p class="text-[10px] font-black uppercase text-slate-400">Custom Monthly — one-time fees</p>
+                            <div id="rowAdmissionFee"><label class="block mb-1 text-slate-500">Admission Fee (₹)</label><input type="number" id="intakeAdmissionFee" min="0" value="0" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                            <div id="rowKitFee"><label class="block mb-1 text-slate-500">Kit Fee (₹)</label><input type="number" id="intakeKitFee" min="0" value="0" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                            <div id="rowUniformFee"><label class="block mb-1 text-slate-500">Uniform Fee (₹)</label><input type="number" id="intakeUniformFee" min="0" value="0" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        </div>
+
+                        <div id="amtVanRow" class="hidden"><label class="block mb-1 text-slate-500">Van monthly (₹)</label><input type="number" id="FormVanFee" min="0" placeholder="Amount" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div id="amtDayCareRow" class="hidden"><label class="block mb-1 text-slate-500">Day Care monthly (₹)</label><input type="number" id="FormDayCareFee" min="0" placeholder="Amount" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div id="amtSportsRow" class="hidden"><label class="block mb-1 text-slate-500">Sports Uniform rate each (₹)</label><input type="number" id="intakeSportsUniformRate" min="0" placeholder="Per piece" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div id="amtRegularUniformRow" class="hidden"><label class="block mb-1 text-slate-500">Regular Uniform (Extra) rate each (₹)</label><input type="number" id="intakeRegularUniformRate" min="0" placeholder="Per piece" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div id="amtSteamKitRow" class="hidden"><label class="block mb-1 text-slate-500">Steam Kit (₹)</label><input type="number" id="intakeSteamKitFee" min="0" placeholder="Amount" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                    </div>
+
+                    <!-- Paid at admission -->
+                    <div class="border-t pt-3 space-y-3" id="sectionPaidAtAdmission">
+                        <h4 class="font-black text-indigo-950 text-sm">Paid at admission (optional)</h4>
+                        <p class="text-[10px] text-slate-500">Record any amount collected now. Leave blank if nothing paid.</p>
+                        <div class="grid grid-cols-1 gap-3">
+                            <div><label class="block mb-1 text-slate-500">Amount paid now (₹)</label><input type="number" id="intakePaidNowAmount" min="0" placeholder="0" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                            <div>
+                                <label class="block mb-1 text-slate-500">Payment mode</label>
+                                <select id="intakePaidNowMode" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
+                                    <option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Netbanking">Netbanking</option><option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block mb-1 text-slate-500">Applies to</label>
+                                <select id="intakePaidNowFor" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
+                                    <option value="Tuition">Tuition / Main fee</option>
+                                    <option value="Van">Van</option>
+                                    <option value="DayCare">Day Care</option>
+                                    <option value="SportsUniform">Sports Uniform</option>
+                                    <option value="RegularUniform">Regular Uniform</option>
+                                    <option value="SteamKit">Steam Kit</option>
+                                    <option value="Admission">Admission Fee</option>
+                                    <option value="Kit">Kit Fee</option>
+                                    <option value="Uniform">Uniform Fee</option>
+                                </select>
+                            </div>
+                            <div><label class="block mb-1 text-slate-500">Remarks</label><input type="text" id="intakePaidNowRemarks" placeholder="Optional note" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        </div>
+                    </div>
+
                     <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl shadow">Save Admission</button>
                 </form>
             </div>
@@ -513,13 +596,7 @@ function calculateExactAge(dateVal) {
 }
 
 function calculateIntakeDiscount() {
-    const cls = document.getElementById("intakeClassSelect")?.value;
-    const standard = Number(globalAppState.standardFees[cls]) || 0;
-    const agreed = Number(document.getElementById("intakeAnnualTuition")?.value) || 0;
-    const discount = Math.max(0, standard - agreed);
-    const badge = document.getElementById("intakeDiscountBadge");
-    if (badge) badge.innerText = `₹${discount} Discount`;
-    return discount;
+    return 0; // Class no longer autofills tuition; discount badge removed from intake
 }
 
 function calculateEditDiscount() {
@@ -637,7 +714,7 @@ function showView(viewId) {
     if (viewId === "intake") {
         const doj = document.getElementById("intakeDOJ");
         if (doj && !doj.value) doj.value = new Date().toISOString().substring(0, 10);
-        handleFormBillingTypeChange("Regular");
+        refreshIntakeAmountPanel();
     }
 }
 
@@ -670,64 +747,94 @@ function toggleFormFeeInput(checkbox, targetInputId) {
     const inp = document.getElementById(targetInputId);
     if (!inp) return;
     inp.disabled = !checkbox.checked;
-    if (!checkbox.checked) inp.value = "0";
+    if (!checkbox.checked) inp.value = "";
+}
+
+function stepQty(inputId, delta) {
+    const el = document.getElementById(inputId);
+    if (!el) return;
+    const next = Math.max(1, (Number(el.value) || 1) + delta);
+    el.value = String(next);
+    refreshIntakeAmountPanel();
+}
+
+function getIntakeBillingModel() {
+    return document.querySelector('input[name="BillingModel"]:checked')?.value || "Regular";
+}
+
+function refreshIntakeAmountPanel() {
+    const isMonthly = getIntakeBillingModel() === "Monthly";
+    const show = (id, on) => { const el = document.getElementById(id); if (el) el.classList.toggle("hidden", !on); };
+
+    show("rowAnnualTuition", !isMonthly);
+    show("rowCustomMonthly", isMonthly);
+    show("blockMonthlyOneTimeFees", isMonthly);
+
+    const vanOn = document.getElementById("chkFormVanOpted")?.checked;
+    const dcOn = document.getElementById("chkFormDayCareOpted")?.checked;
+    const sportsOn = document.getElementById("chkSportsUniform")?.checked;
+    const regUniOn = document.getElementById("chkRegularUniform")?.checked;
+    const steamOn = document.getElementById("chkSteamKit")?.checked;
+
+    show("amtVanRow", !!vanOn);
+    show("amtDayCareRow", !!dcOn);
+    show("amtSportsRow", !!sportsOn);
+    show("amtRegularUniformRow", !!regUniOn);
+    show("amtSteamKitRow", !!steamOn);
+    show("qtySportsUniformWrap", !!sportsOn);
+    show("qtyRegularUniformWrap", !!regUniOn);
+
+    if (!vanOn) { const el = document.getElementById("FormVanFee"); if (el) el.value = ""; }
+    if (!dcOn) { const el = document.getElementById("FormDayCareFee"); if (el) el.value = ""; }
+    if (!sportsOn) { const el = document.getElementById("intakeSportsUniformRate"); if (el) el.value = ""; }
+    if (!regUniOn) { const el = document.getElementById("intakeRegularUniformRate"); if (el) el.value = ""; }
+    if (!steamOn) { const el = document.getElementById("intakeSteamKitFee"); if (el) el.value = ""; }
 }
 
 function handleFormBillingTypeChange(type) {
-    const show = (id, on) => { const el = document.getElementById(id); if (el) el.style.display = on ? "block" : "none"; };
     if (type === "Regular") {
-        show("rowAnnualTuition", true); show("rowAdmissionFee", false); show("rowKitFee", false); show("boxFormOptMonthly", false);
-        const a = document.getElementById("intakeAdmissionFee"); if (a) a.value = "0";
-        const k = document.getElementById("intakeKitFee"); if (k) k.value = "0";
-        const chk = document.getElementById("chkOptMonthly"); if (chk) chk.checked = false;
-        const opt = document.getElementById("FormOptMonthlyFee"); if (opt) { opt.value = "0"; opt.disabled = true; }
-        const badge = document.getElementById("intakeDiscountBadge"); if (badge) badge.style.display = "inline-block";
-        updateIntakeClassFeeDefault();
+        const t = document.getElementById("intakeAnnualTuition");
+        if (t) t.value = "";
+        const opt = document.getElementById("FormOptMonthlyFee");
+        if (opt) opt.value = "";
     } else {
-        show("rowAnnualTuition", false); show("rowAdmissionFee", true); show("rowKitFee", true); show("boxFormOptMonthly", true);
-        const t = document.getElementById("intakeAnnualTuition"); if (t) t.value = "0";
-        const chk = document.getElementById("chkOptMonthly"); if (chk) { chk.checked = true; chk.disabled = false; }
-        const opt = document.getElementById("FormOptMonthlyFee"); if (opt) opt.disabled = false;
-        const badge = document.getElementById("intakeDiscountBadge"); if (badge) badge.style.display = "none";
+        const t = document.getElementById("intakeAnnualTuition");
+        if (t) t.value = "";
+        // Custom Monthly one-time fees: default 0, do NOT block save if left 0/empty
+        ["intakeAdmissionFee", "intakeKitFee", "intakeUniformFee"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el && el.value === "") el.value = "0";
+        });
     }
+    onIntakeClassChange();
+    refreshIntakeAmountPanel();
 }
+
+function onIntakeClassChange() {
+    const cls = document.getElementById("intakeClassSelect")?.value;
+    const wrap = document.getElementById("formModelWrapper");
+    if (cls === "DayCare") {
+        const rad = document.querySelector('input[name="BillingModel"][value="Monthly"]');
+        if (rad) rad.checked = true;
+        if (wrap) wrap.style.display = "none";
+    } else {
+        if (wrap) wrap.style.display = "flex";
+    }
+    refreshIntakeAmountPanel();
+}
+
+function updateIntakeClassFeeDefault() { onIntakeClassChange(); }
 
 function handleEditFormBillingTypeChange(type) {
     const show = (id, on) => { const el = document.getElementById(id); if (el) el.style.display = on ? "block" : "none"; };
     if (type === "Regular") {
         show("editRowAnnualTuition", true); show("editRowAdmissionFee", false); show("editRowKitFee", false); show("editBoxOptMonthly", false);
-        const a = document.getElementById("editAdmissionFee"); if (a) a.value = "0";
-        const k = document.getElementById("editStudentKitFee"); if (k) k.value = "0";
-        const o = document.getElementById("editOptMonthlyFee"); if (o) o.value = "0";
         const badge = document.getElementById("editDiscountBadge"); if (badge) badge.style.display = "inline-block";
         calculateEditDiscount();
     } else {
-        show("editRowAnnualTuition", false); show("editRowAdmissionFee", true); show("editRowKitFee", true); show("editBoxOptMonthly", true);
-        const t = document.getElementById("editCustomFee"); if (t) t.value = "0";
+        show("editRowAnnualTuition", false); show("editRowAdmissionFee", true); show("editRowKitFee", true); show("editRowUniformFee", true); show("editBoxOptMonthly", true);
         const badge = document.getElementById("editDiscountBadge"); if (badge) badge.style.display = "none";
     }
-}
-
-function updateIntakeClassFeeDefault() {
-    const cls = document.getElementById("intakeClassSelect").value;
-    const wrap = document.getElementById("formModelWrapper");
-    if (cls === "DayCare") {
-        const rad = document.querySelector('input[name="BillingModel"][value="Monthly"]');
-        if (rad) rad.checked = true;
-        handleFormBillingTypeChange("Monthly");
-        if (wrap) wrap.style.display = "none";
-        ["rowAdmissionFee","rowKitFee","rowUniformFee","boxFormVan","boxFormDayCare"].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = "none"; });
-    } else {
-        if (wrap) wrap.style.display = "flex";
-        ["rowUniformFee","boxFormVan","boxFormDayCare"].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = "block"; });
-        const isRegular = document.querySelector('input[name="BillingModel"]:checked')?.value === "Regular";
-        if (isRegular) {
-            const t = document.getElementById("intakeAnnualTuition");
-            if (t) t.value = globalAppState.standardFees[cls] || 0;
-            handleFormBillingTypeChange("Regular");
-        }
-    }
-    calculateIntakeDiscount();
 }
 
 function updateEditClassFeeDefault() {
@@ -737,18 +844,64 @@ function updateEditClassFeeDefault() {
         document.getElementById("editModelMonthly").checked = true;
         handleEditFormBillingTypeChange("Monthly");
         if (wrap) wrap.style.display = "none";
-        ["editRowAdmissionFee","editRowKitFee","editRowUniformFee","editBoxVan","editBoxDayCare"].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = "none"; });
     } else {
         if (wrap) wrap.style.display = "flex";
-        ["editRowUniformFee","editBoxVan","editBoxDayCare"].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = "block"; });
         const isRegular = document.querySelector('input[name="EditBillingModel"]:checked')?.value === "Regular";
-        if (isRegular) {
-            const t = document.getElementById("editCustomFee");
-            if (t) t.value = globalAppState.standardFees[cls] || 0;
-            handleEditFormBillingTypeChange("Regular");
-        }
+        handleEditFormBillingTypeChange(isRegular ? "Regular" : "Monthly");
     }
+    // No autofill from standardFees
     calculateEditDiscount();
+}
+
+function buildIntakeFeePayload() {
+    const isMonthly = getIntakeBillingModel() === "Monthly";
+    const vanOn = document.getElementById("chkFormVanOpted")?.checked;
+    const dcOn = document.getElementById("chkFormDayCareOpted")?.checked;
+    const sportsOn = document.getElementById("chkSportsUniform")?.checked;
+    const regUniOn = document.getElementById("chkRegularUniform")?.checked;
+    const steamOn = document.getElementById("chkSteamKit")?.checked;
+
+    const sportsQty = Math.max(1, Number(document.getElementById("intakeSportsUniformQty")?.value) || 1);
+    const regQty = Math.max(1, Number(document.getElementById("intakeRegularUniformQty")?.value) || 1);
+    const sportsTotal = sportsOn ? sportsQty * (Number(document.getElementById("intakeSportsUniformRate")?.value) || 0) : 0;
+    const regUniTotal = regUniOn ? regQty * (Number(document.getElementById("intakeRegularUniformRate")?.value) || 0) : 0;
+    const steamFee = steamOn ? (Number(document.getElementById("intakeSteamKitFee")?.value) || 0) : 0;
+    const vanFee = vanOn ? (Number(document.getElementById("FormVanFee")?.value) || 0) : 0;
+    const dayCareFee = dcOn ? (Number(document.getElementById("FormDayCareFee")?.value) || 0) : 0;
+
+    let customFee = 0, admissionFee = 0, kitFee = 0, uniformFee = 0, optMonthly = 0;
+
+    if (isMonthly) {
+        // Custom Monthly main fee; Admission/Kit/Uniform may be 0 — do not block
+        optMonthly = Number(document.getElementById("FormOptMonthlyFee")?.value) || 0;
+        admissionFee = Number(document.getElementById("intakeAdmissionFee")?.value) || 0;
+        kitFee = (Number(document.getElementById("intakeKitFee")?.value) || 0) + steamFee;
+        uniformFee = (Number(document.getElementById("intakeUniformFee")?.value) || 0) + regUniTotal;
+        customFee = sportsTotal; // sports uniform total in CustomFee for monthly
+    } else {
+        customFee = Number(document.getElementById("intakeAnnualTuition")?.value) || 0;
+        admissionFee = sportsTotal;
+        kitFee = steamFee;
+        uniformFee = regUniTotal;
+        optMonthly = 0;
+    }
+
+    return { isMonthly, customFee, admissionFee, kitFee, uniformFee, vanFee, dayCareFee, optMonthly };
+}
+
+function paidNowRemarkTag(forKey) {
+    const map = {
+        Tuition: "Tuition Admission Payment",
+        Van: "Van Settlement",
+        DayCare: "DayCare Settlement",
+        SportsUniform: "SportsUniform Admission",
+        RegularUniform: "RegularUniform Admission",
+        SteamKit: "SteamKit Admission",
+        Admission: "Admission Fee Payment",
+        Kit: "Kit Fee Payment",
+        Uniform: "Uniform Fee Payment"
+    };
+    return map[forKey] || "Admission Payment";
 }
 
 async function refreshApplicationState(showUserAlert) {
@@ -1233,31 +1386,57 @@ function processEditImageUpload(input) {
 
 async function handleStudentSubmission(event) {
     event.preventDefault();
-    const bModel = document.querySelector('input[name="BillingModel"]:checked')?.value || "Regular";
+    const bModel = getIntakeBillingModel();
     const photo = document.getElementById("base64PayloadCache")?.value || "N/A";
     const sid = "STU-" + Date.now();
+    const fees = buildIntakeFeePayload();
+    const alt = (document.getElementById("intakeAltContact").value || "").trim() || "N/A";
+
     const studentRow = [
-        sid, document.getElementById("intakeStudentName").value, document.getElementById("intakeDOB").value,
-        document.getElementById("intakeGender").value, document.getElementById("intakeClassSelect").value,
-        document.getElementById("intakeGuardianName").value, document.getElementById("intakeContact").value,
-        document.getElementById("intakeAltContact").value, document.getElementById("intakeAddress").value,
-        photo, bModel,
-        Number(document.getElementById("intakeAnnualTuition").value) || 0,
-        Number(document.getElementById("intakeAdmissionFee").value) || 0,
-        Number(document.getElementById("intakeKitFee").value) || 0,
-        Number(document.getElementById("intakeUniformFee").value) || 0,
-        Number(document.getElementById("FormVanFee").value) || 0,
-        Number(document.getElementById("FormDayCareFee").value) || 0,
-        Number(document.getElementById("FormOptMonthlyFee").value) || 0,
-        document.getElementById("intakeBloodGroup").value, document.getElementById("intakeDOJ").value
+        sid,
+        document.getElementById("intakeStudentName").value,
+        document.getElementById("intakeDOB").value,
+        document.getElementById("intakeGender").value,
+        document.getElementById("intakeClassSelect").value,
+        document.getElementById("intakeGuardianName").value,
+        document.getElementById("intakeContact").value,
+        alt,
+        document.getElementById("intakeAddress").value,
+        photo,
+        bModel,
+        fees.customFee,
+        fees.admissionFee,
+        fees.kitFee,
+        fees.uniformFee,
+        fees.vanFee,
+        fees.dayCareFee,
+        fees.optMonthly,
+        document.getElementById("intakeBloodGroup").value,
+        document.getElementById("intakeDOJ").value
     ];
+
     try {
         await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Students", rowData: studentRow }) });
         const pRow = ["PAY-" + sid + "-" + activeSystemMonthContext, sid, activeSystemMonthContext, 0, "", "Cash", "Admission Record Initialized", "Active", ""];
         await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: pRow }) });
+
+        const paidNow = Number(document.getElementById("intakePaidNowAmount")?.value) || 0;
+        if (paidNow > 0) {
+            const mode = document.getElementById("intakePaidNowMode")?.value || "Cash";
+            const forKey = document.getElementById("intakePaidNowFor")?.value || "Tuition";
+            const note = (document.getElementById("intakePaidNowRemarks")?.value || "").trim();
+            const remark = paidNowRemarkTag(forKey) + (note ? " — " + note : "");
+            const payRow = ["PAY-" + sid + "-ADM-" + Date.now(), sid, activeSystemMonthContext, paidNow,
+                new Date().toISOString().substring(0, 10), mode, remark, "Active", ""];
+            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: payRow }) });
+        }
+
         alert("Admission saved!");
         event.target.reset();
         document.getElementById("base64PayloadCache").value = "N/A";
+        const reg = document.querySelector('input[name="BillingModel"][value="Regular"]');
+        if (reg) reg.checked = true;
+        handleFormBillingTypeChange("Regular");
         await refreshApplicationState(false);
         showView("home");
     } catch (e) { console.error(e); }
