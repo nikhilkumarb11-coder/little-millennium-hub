@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Little Millennium Sullurpeta Master ERP</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -10,8 +10,6 @@
         :root { --header-h: 56px; }
         html, body { height: 100%; }
         body { overscroll-behavior: none; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .app-shell { min-height: 100dvh; padding-bottom: env(safe-area-inset-bottom); }
         #view-home {
             height: calc(100dvh - var(--header-h) - env(safe-area-inset-bottom, 0px));
@@ -25,47 +23,54 @@
         .home-tile {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; border-radius: 1rem; padding: 0.5rem; min-height: 0;
-            box-shadow: 0 1px 3px rgb(0 0 0 / 0.08); transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+            transition: transform 0.15s ease;
             -webkit-tap-highlight-color: transparent; user-select: none; position: relative;
+            background: #fff;
         }
         .home-tile:active { transform: scale(0.97); }
-        .home-tile .tile-icon { font-size: 1.5rem; line-height: 1; margin-bottom: 0.35rem; }
-        .home-tile .tile-label { font-size: 0.7rem; font-weight: 800; line-height: 1.15; letter-spacing: 0.01em; }
+        .home-tile .tile-icon { font-size: 1.45rem; line-height: 1; margin-bottom: 0.3rem; }
+        .home-tile .tile-label { font-size: 0.68rem; font-weight: 800; line-height: 1.15; }
         .home-tile .tile-badge {
             position: absolute; top: 0.35rem; right: 0.35rem;
             min-width: 1.25rem; height: 1.25rem; padding: 0 0.3rem;
             border-radius: 999px; font-size: 0.6rem; font-weight: 800;
-            display: flex; align-items: center; justify-content: center;
+            display: none; align-items: center; justify-content: center;
+            background: #f43f5e; color: #fff;
         }
+        .home-tile .tile-badge.show { display: flex; }
         .view-screen { display: none; }
         .view-screen.active { display: block; }
-        .view-scroll { max-height: calc(100dvh - var(--header-h) - 3rem); overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .view-scroll {
+            max-height: calc(100dvh - var(--header-h) - 3.25rem);
+            overflow-y: auto; -webkit-overflow-scrolling: touch;
+        }
         .view-back-bar { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
         @media (min-width: 768px) {
-            #view-home { max-width: 28rem; margin: 0 auto; height: calc(100dvh - var(--header-h) - 1rem); }
+            #view-home { max-width: 28rem; margin: 0 auto; }
         }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans app-shell">
 
-    <!-- Auth Shield Screen -->
+    <!-- Auth -->
     <div id="authShield" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center border-4 border-amber-400">
+        <div class="bg-white p-8 rounded-[2rem] shadow-2xl max-w-sm w-full text-center border-4 border-amber-400">
             <h1 class="text-2xl font-black text-indigo-950 mb-1">Little Millennium</h1>
             <p class="text-[10px] font-bold uppercase tracking-widest text-amber-600 mb-6">Sullurpeta Campus Management</p>
-            <input type="password" id="gateKey" placeholder="Enter Passcode" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-center text-lg font-mono focus:outline-none focus:border-indigo-600 mb-4">
-            <button onclick="attemptAuthentication()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition duration-200">Unlock Master ERP</button>
+            <input type="password" id="gateKey" placeholder="Enter Passcode" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-center text-lg font-mono focus:outline-none focus:border-indigo-600 mb-4" autocomplete="current-password">
+            <button type="button" onclick="attemptAuthentication()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg">Unlock Master ERP</button>
             <p id="authError" class="text-rose-600 text-sm mt-3 hidden font-semibold">Access Key Verification Failed.</p>
         </div>
     </div>
 
-    <!-- Compact Mobile Header -->
+    <!-- Header -->
     <header id="appHeader" class="bg-indigo-950 text-white sticky top-0 z-40 px-3 hidden" style="height: var(--header-h); padding-top: env(safe-area-inset-top);">
         <div class="h-full max-w-3xl mx-auto flex justify-between items-center gap-2">
             <button type="button" onclick="goToHome()" class="flex items-center space-x-2 min-w-0">
-                <div class="bg-amber-400 w-9 h-9 rounded-xl text-indigo-950 text-sm font-black shadow-inner flex items-center justify-center flex-shrink-0">LM</div>
+                <div class="bg-amber-400 w-9 h-9 rounded-xl text-indigo-950 text-sm font-black flex items-center justify-center flex-shrink-0">LM</div>
                 <div class="min-w-0 text-left">
-                    <h2 class="text-sm font-black leading-none tracking-tight truncate">Little Millennium</h2>
+                    <h2 class="text-sm font-black leading-none truncate">Little Millennium</h2>
                     <span class="text-[9px] text-amber-300 font-bold uppercase tracking-wider">Sullurpeta</span>
                 </div>
             </button>
@@ -81,197 +86,113 @@
         </div>
     </header>
 
-    <!-- Main Workspace -->
     <main id="appWorkspace" class="max-w-3xl mx-auto hidden">
 
-        <!-- HOME: 8 tiles, one mobile screen -->
+        <!-- HOME TILES -->
         <section id="view-home" class="view-screen active">
-            <button type="button" class="home-tile bg-white border border-indigo-100" onclick="showView('intake')">
-                <span class="tile-icon">📝</span>
-                <span class="tile-label text-indigo-950">Admission Intake Form</span>
+            <button type="button" class="home-tile border border-indigo-100" onclick="showView('intake')">
+                <span class="tile-icon">📝</span><span class="tile-label text-indigo-950">Admission Intake Form</span>
             </button>
-            <button type="button" class="home-tile bg-white border border-sky-100" onclick="showView('search')">
-                <span class="tile-icon">🔍</span>
-                <span class="tile-label text-sky-950">Search Student</span>
+            <button type="button" class="home-tile border border-sky-100" onclick="showView('search')">
+                <span class="tile-icon">🔍</span><span class="tile-label text-sky-950">Search Student</span>
             </button>
-            <button type="button" class="home-tile bg-white border border-rose-100" onclick="showView('fees')">
-                <span class="tile-icon">💰</span>
-                <span class="tile-label text-rose-950">Monthly Fee Check</span>
-                <span id="tileBadgeFees" class="tile-badge bg-rose-500 text-white hidden">0</span>
+            <button type="button" class="home-tile border border-rose-100" onclick="showView('fees')">
+                <span class="tile-icon">💰</span><span class="tile-label text-rose-950">Monthly Fee Check</span>
+                <span id="tileBadgeFees" class="tile-badge">0</span>
             </button>
-            <button type="button" class="home-tile bg-white border border-amber-100" onclick="showView('rosters')">
-                <span class="tile-icon">👥</span>
-                <span class="tile-label text-amber-950">Total Rosters</span>
-                <span id="tileBadgeRosters" class="tile-badge bg-amber-500 text-white hidden">0</span>
+            <button type="button" class="home-tile border border-amber-100" onclick="showView('rosters')">
+                <span class="tile-icon">👥</span><span class="tile-label text-amber-950">Total Rosters</span>
+                <span id="tileBadgeRosters" class="tile-badge" style="background:#f59e0b">0</span>
             </button>
-            <button type="button" class="home-tile bg-white border border-orange-100" onclick="showView('expenses')">
-                <span class="tile-icon">🧾</span>
-                <span class="tile-label text-orange-950">Expenses Entry</span>
+            <button type="button" class="home-tile border border-orange-100" onclick="showView('expenses')">
+                <span class="tile-icon">🧾</span><span class="tile-label text-orange-950">Expenses Entry</span>
             </button>
-            <button type="button" class="home-tile bg-white border border-emerald-100" onclick="showView('events')">
-                <span class="tile-icon">🗓️</span>
-                <span class="tile-label text-emerald-950">Events Entry</span>
+            <button type="button" class="home-tile border border-emerald-100" onclick="showView('events')">
+                <span class="tile-icon">🗓️</span><span class="tile-label text-emerald-950">Events Entry</span>
             </button>
-            <button type="button" class="home-tile bg-white border border-violet-100" onclick="showView('edit')">
-                <span class="tile-icon">✏️</span>
-                <span class="tile-label text-violet-950">Edit Student Data</span>
+            <button type="button" class="home-tile border border-violet-100" onclick="showView('edit')">
+                <span class="tile-icon">✏️</span><span class="tile-label text-violet-950">Edit Student Data</span>
             </button>
-            <button type="button" class="home-tile bg-white border border-indigo-200" onclick="showView('finances')">
-                <span class="tile-icon">📊</span>
-                <span class="tile-label text-indigo-950">Finances</span>
+            <button type="button" class="home-tile border border-indigo-200" onclick="showView('finances')">
+                <span class="tile-icon">📊</span><span class="tile-label text-indigo-950">Finances</span>
             </button>
         </section>
 
-        <!-- VIEW: Admission Intake -->
+        <!-- INTAKE -->
         <section id="view-intake" class="view-screen px-3 pb-6 pt-2">
             <div class="view-back-bar">
                 <button type="button" onclick="goToHome()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Home</button>
                 <h3 class="font-black text-sm text-indigo-950">Admission Intake</h3>
             </div>
             <div class="view-scroll">
-                <form id="studentEnrollmentForm" onsubmit="handleStudentSubmission(event)" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-4 text-xs font-semibold">
+                <form id="studentEnrollmentForm" onsubmit="handleStudentSubmission(event)" class="bg-white rounded-2xl shadow-sm border p-4 space-y-4 text-xs font-semibold">
                     <div id="formModelWrapper" class="bg-indigo-50 p-3 rounded-2xl border border-indigo-100 flex flex-col gap-2">
                         <span class="font-black text-indigo-950">Billing Model</span>
-                        <label class="flex items-center space-x-2 cursor-pointer text-slate-700">
-                            <input type="radio" name="BillingModel" value="Regular" checked onchange="handleFormBillingTypeChange('Regular')">
-                            <span class="font-bold">Regular Base Model</span>
-                        </label>
-                        <label class="flex items-center space-x-2 cursor-pointer text-slate-700">
-                            <input type="radio" name="BillingModel" value="Monthly" onchange="handleFormBillingTypeChange('Monthly')">
-                            <span class="font-bold">Custom Monthly Model</span>
-                        </label>
+                        <label class="flex items-center gap-2"><input type="radio" name="BillingModel" value="Regular" checked onchange="handleFormBillingTypeChange('Regular')"><span class="font-bold">Regular Base</span></label>
+                        <label class="flex items-center gap-2"><input type="radio" name="BillingModel" value="Monthly" onchange="handleFormBillingTypeChange('Monthly')"><span class="font-bold">Custom Monthly</span></label>
                     </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 gap-3">
+                        <div><label class="block mb-1 text-slate-500">Student Name *</label><input type="text" id="intakeStudentName" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div><label class="block mb-1 text-slate-500">Date of Birth *</label><input type="date" id="intakeDOB" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div><label class="block mb-1 text-slate-500">Date of Joining *</label><input type="date" id="intakeDOJ" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
                         <div>
-                            <label class="block mb-1 text-slate-500">Student Name *</label>
-                            <input type="text" id="intakeStudentName" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block mb-1 text-slate-500">Date of Birth *</label>
-                            <input type="date" id="intakeDOB" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
-                        </div>
-                        <div>
-                            <label class="block mb-1 text-slate-500">Date of Joining (DOJ) *</label>
-                            <input type="date" id="intakeDOJ" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
-                        </div>
-                        <div>
-                            <label class="block mb-1 text-slate-500">Cohort Class Assignment *</label>
-                            <select id="intakeClassSelect" onchange="updateIntakeClassFeeDefault()" required class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
-                                <option value="DR">DR (Developing Roots)</option>
-                                <option value="EW">EW (Emerging Wings)</option>
-                                <option value="RTF1">RTF1 (Ready to Fly 1)</option>
-                                <option value="RTF2">RTF2 (Ready to Fly 2)</option>
-                                <option value="DayCare">Day Care Only Track</option>
+                            <label class="block mb-1 text-slate-500">Class *</label>
+                            <select id="intakeClassSelect" onchange="updateIntakeClassFeeDefault()" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
+                                <option value="DR">DR</option><option value="EW">EW</option><option value="RTF1">RTF1</option><option value="RTF2">RTF2</option><option value="DayCare">Day Care Only</option>
                             </select>
                         </div>
                     </div>
-
-                    <div id="sectionIntakeFees" class="border-t pt-3">
-                        <div class="flex justify-between items-center mb-2">
-                            <h4 class="text-indigo-950 font-black text-sm">Fee Configurations</h4>
-                            <span id="intakeDiscountBadge" class="bg-emerald-50 text-emerald-700 px-3 py-0.5 rounded-lg text-[11px] font-black">₹0 Offered Discount</span>
+                    <div id="sectionIntakeFees" class="border-t pt-3 space-y-3">
+                        <div class="flex justify-between items-center"><h4 class="font-black text-indigo-950 text-sm">Fees</h4><span id="intakeDiscountBadge" class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-[11px] font-black">₹0 Discount</span></div>
+                        <div id="rowAnnualTuition"><label class="block mb-1 text-slate-500">Annual Tuition (₹)</label><input type="number" id="intakeAnnualTuition" value="41000" oninput="calculateIntakeDiscount()" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div id="rowAdmissionFee" class="hidden"><label class="block mb-1 text-slate-500">Admission Fee (₹)</label><input type="number" id="intakeAdmissionFee" value="0" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div id="rowKitFee" class="hidden"><label class="block mb-1 text-slate-500">Kit Fee (₹)</label><input type="number" id="intakeKitFee" value="0" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div id="rowUniformFee"><label class="block mb-1 text-slate-500">Uniform Fee (₹)</label><input type="number" id="intakeUniformFee" value="0" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                    </div>
+                    <div id="sectionIntakeServices" class="border-t pt-3 space-y-3">
+                        <h4 class="font-black text-indigo-950 text-sm">Monthly Services</h4>
+                        <div id="boxFormVan" class="bg-slate-50 p-3 rounded-xl border">
+                            <label class="flex items-center gap-2 font-bold"><input type="checkbox" id="chkFormVanOpted" onchange="toggleFormFeeInput(this,'FormVanFee')"><span>Van</span></label>
+                            <input type="number" id="FormVanFee" value="0" disabled class="w-full mt-2 px-3 py-2 rounded-lg border bg-white">
                         </div>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div id="rowAnnualTuition">
-                                <label class="block mb-1 text-slate-500">Agreed Annual Base Tuition (₹)</label>
-                                <input type="number" id="intakeAnnualTuition" value="41000" oninput="calculateIntakeDiscount()" class="w-full px-3 py-2 rounded-xl border bg-slate-50 focus:bg-white">
-                            </div>
-                            <div id="rowAdmissionFee">
-                                <label class="block mb-1 text-slate-500">Admission Processing Fees (₹)</label>
-                                <input type="number" id="intakeAdmissionFee" value="0" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
-                            </div>
-                            <div id="rowKitFee">
-                                <label class="block mb-1 text-slate-500">Student Welcome Kit Cost (₹)</label>
-                                <input type="number" id="intakeKitFee" value="0" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
-                            </div>
-                            <div id="rowUniformFee">
-                                <label class="block mb-1 text-slate-500">Spare Uniform Outlay (₹)</label>
-                                <input type="number" id="intakeUniformFee" value="0" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
-                            </div>
+                        <div id="boxFormDayCare" class="bg-slate-50 p-3 rounded-xl border">
+                            <label class="flex items-center gap-2 font-bold"><input type="checkbox" id="chkFormDayCareOpted" onchange="toggleFormFeeInput(this,'FormDayCareFee')"><span>Day Care</span></label>
+                            <input type="number" id="FormDayCareFee" value="0" disabled class="w-full mt-2 px-3 py-2 rounded-lg border bg-white">
+                        </div>
+                        <div id="boxFormOptMonthly" class="bg-slate-50 p-3 rounded-xl border hidden">
+                            <label class="flex items-center gap-2 font-bold"><input type="checkbox" id="chkOptMonthly" onchange="toggleFormFeeInput(this,'FormOptMonthlyFee')"><span>Custom Monthly</span></label>
+                            <input type="number" id="FormOptMonthlyFee" value="0" disabled class="w-full mt-2 px-3 py-2 rounded-lg border bg-white">
                         </div>
                     </div>
-
-                    <div id="sectionIntakeServices" class="border-t pt-3">
-                        <h4 class="text-indigo-950 font-black mb-2 text-sm">Monthly Service Activation Engine</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="bg-slate-50 p-3 rounded-xl border" id="boxFormVan">
-                                <label class="flex items-center space-x-2 font-bold text-slate-700">
-                                    <input type="checkbox" id="chkFormVanOpted" onchange="toggleFormFeeInput(this, 'FormVanFee')" class="rounded">
-                                    <span>🚌 Van Commute Service</span>
-                                </label>
-                                <input type="number" id="FormVanFee" value="0" disabled class="w-full mt-2 px-3 py-1.5 rounded-lg border bg-white">
-                            </div>
-                            <div class="bg-slate-50 p-3 rounded-xl border" id="boxFormDayCare">
-                                <label class="flex items-center space-x-2 font-bold text-slate-700">
-                                    <input type="checkbox" id="chkFormDayCareOpted" onchange="toggleFormFeeInput(this, 'FormDayCareFee')" class="rounded">
-                                    <span>☀️ Day Care Management</span>
-                                </label>
-                                <input type="number" id="FormDayCareFee" value="0" disabled class="w-full mt-2 px-3 py-1.5 rounded-lg border bg-white">
-                            </div>
-                            <div class="bg-slate-50 p-3 rounded-xl border" id="boxFormOptMonthly">
-                                <label class="flex items-center space-x-2 font-bold text-slate-700">
-                                    <input type="checkbox" id="chkOptMonthly" onchange="toggleFormFeeInput(this, 'FormOptMonthlyFee')" class="rounded">
-                                    <span>🗓️ Custom Monthly Committed Fee</span>
-                                </label>
-                                <input type="number" id="FormOptMonthlyFee" value="0" disabled class="w-full mt-2 px-3 py-1.5 rounded-lg border bg-white">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="border-t pt-3 grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block mb-1 text-slate-500">Primary Guardian Name *</label>
-                            <input type="text" id="intakeGuardianName" required class="w-full px-3 py-2 rounded-xl border bg-slate-50">
-                        </div>
-                        <div>
-                            <label class="block mb-1 text-slate-500">Mobile Contact Number *</label>
-                            <input type="tel" id="intakeContact" required class="w-full px-3 py-2 rounded-xl border bg-slate-50">
-                        </div>
-                        <div>
-                            <label class="block mb-1 text-slate-500">Alternative Contact</label>
-                            <input type="tel" id="intakeAltContact" value="N/A" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
-                        </div>
-                        <div>
-                            <label class="block mb-1 text-slate-500">Residential Address</label>
-                            <input type="text" id="intakeAddress" value="N/A" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-3">
-                        <div>
-                            <label class="block mb-1 text-slate-500">Blood Group</label>
-                            <input type="text" id="intakeBloodGroup" placeholder="e.g. O+" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
-                        </div>
+                    <div class="border-t pt-3 grid grid-cols-1 gap-3">
+                        <div><label class="block mb-1 text-slate-500">Guardian Name *</label><input type="text" id="intakeGuardianName" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div><label class="block mb-1 text-slate-500">Mobile *</label><input type="tel" id="intakeContact" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div><label class="block mb-1 text-slate-500">Alt Contact</label><input type="tel" id="intakeAltContact" value="N/A" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div><label class="block mb-1 text-slate-500">Address</label><input type="text" id="intakeAddress" value="N/A" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div><label class="block mb-1 text-slate-500">Blood Group</label><input type="text" id="intakeBloodGroup" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
                         <div>
                             <label class="block mb-1 text-slate-500">Gender *</label>
-                            <select id="intakeGender" class="w-full px-3 py-2 rounded-xl border bg-slate-50">
-                                <option value="Boy">Boy</option>
-                                <option value="Girl">Girl</option>
-                            </select>
+                            <select id="intakeGender" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"><option value="Boy">Boy</option><option value="Girl">Girl</option></select>
                         </div>
-                        <div class="md:col-span-2">
-                            <label class="block mb-1 text-slate-500">Profile Photo (optional)</label>
+                        <div>
+                            <label class="block mb-1 text-slate-500">Photo (optional)</label>
                             <input type="file" accept="image/*" onchange="processImageUpload(this)" class="w-full text-xs">
                             <input type="hidden" id="base64PayloadCache" value="N/A">
                         </div>
                     </div>
-
-                    <div class="flex justify-end pt-2">
-                        <button type="submit" class="w-full bg-indigo-600 text-white font-bold px-6 py-3 rounded-xl shadow">Save Admission Profile</button>
-                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl shadow">Save Admission</button>
                 </form>
             </div>
         </section>
 
-        <!-- VIEW: Search Student -->
+        <!-- SEARCH -->
         <section id="view-search" class="view-screen px-3 pb-6 pt-2">
             <div class="view-back-bar">
                 <button type="button" onclick="goToHome()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Home</button>
                 <h3 class="font-black text-sm text-indigo-950">Search Student</h3>
             </div>
             <div class="view-scroll space-y-3">
-                <input type="text" id="rosterSearch" oninput="executeSearchFilter()" placeholder="Search student name..." class="w-full px-3 py-3 rounded-xl text-sm font-medium border bg-white shadow-sm">
+                <input type="text" id="rosterSearch" oninput="renderStudentCards()" placeholder="Search student name..." class="w-full px-3 py-3 rounded-xl text-sm border bg-white shadow-sm">
                 <div class="flex flex-wrap gap-1.5">
                     <button type="button" onclick="filterCohort('ALL', this)" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white">All</button>
                     <button type="button" onclick="filterCohort('DR', this)" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">DR</button>
@@ -284,7 +205,7 @@
             </div>
         </section>
 
-        <!-- VIEW: Monthly Fee Check -->
+        <!-- FEES -->
         <section id="view-fees" class="view-screen px-3 pb-6 pt-2">
             <div class="view-back-bar">
                 <button type="button" onclick="goToHome()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Home</button>
@@ -292,31 +213,22 @@
                 <span id="reminderPeriodBadge" class="bg-indigo-100 text-indigo-800 text-[10px] font-black px-2 py-1 rounded-full">...</span>
             </div>
             <div class="view-scroll space-y-3">
-                <div class="bg-white p-3 rounded-2xl border border-slate-200">
-                    <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
-                        <span>Van</span>
-                        <span id="countVanDues" class="bg-rose-100 text-rose-700 rounded-full px-2 text-[10px]">0</span>
-                    </h4>
+                <div class="bg-white p-3 rounded-2xl border">
+                    <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex justify-between"><span>Van</span><span id="countVanDues" class="bg-rose-100 text-rose-700 rounded-full px-2 text-[10px]">0</span></h4>
                     <div id="containerVanReminders" class="space-y-2 text-[11px] font-semibold"></div>
                 </div>
-                <div class="bg-white p-3 rounded-2xl border border-slate-200">
-                    <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
-                        <span>Day Care</span>
-                        <span id="countDayCareDues" class="bg-rose-100 text-rose-700 rounded-full px-2 text-[10px]">0</span>
-                    </h4>
+                <div class="bg-white p-3 rounded-2xl border">
+                    <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex justify-between"><span>Day Care</span><span id="countDayCareDues" class="bg-rose-100 text-rose-700 rounded-full px-2 text-[10px]">0</span></h4>
                     <div id="containerDayCareReminders" class="space-y-2 text-[11px] font-semibold"></div>
                 </div>
-                <div class="bg-white p-3 rounded-2xl border border-slate-200">
-                    <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex items-center justify-between">
-                        <span>Custom Monthly Opt / Base</span>
-                        <span id="countOptDues" class="bg-rose-100 text-rose-700 rounded-full px-2 text-[10px]">0</span>
-                    </h4>
+                <div class="bg-white p-3 rounded-2xl border">
+                    <h4 class="font-bold text-xs text-slate-500 mb-2 uppercase flex justify-between"><span>Custom Monthly Opt / Base</span><span id="countOptDues" class="bg-rose-100 text-rose-700 rounded-full px-2 text-[10px]">0</span></h4>
                     <div id="containerOptReminders" class="space-y-2 text-[11px] font-semibold"></div>
                 </div>
             </div>
         </section>
 
-        <!-- VIEW: Total Rosters -->
+        <!-- ROSTERS -->
         <section id="view-rosters" class="view-screen px-3 pb-6 pt-2">
             <div class="view-back-bar">
                 <button type="button" onclick="goToHome()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Home</button>
@@ -328,180 +240,117 @@
                     <h4 class="text-3xl font-black text-amber-300 mt-1" id="countCohortTotal">0 Active</h4>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-indigo-600">
-                        <span class="text-[10px] uppercase font-bold text-slate-400">DR</span>
-                        <h4 class="text-xl font-black text-indigo-950 mt-1" id="countCohortDR">0 Kids</h4>
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-rose-500">
-                        <span class="text-[10px] uppercase font-bold text-slate-400">EW</span>
-                        <h4 class="text-xl font-black text-indigo-950 mt-1" id="countCohortEW">0 Kids</h4>
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-amber-500">
-                        <span class="text-[10px] uppercase font-bold text-slate-400">RTF1</span>
-                        <h4 class="text-xl font-black text-indigo-950 mt-1" id="countCohortRTF1">0 Kids</h4>
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-emerald-500">
-                        <span class="text-[10px] uppercase font-bold text-slate-400">RTF2</span>
-                        <h4 class="text-xl font-black text-indigo-950 mt-1" id="countCohortRTF2">0 Kids</h4>
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-purple-500 col-span-2">
-                        <span class="text-[10px] uppercase font-bold text-slate-400">Day Care Only</span>
-                        <h4 class="text-xl font-black text-indigo-950 mt-1" id="countCohortDC">0 Kids</h4>
-                    </div>
+                    <div class="bg-white p-4 rounded-2xl border-l-4 border-indigo-600"><span class="text-[10px] uppercase font-bold text-slate-400">DR</span><h4 class="text-xl font-black mt-1" id="countCohortDR">0 Kids</h4></div>
+                    <div class="bg-white p-4 rounded-2xl border-l-4 border-rose-500"><span class="text-[10px] uppercase font-bold text-slate-400">EW</span><h4 class="text-xl font-black mt-1" id="countCohortEW">0 Kids</h4></div>
+                    <div class="bg-white p-4 rounded-2xl border-l-4 border-amber-500"><span class="text-[10px] uppercase font-bold text-slate-400">RTF1</span><h4 class="text-xl font-black mt-1" id="countCohortRTF1">0 Kids</h4></div>
+                    <div class="bg-white p-4 rounded-2xl border-l-4 border-emerald-500"><span class="text-[10px] uppercase font-bold text-slate-400">RTF2</span><h4 class="text-xl font-black mt-1" id="countCohortRTF2">0 Kids</h4></div>
+                    <div class="bg-white p-4 rounded-2xl border-l-4 border-purple-500 col-span-2"><span class="text-[10px] uppercase font-bold text-slate-400">Day Care Only</span><h4 class="text-xl font-black mt-1" id="countCohortDC">0 Kids</h4></div>
                 </div>
             </div>
         </section>
 
-        <!-- VIEW: Expenses Entry -->
+        <!-- EXPENSES -->
         <section id="view-expenses" class="view-screen px-3 pb-6 pt-2">
             <div class="view-back-bar">
                 <button type="button" onclick="goToHome()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Home</button>
                 <h3 class="font-black text-sm text-indigo-950">Expenses Entry</h3>
             </div>
             <div class="view-scroll space-y-4">
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <div class="bg-white p-4 rounded-2xl border shadow-sm">
                     <h4 class="font-black text-sm text-slate-700 mb-3" id="expenseFormHeader">Add Expense</h4>
                     <form id="expenseForm" onsubmit="handleExpenseSubmission(event)" class="space-y-3 text-xs font-semibold">
                         <input type="hidden" id="expenseFormID" name="ExpenseID">
-                        <div class="grid grid-cols-1 gap-3">
-                            <div>
-                                <label class="block mb-1 text-slate-500">Date *</label>
-                                <input type="date" id="expenseInputDate" name="Date" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
-                            </div>
-                            <div>
-                                <label class="block mb-1 text-slate-500">Category *</label>
-                                <select id="expenseInputCategory" name="Category" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
-                                    <option value="Salaries">Staff Salaries</option>
-                                    <option value="Rent">Infrastructure Rent</option>
-                                    <option value="Utilities">Utilities & Power</option>
-                                    <option value="Marketing">Marketing & Banners</option>
-                                    <option value="Events">Summer Camps & Celebrations</option>
-                                    <option value="Maintenance">General Asset Repairs</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block mb-1 text-slate-500">Amount (₹) *</label>
-                                <input type="number" id="expenseInputAmount" name="Amount" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
-                            </div>
-                            <div>
-                                <label class="block mb-1 text-slate-500">Type *</label>
-                                <select id="expenseInputType" name="Type" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
-                                    <option value="Fixed">Fixed</option>
-                                    <option value="Variable">Variable</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block mb-1 text-slate-500">Description</label>
-                                <input type="text" id="expenseInputDescription" name="Description" placeholder="Notes" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
-                            </div>
+                        <div><label class="block mb-1 text-slate-500">Date *</label><input type="date" id="expenseInputDate" name="Date" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div>
+                            <label class="block mb-1 text-slate-500">Category *</label>
+                            <select id="expenseInputCategory" name="Category" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
+                                <option value="Salaries">Salaries</option><option value="Rent">Rent</option><option value="Utilities">Utilities</option>
+                                <option value="Marketing">Marketing</option><option value="Events">Events</option><option value="Maintenance">Maintenance</option>
+                            </select>
                         </div>
-                        <div class="flex space-x-2 pt-1" id="expenseFormActions">
-                            <button type="submit" class="w-full bg-rose-600 text-white font-bold py-3 rounded-xl shadow">Save Expense</button>
+                        <div><label class="block mb-1 text-slate-500">Amount (₹) *</label><input type="number" id="expenseInputAmount" name="Amount" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div>
+                            <label class="block mb-1 text-slate-500">Type *</label>
+                            <select id="expenseInputType" name="Type" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
+                                <option value="Fixed">Fixed</option><option value="Variable">Variable</option>
+                            </select>
                         </div>
+                        <div><label class="block mb-1 text-slate-500">Description</label><input type="text" id="expenseInputDescription" name="Description" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div id="expenseFormActions"><button type="submit" class="w-full bg-rose-600 text-white font-bold py-3 rounded-xl">Save Expense</button></div>
                     </form>
                 </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <div class="bg-white p-4 rounded-2xl border shadow-sm">
                     <h4 class="font-black text-sm text-slate-700 mb-3">Recent Expenses</h4>
                     <div id="containerRunningExpensesList" class="space-y-2 text-xs"></div>
                 </div>
             </div>
         </section>
 
-        <!-- VIEW: Events Entry -->
+        <!-- EVENTS -->
         <section id="view-events" class="view-screen px-3 pb-6 pt-2">
             <div class="view-back-bar">
                 <button type="button" onclick="goToHome()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Home</button>
                 <h3 class="font-black text-sm text-indigo-950">Events Entry</h3>
             </div>
             <div class="view-scroll space-y-4">
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 text-xs font-semibold">
-                    <form id="eventForm" onsubmit="handleEventSubmission(event)" class="space-y-3">
-                        <div>
-                            <label class="block mb-1 text-slate-500">Event Title *</label>
-                            <input type="text" name="Title" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block mb-1 text-slate-500">Date *</label>
-                                <input type="date" name="Date" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
-                            </div>
-                            <div>
-                                <label class="block mb-1 text-slate-500">Time</label>
-                                <input type="time" name="Time" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block mb-1 text-slate-500">Category *</label>
-                            <select name="Category" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
-                                <option value="Holiday">Holiday</option>
-                                <option value="Meeting">Parent-Teacher Meeting</option>
-                                <option value="Celebration">Celebration</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl shadow">Save Event</button>
-                    </form>
-                </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-                    <h4 class="font-black text-sm text-slate-700 mb-3" id="calendarAgendaHeader">Agenda</h4>
-                    <div id="calendarAgendaStream" class="space-y-3">
-                        <p class="text-xs text-slate-400 font-medium">No events yet.</p>
+                <form id="eventForm" onsubmit="handleEventSubmission(event)" class="bg-white p-4 rounded-2xl border shadow-sm space-y-3 text-xs font-semibold">
+                    <div><label class="block mb-1 text-slate-500">Title *</label><input type="text" name="Title" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div><label class="block mb-1 text-slate-500">Date *</label><input type="date" name="Date" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div><label class="block mb-1 text-slate-500">Time</label><input type="time" name="Time" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
                     </div>
+                    <div>
+                        <label class="block mb-1 text-slate-500">Category *</label>
+                        <select name="Category" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
+                            <option value="Holiday">Holiday</option><option value="Meeting">Meeting</option><option value="Celebration">Celebration</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl">Save Event</button>
+                </form>
+                <div class="bg-white p-4 rounded-2xl border shadow-sm">
+                    <h4 class="font-black text-sm text-slate-700 mb-3">Agenda</h4>
+                    <div id="calendarAgendaStream" class="space-y-3"><p class="text-xs text-slate-400">No events yet.</p></div>
                 </div>
             </div>
         </section>
 
-        <!-- VIEW: Edit Student -->
+        <!-- EDIT -->
         <section id="view-edit" class="view-screen px-3 pb-6 pt-2">
             <div class="view-back-bar">
                 <button type="button" onclick="goToHome()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Home</button>
                 <h3 class="font-black text-sm text-indigo-950">Edit Student Data</h3>
             </div>
             <div class="view-scroll space-y-3">
-                <input type="text" id="editStudentSearch" oninput="renderEditStudentCards()" placeholder="Search by student name..." class="w-full px-3 py-3 rounded-xl text-sm font-medium border bg-white shadow-sm">
-                <p class="text-[11px] text-slate-500 font-semibold">Tap a student to edit their profile.</p>
+                <input type="text" id="editStudentSearch" oninput="renderEditStudentCards()" placeholder="Search by student name..." class="w-full px-3 py-3 rounded-xl text-sm border bg-white shadow-sm">
+                <p class="text-[11px] text-slate-500 font-semibold">Tap a student to edit.</p>
                 <div id="editStudentCardsGrid" class="grid grid-cols-1 gap-3"></div>
             </div>
         </section>
 
-        <!-- VIEW: Finances (stats only) -->
+        <!-- FINANCES -->
         <section id="view-finances" class="view-screen px-3 pb-6 pt-2">
             <div class="view-back-bar">
                 <button type="button" onclick="goToHome()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Home</button>
                 <h3 class="font-black text-sm text-indigo-950">Finances</h3>
             </div>
             <div class="view-scroll space-y-4">
-                <div class="bg-white p-3 rounded-2xl shadow-sm border flex flex-wrap items-center gap-2 text-xs font-bold">
+                <div class="bg-white p-3 rounded-2xl border flex gap-2 text-xs font-bold">
                     <select id="expensePeriodMonth" onchange="renderFinanceLedger()" class="p-2 border rounded-xl bg-slate-50 flex-1">
-                        <option value="0">January</option><option value="1">February</option><option value="2">March</option>
-                        <option value="3">April</option><option value="4">May</option><option value="5">June</option>
-                        <option value="6">July</option><option value="7">August</option><option value="8">September</option>
-                        <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+                        <option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option>
+                        <option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option>
+                        <option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option>
                     </select>
                     <select id="expensePeriodYear" onchange="renderFinanceLedger()" class="p-2 border rounded-xl bg-slate-50">
-                        <option value="2026">2026</option>
-                        <option value="2027">2027</option>
+                        <option value="2026">2026</option><option value="2027">2027</option>
                     </select>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-white p-3 rounded-2xl shadow-sm border">
-                        <span class="text-[10px] uppercase font-bold text-slate-400">Billed</span>
-                        <h4 class="text-lg font-black text-indigo-950 mt-1" id="kpiGrossRevenue">₹0</h4>
-                    </div>
-                    <div class="bg-white p-3 rounded-2xl shadow-sm border">
-                        <span class="text-[10px] uppercase font-bold text-slate-400">Collected</span>
-                        <h4 class="text-lg font-black text-emerald-600 mt-1" id="kpiCollectedRevenue">₹0</h4>
-                    </div>
-                    <div class="bg-white p-3 rounded-2xl shadow-sm border">
-                        <span class="text-[10px] uppercase font-bold text-slate-400">Pending</span>
-                        <h4 class="text-lg font-black text-amber-600 mt-1" id="kpiDuesPending">₹0</h4>
-                    </div>
-                    <div class="bg-white p-3 rounded-2xl shadow-sm border">
-                        <span class="text-[10px] uppercase font-bold text-slate-400">Expenses</span>
-                        <h4 class="text-lg font-black text-rose-600 mt-1" id="kpiTotalExpenses">₹0</h4>
-                    </div>
+                    <div class="bg-white p-3 rounded-2xl border"><span class="text-[10px] uppercase font-bold text-slate-400">Billed</span><h4 class="text-lg font-black text-indigo-950 mt-1" id="kpiGrossRevenue">₹0</h4></div>
+                    <div class="bg-white p-3 rounded-2xl border"><span class="text-[10px] uppercase font-bold text-slate-400">Collected</span><h4 class="text-lg font-black text-emerald-600 mt-1" id="kpiCollectedRevenue">₹0</h4></div>
+                    <div class="bg-white p-3 rounded-2xl border"><span class="text-[10px] uppercase font-bold text-slate-400">Pending</span><h4 class="text-lg font-black text-amber-600 mt-1" id="kpiDuesPending">₹0</h4></div>
+                    <div class="bg-white p-3 rounded-2xl border"><span class="text-[10px] uppercase font-bold text-slate-400">Expenses</span><h4 class="text-lg font-black text-rose-600 mt-1" id="kpiTotalExpenses">₹0</h4></div>
                 </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border space-y-3">
-                    <h4 class="font-black text-sm text-indigo-950">Analytics</h4>
+                <div class="bg-white p-4 rounded-2xl border space-y-3">
                     <div class="flex flex-wrap gap-1 bg-slate-100 p-1 rounded-xl text-[10px] font-bold">
                         <button type="button" onclick="setExpenseGraphTimeframe('monthly')" id="btnExpTime-monthly" class="px-2 py-1.5 rounded-lg bg-white text-indigo-950 shadow-sm flex-1">Monthly</button>
                         <button type="button" onclick="setExpenseGraphTimeframe('currentYear')" id="btnExpTime-currentYear" class="px-2 py-1.5 rounded-lg text-slate-600 flex-1">FY</button>
@@ -514,1227 +363,916 @@
         </section>
     </main>
 
-    <!-- Student Profile Edit Modal Container -->
+    <!-- Edit Student Modal -->
     <div id="studentDetailModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-[2rem] max-w-2xl w-full p-6 shadow-2xl space-y-4 border-2 border-indigo-100 max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-[1.5rem] max-w-lg w-full p-5 shadow-2xl space-y-4 border max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-start border-b pb-3">
                 <div class="flex items-center space-x-3">
-                    <div id="detailProfilePhotoSlot" class="w-14 h-14 rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden font-black"></div>
+                    <div id="detailProfilePhotoSlot" class="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden font-black bg-indigo-100"></div>
                     <div>
-                        <h3 id="detailStudentNameHeader" class="font-black text-indigo-950 text-base">Loading...</h3>
-                        <p id="detailStudentClassHeader" class="text-[10px] font-bold text-amber-600 tracking-wider uppercase">Loading...</p>
+                        <h3 id="detailStudentNameHeader" class="font-black text-indigo-950 text-sm">Loading...</h3>
+                        <p id="detailStudentClassHeader" class="text-[10px] font-bold text-amber-600 uppercase">Loading...</p>
                     </div>
                 </div>
-                <button type="button" onclick="closeStudentDetailModal()" class="text-2xl text-slate-400 hover:text-slate-600 font-bold leading-none">&times;</button>
+                <button type="button" onclick="closeStudentDetailModal()" class="text-2xl text-slate-400 font-bold leading-none">&times;</button>
             </div>
-
-            <form id="studentDetailUpdateForm" onsubmit="handleStudentDetailUpdate(event)" class="text-xs font-semibold space-y-4">
-                <input type="hidden" id="detailStudentID">
-                <input type="hidden" id="detailPhotoBase64">
-                
-                <div id="editModelWrapper" class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 flex items-center space-x-6">
-                    <span class="font-black text-indigo-950">Billing Pipeline Model:</span>
-                    <label class="flex items-center space-x-1 cursor-pointer">
-                        <input type="radio" id="editModelRegular" name="EditBillingModel" value="Regular" onchange="handleEditFormBillingTypeChange('Regular')">
-                        <span>Regular Base Model</span>
-                    </label>
-                    <label class="flex items-center space-x-1 cursor-pointer">
-                        <input type="radio" id="editModelMonthly" name="EditBillingModel" value="Monthly" onchange="handleEditFormBillingTypeChange('Monthly')">
-                        <span>Custom Monthly Model</span>
-                    </label>
+            <form id="studentDetailUpdateForm" onsubmit="handleStudentDetailUpdate(event)" class="text-xs font-semibold space-y-3">
+                <input type="hidden" id="detailStudentID"><input type="hidden" id="detailPhotoBase64">
+                <div id="editModelWrapper" class="bg-indigo-50 p-3 rounded-xl border flex flex-col gap-2">
+                    <span class="font-black text-indigo-950">Billing Model</span>
+                    <label class="flex items-center gap-2"><input type="radio" id="editModelRegular" name="EditBillingModel" value="Regular" onchange="handleEditFormBillingTypeChange('Regular')"><span>Regular</span></label>
+                    <label class="flex items-center gap-2"><input type="radio" id="editModelMonthly" name="EditBillingModel" value="Monthly" onchange="handleEditFormBillingTypeChange('Monthly')"><span>Monthly</span></label>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div class="grid grid-cols-1 gap-3">
+                    <div><label class="block mb-1 text-slate-400">Name</label><input type="text" id="editStudentName" required class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div><label class="block mb-1 text-slate-400">DOB</label><input type="date" id="editDOB" required class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div><label class="block mb-1 text-slate-400">DOJ</label><input type="date" id="editDOJ" required class="w-full p-2 border rounded-xl bg-slate-50"></div>
                     <div>
-                        <label class="block mb-1 text-slate-400">Student Name</label>
-                        <input type="text" id="editStudentName" required class="w-full p-2 border rounded-xl bg-slate-50">
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-slate-400">Date of Birth</label>
-                        <input type="date" id="editDOB" required class="w-full p-2 border rounded-xl bg-slate-50">
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-slate-400">Date of Joining (DOJ)</label>
-                        <input type="date" id="editDOJ" required class="w-full p-2 border rounded-xl bg-slate-50">
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-slate-400">Class Assigned</label>
+                        <label class="block mb-1 text-slate-400">Class</label>
                         <select id="editClass" onchange="updateEditClassFeeDefault()" required class="w-full p-2 border rounded-xl bg-slate-50">
-                            <option value="DR">DR</option><option value="EW">EW</option><option value="RTF1">RTF1</option><option value="RTF2">RTF2</option><option value="DayCare">Day Care Only Track</option>
+                            <option value="DR">DR</option><option value="EW">EW</option><option value="RTF1">RTF1</option><option value="RTF2">RTF2</option><option value="DayCare">Day Care</option>
                         </select>
                     </div>
                 </div>
-
-                <div id="sectionEditFees" class="border-t pt-3">
-                    <div class="flex justify-between items-center mb-2">
-                        <h5 class="font-black text-slate-600">Financial Allocations Matrix</h5>
-                        <span id="editDiscountBadge" class="bg-indigo-50 text-indigo-700 font-extrabold px-2 py-0.5 rounded text-[11px]">₹0 Offered Discount</span>
-                    </div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div id="editRowAnnualTuition">
-                            <label class="block mb-1 text-slate-400">Agreed Annual Tuition (₹)</label>
-                            <input type="number" id="editCustomFee" oninput="calculateEditDiscount()" class="w-full p-2 border rounded-xl bg-slate-50">
-                        </div>
-                        <div id="editRowAdmissionFee">
-                            <label class="block mb-1 text-slate-400">Admission Fee (₹)</label>
-                            <input type="number" id="editAdmissionFee" class="w-full p-2 border rounded-xl bg-slate-50">
-                        </div>
-                        <div id="editRowKitFee">
-                            <label class="block mb-1 text-slate-400">Student Kit Fee (₹)</label>
-                            <input type="number" id="editStudentKitFee" class="w-full p-2 border rounded-xl bg-slate-50">
-                        </div>
-                        <div id="editRowUniformFee">
-                            <label class="block mb-1 text-slate-400">Spare Uniform Fee (₹)</label>
-                            <input type="number" id="editSpareUniformFee" class="w-full p-2 border rounded-xl bg-slate-50">
-                        </div>
-                    </div>
+                <div id="sectionEditFees" class="border-t pt-3 space-y-2">
+                    <div class="flex justify-between"><h5 class="font-black text-slate-600">Fees</h5><span id="editDiscountBadge" class="bg-indigo-50 text-indigo-700 font-extrabold px-2 py-0.5 rounded text-[11px]">₹0 Discount</span></div>
+                    <div id="editRowAnnualTuition"><label class="block mb-1 text-slate-400">Annual Tuition</label><input type="number" id="editCustomFee" oninput="calculateEditDiscount()" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div id="editRowAdmissionFee" class="hidden"><label class="block mb-1 text-slate-400">Admission</label><input type="number" id="editAdmissionFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div id="editRowKitFee" class="hidden"><label class="block mb-1 text-slate-400">Kit</label><input type="number" id="editStudentKitFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div id="editRowUniformFee"><label class="block mb-1 text-slate-400">Uniform</label><input type="number" id="editSpareUniformFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
                 </div>
-
-                <div id="sectionEditServices" class="border-t pt-3">
-                    <h5 class="font-black text-slate-600 mb-2">Active Monthly Services Parameters</h5>
-                    <div class="grid grid-cols-3 gap-3">
-                        <div id="editBoxVan">
-                            <label class="block mb-1 text-slate-400">🚌 Van Service Fee (₹)</label>
-                            <input type="number" id="editVanFee" class="w-full p-2 border rounded-xl bg-slate-50">
-                        </div>
-                        <div id="editBoxDayCare">
-                            <label class="block mb-1 text-slate-400">☀️ Day Care Facility Fee (₹)</label>
-                            <input type="number" id="editDayCareFee" class="w-full p-2 border rounded-xl bg-slate-50">
-                        </div>
-                        <div id="editBoxOptMonthly">
-                            <label class="block mb-1 text-slate-400">🗓️ Custom Monthly Opt Fee (₹)</label>
-                            <input type="number" id="editOptMonthlyFee" class="w-full p-2 border rounded-xl bg-slate-50">
-                        </div>
-                    </div>
+                <div id="sectionEditServices" class="border-t pt-3 space-y-2">
+                    <h5 class="font-black text-slate-600">Monthly Services</h5>
+                    <div id="editBoxVan"><label class="block mb-1 text-slate-400">Van Fee</label><input type="number" id="editVanFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div id="editBoxDayCare"><label class="block mb-1 text-slate-400">Day Care Fee</label><input type="number" id="editDayCareFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div id="editBoxOptMonthly" class="hidden"><label class="block mb-1 text-slate-400">Opt Monthly</label><input type="number" id="editOptMonthlyFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-3 border-t pt-3">
-                    <div>
-                        <label class="block mb-1 text-slate-400">Primary Guardian Name</label>
-                        <input type="text" id="editGuardianName" required class="w-full p-2 border rounded-xl bg-slate-50">
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-slate-400">Contact Number</label>
-                        <input type="tel" id="editContact" required class="w-full p-2 border rounded-xl bg-slate-50">
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-slate-400">Alternative Contact</label>
-                        <input type="tel" id="editAltContact" class="w-full p-2 border rounded-xl bg-slate-50">
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-slate-400">Address</label>
-                        <input type="text" id="editAddress" class="w-full p-2 border rounded-xl bg-slate-50">
-                    </div>
+                <div class="grid grid-cols-1 gap-3 border-t pt-3">
+                    <div><label class="block mb-1 text-slate-400">Guardian</label><input type="text" id="editGuardianName" required class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div><label class="block mb-1 text-slate-400">Contact</label><input type="tel" id="editContact" required class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div><label class="block mb-1 text-slate-400">Alt Contact</label><input type="tel" id="editAltContact" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div><label class="block mb-1 text-slate-400">Address</label><input type="text" id="editAddress" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div><label class="block mb-1 text-slate-400">Blood Group</label><input type="text" id="editBloodGroup" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div><label class="block mb-1 text-slate-400">Gender</label><select id="editGender" class="w-full p-2 border rounded-xl bg-slate-50"><option value="Boy">Boy</option><option value="Girl">Girl</option></select></div>
+                    <div><label class="block mb-1 text-slate-400">Replace Photo</label><input type="file" accept="image/*" onchange="processEditImageUpload(this)" class="w-full text-xs"></div>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 border-t pt-3">
-                    <div>
-                        <label class="block mb-1 text-slate-400">Blood Group</label>
-                        <input type="text" id="editBloodGroup" class="w-full p-2 border rounded-xl bg-slate-50">
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-slate-400">Gender</label>
-                        <select id="editGender" class="w-full p-2 border rounded-xl bg-slate-50">
-                            <option value="Boy">Boy</option><option value="Girl">Girl</option>
-                        </select>
-                    </div>
-                    <div class="pt-2 col-span-2">
-                        <label class="block mb-1 text-slate-400">Replace Profile Image</label>
-                        <input type="file" accept="image/*" onchange="processEditImageUpload(this)" class="w-full text-xs">
-                    </div>
-                </div>
-
-                <div class="flex justify-between items-center pt-4 border-t">
-                    <button type="button" onclick="triggerDeleteStudent()" class="px-4 py-2 bg-rose-100 hover:bg-rose-200 text-rose-600 font-bold rounded-xl flex items-center space-x-1">
-                        <span>🗑️</span> <span>Delete Student Record</span>
-                    </button>
-                    <div class="flex space-x-2">
-                        <button type="button" onclick="closeStudentDetailModal()" class="px-4 py-2 bg-slate-100 text-slate-600 font-bold rounded-xl">Cancel</button>
-                        <button type="submit" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md">Commit Profile Changes</button>
-                    </div>
+                <div class="flex flex-col gap-2 pt-3 border-t">
+                    <button type="submit" class="w-full px-4 py-2.5 bg-indigo-600 text-white font-bold rounded-xl">Save Changes</button>
+                    <button type="button" onclick="closeStudentDetailModal()" class="w-full px-4 py-2 bg-slate-100 text-slate-600 font-bold rounded-xl">Cancel</button>
+                    <button type="button" onclick="triggerDeleteStudent()" class="w-full px-4 py-2 bg-rose-100 text-rose-600 font-bold rounded-xl">Delete Student</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Fee Particulars Modal Overlay -->
+    <!-- Payment Modal -->
     <div id="paymentModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-[2rem] max-w-md w-full p-6 shadow-2xl space-y-4 border-2 border-indigo-100 max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-[1.5rem] max-w-md w-full p-5 shadow-2xl space-y-4 border max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
                 <div>
-                    <h3 id="modalStudentTitleName" class="font-black text-indigo-950 text-base">Fee Particulars Deck</h3>
-                    <p id="modalStudentCohortSubtitle" class="text-[10px] font-bold text-amber-600 tracking-wider uppercase">Balance Monitoring Sheet</p>
+                    <h3 id="modalStudentTitleName" class="font-black text-indigo-950 text-sm">Fee Particulars</h3>
+                    <p id="modalStudentCohortSubtitle" class="text-[10px] font-bold text-amber-600 uppercase">Balance</p>
                 </div>
-                <button type="button" onclick="closePaymentModal()" class="text-2xl text-slate-400 font-bold leading-none">&times;</button>
+                <button type="button" onclick="closePaymentModal()" class="text-2xl text-slate-400 font-bold">&times;</button>
             </div>
-            
-            <div class="bg-slate-50 p-4 rounded-2xl border space-y-2 text-xs font-bold text-slate-700">
-                <div class="flex justify-between"><span>Gross Total Billed Tuition:</span><span id="lblModalTotalBilled" class="text-indigo-950">₹0</span></div>
-                <div class="flex justify-between"><span>Cumulative Logged Payments:</span><span id="lblModalTotalPaid" class="text-emerald-600">₹0</span></div>
-                <div class="flex justify-between border-t pt-2 text-sm"><span>Outstanding Balance:</span><span id="lblModalOutstandingBalance" class="text-rose-600 font-black">₹0</span></div>
+            <div class="bg-slate-50 p-4 rounded-2xl border space-y-2 text-xs font-bold">
+                <div class="flex justify-between"><span>Billed</span><span id="lblModalTotalBilled">₹0</span></div>
+                <div class="flex justify-between"><span>Paid</span><span id="lblModalTotalPaid" class="text-emerald-600">₹0</span></div>
+                <div class="flex justify-between border-t pt-2 text-sm"><span>Outstanding</span><span id="lblModalOutstandingBalance" class="text-rose-600 font-black">₹0</span></div>
             </div>
-
             <form id="modalFeeParticularsForm" onsubmit="commitParticularsTransaction(event)" class="text-xs font-semibold space-y-3">
                 <input type="hidden" id="modalTargetStudentID">
-                <h4 class="font-black text-indigo-950 border-b pb-1 uppercase tracking-wider text-[10px] text-slate-400">Record New Tuition Installment</h4>
-                <div>
-                    <label class="block mb-1 text-slate-500">Payment Processing Amount (₹) *</label>
-                    <input type="number" id="txAmountPaid" required class="w-full p-2.5 rounded-xl border bg-slate-50 font-bold text-indigo-950 text-sm">
-                </div>
+                <div><label class="block mb-1 text-slate-500">Amount (₹) *</label><input type="number" id="txAmountPaid" required class="w-full p-2.5 rounded-xl border bg-slate-50 font-bold"></div>
                 <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block mb-1 text-slate-500">Date *</label><input type="date" id="txPaymentDate" required class="w-full p-2 rounded-xl border bg-slate-50"></div>
                     <div>
-                        <label class="block mb-1 text-slate-500">Transaction Date *</label>
-                        <input type="date" id="txPaymentDate" required class="w-full p-2 rounded-xl border bg-slate-50">
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-slate-500">Payment Channel Mode *</label>
+                        <label class="block mb-1 text-slate-500">Mode *</label>
                         <select id="txPaymentMode" required class="w-full p-2 rounded-xl border bg-slate-50">
-                            <option value="Cash">Cash Handover</option>
-                            <option value="UPI">UPI (GPay/PhonePe)</option>
-                            <option value="Netbanking">Netbanking Wire</option>
-                            <option value="Other">Other Mode Channel</option>
+                            <option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Netbanking">Netbanking</option><option value="Other">Other</option>
                         </select>
                     </div>
                 </div>
-                <div>
-                    <label class="block mb-1 text-slate-500">Remarks</label>
-                    <input type="text" id="txRemarks" placeholder="Reference notes or bank tracking keys" class="w-full p-2 rounded-xl border bg-slate-50">
-                </div>
-                <div class="flex space-x-2 pt-2">
-                    <button type="button" onclick="closePaymentModal()" class="w-1/3 bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl">Close</button>
-                    <button type="submit" class="w-2/3 bg-emerald-600 text-white font-bold py-2.5 rounded-xl shadow">Log Settle Transaction</button>
-                </div>
+                <div><label class="block mb-1 text-slate-500">Remarks</label><input type="text" id="txRemarks" class="w-full p-2 rounded-xl border bg-slate-50"></div>
+                <div class="flex gap-2"><button type="button" onclick="closePaymentModal()" class="w-1/3 bg-slate-100 font-bold py-2.5 rounded-xl">Close</button><button type="submit" class="w-2/3 bg-emerald-600 text-white font-bold py-2.5 rounded-xl">Log Payment</button></div>
             </form>
         </div>
     </div>
 
-    <!-- Security Settings Modal -->
+    <!-- Password Modal -->
     <div id="changePasswordModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-amber-400 text-center space-y-4">
-            <h3 class="font-black text-indigo-950 text-lg">System Security Hub</h3>
-            <p class="text-xs text-slate-400 font-medium">Update the validation security passcode below.</p>
-            <input type="text" id="newPasscodeInput" class="w-full px-3 py-2 border rounded-xl text-center font-mono focus:outline-none">
-            <div class="flex space-x-2">
-                <button onclick="closeChangePasswordModal()" class="w-1/3 bg-slate-100 py-2 rounded-xl text-xs font-bold">Cancel</button>
-                <button onclick="commitNewPasscodeKey()" class="w-2/3 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold shadow">Save Passcode</button>
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border-2 border-amber-400 text-center space-y-4">
+            <h3 class="font-black text-indigo-950 text-lg">Security</h3>
+            <input type="text" id="newPasscodeInput" class="w-full px-3 py-2 border rounded-xl text-center font-mono">
+            <div class="flex gap-2">
+                <button type="button" onclick="closeChangePasswordModal()" class="w-1/3 bg-slate-100 py-2 rounded-xl text-xs font-bold">Cancel</button>
+                <button type="button" onclick="commitNewPasscodeKey()" class="w-2/3 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold">Save</button>
             </div>
         </div>
     </div>
 
-    <!-- Javascript Script Logic Engine Hub -->
-    <script>
-        const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyaykhdrvyBUCNwruy0IGGpDK4zG14QaoHG1cYurVDww6qMsBIRuIfg7NxygrE6KLha8w/exec";
-        
-        let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "ApexSullurpeta2026!";
-        let globalAppState = { students: [], payments: [], expenses: [], events: [], standardFees: { "DR":41000, "EW":42000, "RTF1":43000, "RTF2":44000 } };
-        let currentActiveCohortFilter = 'ALL';
-        let currentExpenseTimeframeContext = 'monthly';
-        const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-        const AVATAR_COLORS = ['bg-indigo-500', 'bg-rose-500', 'bg-emerald-500', 'bg-amber-500', 'bg-purple-500', 'bg-sky-500'];
+<script>
+const APP_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyaykhdrvyBUCNwruy0IGGpDK4zG14QaoHG1cYurVDww6qMsBIRuIfg7NxygrE6KLha8w/exec";
+let CURRENT_GATE_PASSPHRASE = localStorage.getItem("LM_PASSPHRASE") || "ApexSullurpeta2026!";
+let globalAppState = { students: [], payments: [], expenses: [], events: [], standardFees: { DR:41000, EW:42000, RTF1:43000, RTF2:44000 } };
+let currentActiveCohortFilter = "ALL";
+let currentExpenseTimeframeContext = "monthly";
+const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const AVATAR_COLORS = ["bg-indigo-500","bg-rose-500","bg-emerald-500","bg-amber-500","bg-purple-500","bg-sky-500"];
 
-        function getMonthYearLabel(dateObj = new Date()) {
-            return `${MONTH_NAMES[dateObj.getMonth()]}-${dateObj.getFullYear()}`;
+function getMonthYearLabel(d = new Date()) { return `${MONTH_NAMES[d.getMonth()]}-${d.getFullYear()}`; }
+function parseMonthYearLabel(label) {
+    const parts = (label || "").split("-");
+    if (parts.length < 2) return null;
+    const month = MONTH_NAMES.indexOf(parts[0]);
+    const year = parseInt(parts[1], 10);
+    if (month < 0 || isNaN(year)) return null;
+    return { month, year };
+}
+let activeSystemMonthContext = getMonthYearLabel();
+
+function formatToInputDate(dateVal) {
+    if (!dateVal) return "";
+    let cleanStr = dateVal.toString().trim().split("T")[0].replace(/[\/\s]/g, "-");
+    let parts = cleanStr.split("-");
+    if (parts.length < 3) return "";
+    if (parts[0].length === 4) return `${parts[0]}-${parts[1].padStart(2,"0")}-${parts[2].padStart(2,"0")}`;
+    if (parts[2].length === 4) return `${parts[2]}-${parts[1].padStart(2,"0")}-${parts[0].padStart(2,"0")}`;
+    return "";
+}
+
+function calculateExactAge(dateVal) {
+    const iso = formatToInputDate(dateVal);
+    if (!iso) return 0;
+    const [y, m, d] = iso.split("-").map(Number);
+    const birth = new Date(y, m - 1, d);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    if (today.getMonth() < birth.getMonth() || (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) age--;
+    return Math.max(0, age);
+}
+
+function calculateIntakeDiscount() {
+    const cls = document.getElementById("intakeClassSelect")?.value;
+    const standard = Number(globalAppState.standardFees[cls]) || 0;
+    const agreed = Number(document.getElementById("intakeAnnualTuition")?.value) || 0;
+    const discount = Math.max(0, standard - agreed);
+    const badge = document.getElementById("intakeDiscountBadge");
+    if (badge) badge.innerText = `₹${discount} Discount`;
+    return discount;
+}
+
+function calculateEditDiscount() {
+    const cls = document.getElementById("editClass")?.value;
+    const standard = Number(globalAppState.standardFees[cls]) || 0;
+    const agreed = Number(document.getElementById("editCustomFee")?.value) || 0;
+    const discount = Math.max(0, standard - agreed);
+    const badge = document.getElementById("editDiscountBadge");
+    if (badge) badge.innerText = `₹${discount} Discount`;
+    return discount;
+}
+
+function getStudentPayments(sid) {
+    return globalAppState.payments.filter(p => (p.StudentID || p.studentid) === sid);
+}
+function isServicePayment(remarks, key) {
+    const r = (remarks || "").toString();
+    if (key === "Van") return r.includes("Van");
+    if (key === "DayCare") return r.includes("DayCare") || r.includes("Day Care");
+    if (key === "OptMonthly") return r.includes("OptMonthly");
+    return false;
+}
+function isTuitionPayment(remarks) {
+    const r = (remarks || "").toString();
+    return !r.includes("Van") && !r.includes("DayCare") && !r.includes("Day Care") && !r.includes("OptMonthly");
+}
+function getElapsedMonthsToBill(student, periodLabel = activeSystemMonthContext) {
+    let elapsed = 1;
+    const rawDoj = student.DOJ || student.doj || "";
+    const dateClean = rawDoj.toString().trim().replace(/[\/\s]/g, "-");
+    const period = parseMonthYearLabel(periodLabel);
+    if (!period || !dateClean.includes("-")) return elapsed;
+    const parts = dateClean.split("-");
+    let jYear = parseInt(parts[0], 10), jMonth = parseInt(parts[1], 10) - 1;
+    if (parts[0].length < 4) { jYear = parseInt(parts[2], 10); jMonth = parseInt(parts[1], 10) - 1; }
+    if (isNaN(jYear) || isNaN(jMonth)) return elapsed;
+    const joinDate = new Date(jYear, jMonth, 1);
+    const currentPeriodDate = new Date(period.year, period.month, 1);
+    const diff = (currentPeriodDate.getFullYear() - joinDate.getFullYear()) * 12 + (currentPeriodDate.getMonth() - joinDate.getMonth());
+    if (diff > 0) elapsed += diff;
+    return elapsed;
+}
+function getOneTimeTuitionBilled(s) {
+    return (Number(s.CustomFee || s.customfee) || 0) + (Number(s.AdmissionFee || s.admissionfee) || 0) +
+        (Number(s.StudentKitFee || s.studentkitfee) || 0) + (Number(s.SpareUniformFee || s.spareuniformfee) || 0);
+}
+function getStudentReceivables(s) {
+    const elapsed = getElapsedMonthsToBill(s);
+    const oneTime = getOneTimeTuitionBilled(s);
+    const van = Number(s.VanFee || s.vanfee) || 0;
+    const isDC = (s.Class || s.class) === "DayCare";
+    const dayCareMonthly = isDC ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : (Number(s.DayCareFee || s.daycarefee) || 0);
+    const optMonthly = (!isDC && (s.BillingModel === "Monthly" || s.billingmodel === "Monthly")) ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : 0;
+    return oneTime + ((van + dayCareMonthly + optMonthly) * elapsed);
+}
+function getOrCreateMonthPaymentMeta(sid, periodLabel = activeSystemMonthContext) {
+    return getStudentPayments(sid).find(x => (x.MonthYear || x.monthyear) === periodLabel) || null;
+}
+
+function updateTileBadge(id, count) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (count > 0) { el.innerText = count > 99 ? "99+" : String(count); el.classList.add("show"); }
+    else el.classList.remove("show");
+}
+
+function toggleHeaderMenu(force) {
+    const menu = document.getElementById("headerMenu");
+    if (!menu) return;
+    if (force === false) menu.classList.add("hidden");
+    else if (force === true) menu.classList.remove("hidden");
+    else menu.classList.toggle("hidden");
+}
+
+function attemptAuthentication() {
+    if (document.getElementById("gateKey").value === CURRENT_GATE_PASSPHRASE) {
+        document.getElementById("authShield").classList.add("hidden");
+        document.getElementById("appWorkspace").classList.remove("hidden");
+        document.getElementById("appHeader").classList.remove("hidden");
+        showView("home");
+        refreshApplicationState(false);
+    } else {
+        document.getElementById("authError").classList.remove("hidden");
+    }
+}
+
+function triggerSystemLogout() {
+    document.getElementById("authShield").classList.remove("hidden");
+    document.getElementById("appWorkspace").classList.add("hidden");
+    document.getElementById("appHeader").classList.add("hidden");
+    document.getElementById("gateKey").value = "";
+    toggleHeaderMenu(false);
+    window.scrollTo(0, 0);
+}
+
+function goToHome() { showView("home"); }
+
+function showView(viewId) {
+    toggleHeaderMenu(false);
+    document.querySelectorAll(".view-screen").forEach(el => el.classList.remove("active"));
+    const target = document.getElementById("view-" + viewId);
+    if (target) target.classList.add("active");
+    const backBtn = document.getElementById("headerBackBtn");
+    if (backBtn) backBtn.classList.toggle("hidden", viewId === "home");
+    window.scrollTo(0, 0);
+    if (viewId === "search") renderStudentCards();
+    if (viewId === "edit") renderEditStudentCards();
+    if (viewId === "fees") renderFrontPageReminders();
+    if (viewId === "rosters") renderCohortHeadcounts();
+    if (viewId === "finances" || viewId === "expenses") renderFinanceLedger();
+    if (viewId === "events") renderCalendarAgenda();
+    if (viewId === "intake") {
+        const doj = document.getElementById("intakeDOJ");
+        if (doj && !doj.value) doj.value = new Date().toISOString().substring(0, 10);
+        handleFormBillingTypeChange("Regular");
+    }
+}
+
+function openChangePasswordModal() {
+    document.getElementById("newPasscodeInput").value = CURRENT_GATE_PASSPHRASE;
+    document.getElementById("changePasswordModalOverlay").classList.remove("hidden");
+}
+function closeChangePasswordModal() { document.getElementById("changePasswordModalOverlay").classList.add("hidden"); }
+function commitNewPasscodeKey() {
+    const val = document.getElementById("newPasscodeInput").value.trim();
+    if (val) { CURRENT_GATE_PASSPHRASE = val; localStorage.setItem("LM_PASSPHRASE", val); alert("Passcode updated!"); closeChangePasswordModal(); }
+}
+function toggleFormFeeInput(checkbox, targetInputId) {
+    const inp = document.getElementById(targetInputId);
+    if (!inp) return;
+    inp.disabled = !checkbox.checked;
+    if (!checkbox.checked) inp.value = "0";
+}
+
+function handleFormBillingTypeChange(type) {
+    const show = (id, on) => { const el = document.getElementById(id); if (el) el.style.display = on ? "block" : "none"; };
+    if (type === "Regular") {
+        show("rowAnnualTuition", true); show("rowAdmissionFee", false); show("rowKitFee", false); show("boxFormOptMonthly", false);
+        const a = document.getElementById("intakeAdmissionFee"); if (a) a.value = "0";
+        const k = document.getElementById("intakeKitFee"); if (k) k.value = "0";
+        const chk = document.getElementById("chkOptMonthly"); if (chk) chk.checked = false;
+        const opt = document.getElementById("FormOptMonthlyFee"); if (opt) { opt.value = "0"; opt.disabled = true; }
+        const badge = document.getElementById("intakeDiscountBadge"); if (badge) badge.style.display = "inline-block";
+        updateIntakeClassFeeDefault();
+    } else {
+        show("rowAnnualTuition", false); show("rowAdmissionFee", true); show("rowKitFee", true); show("boxFormOptMonthly", true);
+        const t = document.getElementById("intakeAnnualTuition"); if (t) t.value = "0";
+        const chk = document.getElementById("chkOptMonthly"); if (chk) { chk.checked = true; chk.disabled = false; }
+        const opt = document.getElementById("FormOptMonthlyFee"); if (opt) opt.disabled = false;
+        const badge = document.getElementById("intakeDiscountBadge"); if (badge) badge.style.display = "none";
+    }
+}
+
+function handleEditFormBillingTypeChange(type) {
+    const show = (id, on) => { const el = document.getElementById(id); if (el) el.style.display = on ? "block" : "none"; };
+    if (type === "Regular") {
+        show("editRowAnnualTuition", true); show("editRowAdmissionFee", false); show("editRowKitFee", false); show("editBoxOptMonthly", false);
+        const a = document.getElementById("editAdmissionFee"); if (a) a.value = "0";
+        const k = document.getElementById("editStudentKitFee"); if (k) k.value = "0";
+        const o = document.getElementById("editOptMonthlyFee"); if (o) o.value = "0";
+        const badge = document.getElementById("editDiscountBadge"); if (badge) badge.style.display = "inline-block";
+        calculateEditDiscount();
+    } else {
+        show("editRowAnnualTuition", false); show("editRowAdmissionFee", true); show("editRowKitFee", true); show("editBoxOptMonthly", true);
+        const t = document.getElementById("editCustomFee"); if (t) t.value = "0";
+        const badge = document.getElementById("editDiscountBadge"); if (badge) badge.style.display = "none";
+    }
+}
+
+function updateIntakeClassFeeDefault() {
+    const cls = document.getElementById("intakeClassSelect").value;
+    const wrap = document.getElementById("formModelWrapper");
+    if (cls === "DayCare") {
+        const rad = document.querySelector('input[name="BillingModel"][value="Monthly"]');
+        if (rad) rad.checked = true;
+        handleFormBillingTypeChange("Monthly");
+        if (wrap) wrap.style.display = "none";
+        ["rowAdmissionFee","rowKitFee","rowUniformFee","boxFormVan","boxFormDayCare"].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = "none"; });
+    } else {
+        if (wrap) wrap.style.display = "flex";
+        ["rowUniformFee","boxFormVan","boxFormDayCare"].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = "block"; });
+        const isRegular = document.querySelector('input[name="BillingModel"]:checked')?.value === "Regular";
+        if (isRegular) {
+            const t = document.getElementById("intakeAnnualTuition");
+            if (t) t.value = globalAppState.standardFees[cls] || 0;
+            handleFormBillingTypeChange("Regular");
         }
+    }
+    calculateIntakeDiscount();
+}
 
-        function parseMonthYearLabel(label) {
-            const parts = (label || "").split("-");
-            if (parts.length < 2) return null;
-            const monthIdx = MONTH_NAMES.indexOf(parts[0]);
-            const year = parseInt(parts[1], 10);
-            if (monthIdx < 0 || isNaN(year)) return null;
-            return { month: monthIdx, year };
+function updateEditClassFeeDefault() {
+    const cls = document.getElementById("editClass").value;
+    const wrap = document.getElementById("editModelWrapper");
+    if (cls === "DayCare") {
+        document.getElementById("editModelMonthly").checked = true;
+        handleEditFormBillingTypeChange("Monthly");
+        if (wrap) wrap.style.display = "none";
+        ["editRowAdmissionFee","editRowKitFee","editRowUniformFee","editBoxVan","editBoxDayCare"].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = "none"; });
+    } else {
+        if (wrap) wrap.style.display = "flex";
+        ["editRowUniformFee","editBoxVan","editBoxDayCare"].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = "block"; });
+        const isRegular = document.querySelector('input[name="EditBillingModel"]:checked')?.value === "Regular";
+        if (isRegular) {
+            const t = document.getElementById("editCustomFee");
+            if (t) t.value = globalAppState.standardFees[cls] || 0;
+            handleEditFormBillingTypeChange("Regular");
         }
+    }
+    calculateEditDiscount();
+}
 
-        let activeSystemMonthContext = getMonthYearLabel();
-
-        function calculateExactAge(dateVal) {
-            if (!dateVal) return 0;
-            const iso = formatToInputDate(dateVal);
-            if (!iso) return 0;
-            const [y, m, d] = iso.split("-").map(Number);
-            const birth = new Date(y, m - 1, d);
-            const today = new Date();
-            let age = today.getFullYear() - birth.getFullYear();
-            const beforeBirthday = today.getMonth() < birth.getMonth() ||
-                (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate());
-            if (beforeBirthday) age -= 1;
-            return Math.max(0, age);
+async function refreshApplicationState(showUserAlert) {
+    try {
+        const response = await fetch(`${APP_SHEET_API_URL}?action=getData&password=${encodeURIComponent(CURRENT_GATE_PASSPHRASE)}`);
+        const result = await response.json();
+        if (result.success) {
+            globalAppState.students = result.data.students || [];
+            globalAppState.payments = result.data.payments || [];
+            globalAppState.expenses = result.data.expenses || [];
+            globalAppState.events = result.data.events || [];
+            try { renderCohortHeadcounts(); } catch (e) { console.error(e); }
+            try { renderStudentCards(); } catch (e) { console.error(e); }
+            try { renderEditStudentCards(); } catch (e) { console.error(e); }
+            try { renderFrontPageReminders(); } catch (e) { console.error(e); }
+            try { renderCalendarAgenda(); } catch (e) { console.error(e); }
+            try { renderFinanceLedger(); } catch (e) { console.error(e); }
+            if (showUserAlert) alert("Synced successfully!");
         }
+    } catch (err) { console.error("Database connection lost:", err); alert("Sync failed. Check connection."); }
+}
 
-        function calculateIntakeDiscount() {
-            const cls = document.getElementById('intakeClassSelect')?.value;
-            const standard = Number(globalAppState.standardFees[cls]) || 0;
-            const agreed = Number(document.getElementById('intakeAnnualTuition')?.value) || 0;
-            const discount = Math.max(0, standard - agreed);
-            const badge = document.getElementById('intakeDiscountBadge');
-            if (badge) badge.innerText = `₹${discount} Offered Discount`;
-            return discount;
-        }
+function renderCohortHeadcounts() {
+    const list = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED");
+    const set = (id, t) => { const el = document.getElementById(id); if (el) el.innerText = t; };
+    set("countCohortDR", `${list.filter(s => s.Class === "DR").length} Kids`);
+    set("countCohortEW", `${list.filter(s => s.Class === "EW").length} Kids`);
+    set("countCohortRTF1", `${list.filter(s => s.Class === "RTF1").length} Kids`);
+    set("countCohortRTF2", `${list.filter(s => s.Class === "RTF2").length} Kids`);
+    set("countCohortDC", `${list.filter(s => s.Class === "DayCare").length} Kids`);
+    set("countCohortTotal", `${list.length} Active`);
+    updateTileBadge("tileBadgeRosters", list.length);
+}
 
-        function calculateEditDiscount() {
-            const cls = document.getElementById('editClass')?.value;
-            const standard = Number(globalAppState.standardFees[cls]) || 0;
-            const agreed = Number(document.getElementById('editCustomFee')?.value) || 0;
-            const discount = Math.max(0, standard - agreed);
-            const badge = document.getElementById('editDiscountBadge');
-            if (badge) badge.innerText = `₹${discount} Offered Discount`;
-            return discount;
-        }
+function renderStudentCards() {
+    const grid = document.getElementById("studentCardsGrid");
+    if (!grid) return;
+    grid.innerHTML = "";
+    let list = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED");
+    if (currentActiveCohortFilter !== "ALL") list = list.filter(s => s.Class === currentActiveCohortFilter);
+    const search = (document.getElementById("rosterSearch")?.value || "").toLowerCase();
+    if (search) list = list.filter(s => (s.StudentName || "").toLowerCase().includes(search));
+    if (!list.length) { grid.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">No students found.</p>'; return; }
 
-        function getStudentPayments(sid) {
-            return globalAppState.payments.filter(p => (p.StudentID || p.studentid) === sid);
-        }
-
-        function isServicePayment(remarks, serviceKey) {
-            const r = (remarks || "").toString();
-            if (serviceKey === "Van") return r.includes("Van");
-            if (serviceKey === "DayCare") return r.includes("DayCare") || r.includes("Day Care");
-            if (serviceKey === "OptMonthly") return r.includes("OptMonthly");
-            return false;
-        }
-
-        function isTuitionPayment(remarks) {
-            const r = (remarks || "").toString();
-            return !r.includes("Van") && !r.includes("DayCare") && !r.includes("Day Care") && !r.includes("OptMonthly");
-        }
-
-        function getElapsedMonthsToBill(student, periodLabel = activeSystemMonthContext) {
-            let elapsed = 1;
-            const rawDoj = student.DOJ || student.doj || "";
-            const dateClean = rawDoj.toString().trim().replace(/[\/\s]/g, "-");
-            const period = parseMonthYearLabel(periodLabel);
-            if (!period || !dateClean.includes("-")) return elapsed;
-            const parts = dateClean.split("-");
-            let jYear = parseInt(parts[0], 10);
-            let jMonth = parseInt(parts[1], 10) - 1;
-            if (parts[0].length < 4) { jYear = parseInt(parts[2], 10); jMonth = parseInt(parts[1], 10) - 1; }
-            if (isNaN(jYear) || isNaN(jMonth)) return elapsed;
-            const joinDate = new Date(jYear, jMonth, 1);
-            const currentPeriodDate = new Date(period.year, period.month, 1);
-            const diffMonths = (currentPeriodDate.getFullYear() - joinDate.getFullYear()) * 12 +
-                (currentPeriodDate.getMonth() - joinDate.getMonth());
-            if (diffMonths > 0) elapsed += diffMonths;
-            return elapsed;
-        }
-
-        function getOneTimeTuitionBilled(student) {
-            return (Number(student.CustomFee || student.customfee) || 0) +
-                (Number(student.AdmissionFee || student.admissionfee) || 0) +
-                (Number(student.StudentKitFee || student.studentkitfee) || 0) +
-                (Number(student.SpareUniformFee || student.spareuniformfee) || 0);
-        }
-
-        function getStudentReceivables(student) {
-            const elapsed = getElapsedMonthsToBill(student);
-            const oneTime = getOneTimeTuitionBilled(student);
-            const van = Number(student.VanFee || student.vanfee) || 0;
-            const isDayCareTrack = (student.Class || student.class) === "DayCare";
-            const dayCareMonthly = isDayCareTrack
-                ? (Number(student.OptMonthlyFee || student.optmonthlyfee) || 0)
-                : (Number(student.DayCareFee || student.daycarefee) || 0);
-            const optMonthly = (!isDayCareTrack && (student.BillingModel === "Monthly" || student.billingmodel === "Monthly"))
-                ? (Number(student.OptMonthlyFee || student.optmonthlyfee) || 0)
-                : 0;
-            return oneTime + ((van + dayCareMonthly + optMonthly) * elapsed);
-        }
-
-        function getOrCreateMonthPaymentMeta(sid, periodLabel = activeSystemMonthContext) {
-            const logs = getStudentPayments(sid);
-            return logs.find(x => (x.MonthYear || x.monthyear) === periodLabel) || null;
-        }
-
-        function openPaymentModal(sid) {
-            const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
-            if (!s) return;
-            const logs = getStudentPayments(sid);
-            const totalBilled = getOneTimeTuitionBilled(s);
-            let totalPaid = 0;
-            logs.forEach(p => {
-                if (isTuitionPayment(p.Remarks || p.remarks)) {
-                    totalPaid += Number(p.AmountPaid || p.amountpaid) || 0;
-                }
-            });
-            const outstanding = Math.max(0, totalBilled - totalPaid);
-
-            document.getElementById('modalTargetStudentID').value = sid;
-            document.getElementById('modalStudentTitleName').innerText = s.StudentName || s.studentname || "Fee Particulars";
-            document.getElementById('modalStudentCohortSubtitle').innerText = `${s.Class || s.class || ""} Balance Monitoring Sheet`;
-            document.getElementById('lblModalTotalBilled').innerText = `₹${totalBilled}`;
-            document.getElementById('lblModalTotalPaid').innerText = `₹${totalPaid}`;
-            document.getElementById('lblModalOutstandingBalance').innerText = `₹${outstanding}`;
-            document.getElementById('txAmountPaid').value = outstanding > 0 ? outstanding : "";
-            document.getElementById('txPaymentDate').value = new Date().toISOString().substring(0, 10);
-            document.getElementById('txPaymentMode').value = "Cash";
-            document.getElementById('txRemarks').value = "";
-            document.getElementById('paymentModalOverlay').classList.remove('hidden');
-        }
-
-        function closePaymentModal() {
-            document.getElementById('paymentModalOverlay').classList.add('hidden');
-        }
-
-        async function commitParticularsTransaction(e) {
-            e.preventDefault();
-            const sid = document.getElementById('modalTargetStudentID').value;
-            const amount = Number(document.getElementById('txAmountPaid').value) || 0;
-            if (amount <= 0) { alert("Enter a valid payment amount."); return; }
-            const payDate = document.getElementById('txPaymentDate').value;
-            const mode = document.getElementById('txPaymentMode').value;
-            const remarks = document.getElementById('txRemarks').value.trim() || "Tuition Installment";
-            const payId = "PAY-" + sid + "-" + Date.now();
-            const row = [payId, sid, activeSystemMonthContext, amount, payDate, mode, remarks, "Active", ""];
-            await fetch(APP_SHEET_API_URL, {
-                method: "POST", mode: "no-cors",
-                body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })
-            });
-            alert("✅ Tuition installment logged!");
-            closePaymentModal();
-            await refreshApplicationState(false);
-        }
-
-        async function toggleReminderNullify(sid, serviceKey, isChecked) {
-            const period = activeSystemMonthContext;
-            const existing = getOrCreateMonthPaymentMeta(sid, period);
-            let flags = (existing?.NullifiedServices || existing?.nullifiedservices || "").toString()
-                .split(",").map(x => x.trim()).filter(Boolean);
-            if (isChecked) {
-                if (!flags.includes(serviceKey)) flags.push(serviceKey);
-            } else {
-                flags = flags.filter(f => f !== serviceKey);
-            }
-            const nullified = flags.join(",");
-            const payId = (existing && (existing.PaymentID || existing.paymentid)) || ("PAY-" + sid + "-" + period);
-            const amount = Number(existing?.AmountPaid || existing?.amountpaid) || 0;
-            const mode = existing?.PaymentMode || existing?.paymentmode || "Cash";
-            const remarks = existing?.Remarks || existing?.remarks || "Month Meta";
-            const status = existing?.Status || existing?.status || "Active";
-            const payDate = existing?.PaymentDate || existing?.paymentdate || new Date().toISOString().substring(0, 10);
-            const row = [payId, sid, period, amount, payDate, mode, remarks, status, nullified];
-            const actionType = existing ? "updateRow" : "addRow";
-            await fetch(APP_SHEET_API_URL, {
-                method: "POST", mode: "no-cors",
-                body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: actionType, targetSheet: "Fee_Payments", rowId: payId, rowData: row })
-            });
-            await refreshApplicationState(false);
-        }
-
-        async function commitReminderSettlement(sid, serviceKey, dueAmount) {
-            const amount = Number(dueAmount) || 0;
-            if (amount <= 0) { alert("Nothing outstanding to settle."); return; }
-            let modeElId = "mode-van-" + sid;
-            if (serviceKey === "DayCare") modeElId = "mode-dc-" + sid;
-            if (serviceKey === "OptMonthly") modeElId = "mode-opt-" + sid;
-            const mode = document.getElementById(modeElId)?.value || "Cash";
-            const remarkTag = serviceKey === "DayCare" ? "DayCare Settlement" :
-                (serviceKey === "OptMonthly" ? "OptMonthly Settlement" : "Van Settlement");
-            const payId = "PAY-" + sid + "-" + serviceKey + "-" + Date.now();
-            const row = [payId, sid, activeSystemMonthContext, amount, new Date().toISOString().substring(0, 10), mode, remarkTag, "Active", ""];
-            await fetch(APP_SHEET_API_URL, {
-                method: "POST", mode: "no-cors",
-                body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row })
-            });
-            alert(`✅ ${serviceKey} dues settled (₹${amount})`);
-            await refreshApplicationState(false);
-        }
-
-        function attemptAuthentication() {
-            if (document.getElementById('gateKey').value === CURRENT_GATE_PASSPHRASE) {
-                document.getElementById('authShield').classList.add('hidden');
-                document.getElementById('appWorkspace').classList.remove('hidden');
-                document.getElementById('appHeader').classList.remove('hidden');
-                showView('home');
-                refreshApplicationState(false);
-            } else {
-                document.getElementById('authError').classList.remove('hidden');
-            }
-        }
-
-        function triggerSystemLogout() {
-            document.getElementById('authShield').classList.remove('hidden');
-            document.getElementById('appWorkspace').classList.add('hidden');
-            document.getElementById('appHeader').classList.add('hidden');
-            document.getElementById('gateKey').value = "";
-            toggleHeaderMenu(false);
-            window.scrollTo(0,0);
-        }
-
-        function toggleHeaderMenu(force) {
-            const menu = document.getElementById('headerMenu');
-            if (!menu) return;
-            if (force === false) menu.classList.add('hidden');
-            else if (force === true) menu.classList.remove('hidden');
-            else menu.classList.toggle('hidden');
-        }
-
-        function goToHome() { showView('home'); }
-
-        function showView(viewId) {
-            toggleHeaderMenu(false);
-            document.querySelectorAll('.view-screen').forEach(el => el.classList.remove('active'));
-            const target = document.getElementById('view-' + viewId);
-            if (target) target.classList.add('active');
-            const backBtn = document.getElementById('headerBackBtn');
-            if (backBtn) backBtn.classList.toggle('hidden', viewId === 'home');
-            window.scrollTo(0, 0);
-            if (viewId === 'search') renderStudentCards();
-            if (viewId === 'edit') renderEditStudentCards();
-            if (viewId === 'fees') renderFrontPageReminders();
-            if (viewId === 'rosters') renderCohortHeadcounts();
-            if (viewId === 'finances' || viewId === 'expenses') renderFinanceLedger();
-            if (viewId === 'events') renderCalendarAgenda();
-        }
-
-        function openChangePasswordModal() {
-            document.getElementById('newPasscodeInput').value = CURRENT_GATE_PASSPHRASE;
-            document.getElementById('changePasswordModalOverlay').classList.remove('hidden');
-        }
-        function toggleFormFeeInput(checkbox, targetInputId) {
-            const inp = document.getElementById(targetInputId); if(inp) inp.disabled = !checkbox.checked;
-            if(inp && !checkbox.checked) inp.value = "0";
-        }
-        function closeChangePasswordModal() { document.getElementById('changePasswordModalOverlay').classList.add('hidden'); }
-        function commitNewPasscodeKey() {
-            const val = document.getElementById('newPasscodeInput').value.trim();
-            if(val) {
-                CURRENT_GATE_PASSPHRASE = val; localStorage.setItem("LM_PASSPHRASE", val);
-                alert("Passcode updated!"); closeChangePasswordModal();
-            }
-        }
-
-        function handleFormBillingTypeChange(type) {
-            const rowAnnual = document.getElementById('rowAnnualTuition');
-            const rowAdmission = document.getElementById('rowAdmissionFee');
-            const rowKit = document.getElementById('rowKitFee');
-            const boxOpt = document.getElementById('boxFormOptMonthly');
-            const chkOpt = document.getElementById('chkOptMonthly');
-
-            if(type === 'Regular') {
-                if(rowAnnual) rowAnnual.style.display = "block";
-                if(rowAdmission) rowAdmission.style.display = "none"; 
-                if(document.getElementById('intakeAdmissionFee')) document.getElementById('intakeAdmissionFee').value = "0";
-                if(rowKit) rowKit.style.display = "none"; 
-                if(document.getElementById('intakeKitFee')) document.getElementById('intakeKitFee').value = "0";
-                if(boxOpt) boxOpt.style.display = "none"; 
-                if(chkOpt) chkOpt.checked = false;
-                if(document.getElementById('FormOptMonthlyFee')) {
-                    document.getElementById('FormOptMonthlyFee').value = "0"; 
-                    document.getElementById('FormOptMonthlyFee').disabled = true;
-                }
-                if(document.getElementById('intakeDiscountBadge')) document.getElementById('intakeDiscountBadge').style.display = "inline-block";
-                updateIntakeClassFeeDefault();
-            } else {
-                if(rowAnnual) rowAnnual.style.display = "none"; 
-                if(document.getElementById('intakeAnnualTuition')) document.getElementById('intakeAnnualTuition').value = "0";
-                if(rowAdmission) rowAdmission.style.display = "block";
-                if(rowKit) rowKit.style.display = "block";
-                if(boxOpt) boxOpt.style.display = "block"; 
-                if(chkOpt) { chkOpt.checked = true; chkOpt.disabled = false; }
-                if(document.getElementById('FormOptMonthlyFee')) document.getElementById('FormOptMonthlyFee').disabled = false;
-                if(document.getElementById('intakeDiscountBadge')) document.getElementById('intakeDiscountBadge').style.display = "none";
-            }
-        }
-
-        function handleEditFormBillingTypeChange(type) {
-            const rowAnnual = document.getElementById('editRowAnnualTuition');
-            const rowAdmission = document.getElementById('editRowAdmissionFee');
-            const rowKit = document.getElementById('editRowKitFee');
-            const boxOpt = document.getElementById('editBoxOptMonthly');
-
-            if(type === 'Regular') {
-                if(rowAnnual) rowAnnual.style.display = "block";
-                if(rowAdmission) rowAdmission.style.display = "none"; 
-                if(document.getElementById('editAdmissionFee')) document.getElementById('editAdmissionFee').value = "0";
-                if(rowKit) rowKit.style.display = "none"; 
-                if(document.getElementById('editStudentKitFee')) document.getElementById('editStudentKitFee').value = "0";
-                if(boxOpt) boxOpt.style.display = "none"; 
-                if(document.getElementById('editOptMonthlyFee')) document.getElementById('editOptMonthlyFee').value = "0";
-                if(document.getElementById('editDiscountBadge')) document.getElementById('editDiscountBadge').style.display = "inline-block";
-                calculateEditDiscount();
-            } else {
-                if(rowAnnual) rowAnnual.style.display = "none"; 
-                if(document.getElementById('editCustomFee')) document.getElementById('editCustomFee').value = "0";
-                if(rowAdmission) rowAdmission.style.display = "block";
-                if(rowKit) rowKit.style.display = "block";
-                if(boxOpt) boxOpt.style.display = "block";
-                if(document.getElementById('editDiscountBadge')) document.getElementById('editDiscountBadge').style.display = "none";
-            }
-        }
-
-        function updateIntakeClassFeeDefault() {
-            const cls = document.getElementById('intakeClassSelect').value;
-            if(cls === 'DayCare') {
-                const rad = document.querySelector('input[name="BillingModel"][value="Monthly"]');
-                if(rad) rad.checked = true;
-                handleFormBillingTypeChange('Monthly');
-                if(document.getElementById('formModelWrapper')) document.getElementById('formModelWrapper').style.display = "none";
-                if(document.getElementById('rowAdmissionFee')) document.getElementById('rowAdmissionFee').style.display = "none";
-                if(document.getElementById('rowKitFee')) document.getElementById('rowKitFee').style.display = "none";
-                if(document.getElementById('rowUniformFee')) document.getElementById('rowUniformFee').style.display = "none";
-                if(document.getElementById('boxFormVan')) document.getElementById('boxFormVan').style.display = "none";
-                if(document.getElementById('boxFormDayCare')) document.getElementById('boxFormDayCare').style.display = "none";
-            } else {
-                if(document.getElementById('formModelWrapper')) document.getElementById('formModelWrapper').style.display = "flex";
-                if(document.getElementById('rowUniformFee')) document.getElementById('rowUniformFee').style.display = "block";
-                if(document.getElementById('boxFormVan')) document.getElementById('boxFormVan').style.display = "block";
-                if(document.getElementById('boxFormDayCare')) document.getElementById('boxFormDayCare').style.display = "block";
-                const isRegularEl = document.querySelector('input[name="BillingModel"]:checked');
-                const isRegular = isRegularEl ? isRegularEl.value === 'Regular' : true;
-                if(isRegular) {
-                    if(document.getElementById('intakeAnnualTuition')) document.getElementById('intakeAnnualTuition').value = globalAppState.standardFees[cls] || 0;
-                    handleFormBillingTypeChange('Regular');
-                }
-            }
-            calculateIntakeDiscount();
-        }
-
-        function updateEditClassFeeDefault() {
-            const cls = document.getElementById('editClass').value;
-            if(cls === 'DayCare') {
-                if(document.getElementById('editModelMonthly')) document.getElementById('editModelMonthly').checked = true;
-                handleEditFormBillingTypeChange('Monthly');
-                if(document.getElementById('editModelWrapper')) document.getElementById('editModelWrapper').style.display = "none";
-                if(document.getElementById('editRowAdmissionFee')) document.getElementById('editRowAdmissionFee').style.display = "none";
-                if(document.getElementById('editRowKitFee')) document.getElementById('editRowKitFee').style.display = "none";
-                if(document.getElementById('editRowUniformFee')) document.getElementById('editRowUniformFee').style.display = "none";
-                if(document.getElementById('editBoxVan')) document.getElementById('editBoxVan').style.display = "none";
-                if(document.getElementById('editBoxDayCare')) document.getElementById('editBoxDayCare').style.display = "none";
-            } else {
-                if(document.getElementById('editModelWrapper')) document.getElementById('editModelWrapper').style.display = "flex";
-                if(document.getElementById('editRowUniformFee')) document.getElementById('editRowUniformFee').style.display = "block";
-                if(document.getElementById('editBoxVan')) document.getElementById('editBoxVan').style.display = "block";
-                if(document.getElementById('editBoxDayCare')) document.getElementById('editBoxDayCare').style.display = "block";
-                const isRegularEl = document.querySelector('input[name="EditBillingModel"]:checked');
-                const isRegular = isRegularEl ? isRegularEl.value === 'Regular' : true;
-                if(isRegular) {
-                    if(document.getElementById('editCustomFee')) document.getElementById('editCustomFee').value = globalAppState.standardFees[cls] || 0;
-                    handleEditFormBillingTypeChange('Regular');
-                }
-            }
-            calculateEditDiscount();
-        }
-
-        function showViewLegacyCompat(tabId) {
-            if (tabId === 'financeTab') showView('finances');
-            else if (tabId === 'calendarTab') showView('events');
-            else showView('home');
-        }
-        function switchTab(tabId) { showViewLegacyCompat(tabId); }
-
-        async function refreshApplicationState(showUserAlert) {
-            try {
-                const response = await fetch(`${APP_SHEET_API_URL}?action=getData&password=${encodeURIComponent(CURRENT_GATE_PASSPHRASE)}`);
-                const result = await response.json();
-                if (result.success) {
-                    globalAppState.students = result.data.students || [];
-                    globalAppState.payments = result.data.payments || [];
-                    globalAppState.expenses = result.data.expenses || [];
-                    globalAppState.events = result.data.events || [];
-                    
-                    try { renderCohortHeadcounts(); } catch(e){console.error("Headcount Error:", e);}
-                    try { renderStudentCards(); } catch(e){console.error("Cards Error:", e);}
-                    try { renderEditStudentCards(); } catch(e){console.error("Edit Cards Error:", e);}
-                    try { renderFrontPageReminders(); } catch(e){console.error("Reminders Error:", e);}
-                    try { renderCalendarAgenda(); } catch(e){console.error("Calendar Error:", e);}
-                    try { renderFinanceLedger(); } catch(e){console.error("Finance Error:", e);}
-                    
-                    if(showUserAlert) { alert("Synced successfully!"); }
-                }
-            } catch (err) { console.error("Database connection lost:", err); }
-        }
-
-        function updateTileBadge(id, count) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            if (count > 0) {
-                el.innerText = count > 99 ? "99+" : String(count);
-                el.classList.remove('hidden');
-            } else {
-                el.classList.add('hidden');
-            }
-        }
-
-        function renderCohortHeadcounts() {
-            const list = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED");
-            const setTxt = (id, text) => { const el = document.getElementById(id); if (el) el.innerText = text; };
-            setTxt('countCohortDR', `${list.filter(s=>s.Class==='DR').length} Kids`);
-            setTxt('countCohortEW', `${list.filter(s=>s.Class==='EW').length} Kids`);
-            setTxt('countCohortRTF1', `${list.filter(s=>s.Class==='RTF1').length} Kids`);
-            setTxt('countCohortRTF2', `${list.filter(s=>s.Class==='RTF2').length} Kids`);
-            setTxt('countCohortDC', `${list.filter(s=>s.Class==='DayCare').length} Kids`);
-            setTxt('countCohortTotal', `${list.length} Active`);
-            updateTileBadge('tileBadgeRosters', list.length);
-        }
-
-        function renderStudentCards() {
-            const grid = document.getElementById('studentCardsGrid');
-            if (!grid) return;
-            grid.innerHTML = '';
-            let list = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED");
-            if (currentActiveCohortFilter !== 'ALL') list = list.filter(s => s.Class === currentActiveCohortFilter);
-            const searchEl = document.getElementById('rosterSearch');
-            const search = (searchEl?.value || "").toLowerCase();
-            if (search) list = list.filter(s => (s.StudentName || s.studentname || "").toLowerCase().includes(search));
-
-            if (!list.length) {
-                grid.innerHTML = '<p class="text-xs text-slate-400 font-medium py-6 text-center">No students found.</p>';
-                return;
-            }
-
-            list.forEach((s, index) => {
-                const sid = s.StudentID || s.studentid;
-                const isRegularModel = (s.BillingModel === "Regular" || s.billingmodel === "Regular");
-                const colorClass = AVATAR_COLORS[index % AVATAR_COLORS.length];
-                const name = s.StudentName || s.studentname || "";
-                const imageContent = (s.PhotoBase64 && s.PhotoBase64 !== "N/A" && s.PhotoBase64.length > 50) 
-                    ? `<img src="${s.PhotoBase64}" class="w-full h-full object-cover">` 
-                    : `<div class="w-full h-full ${colorClass} text-white font-black flex items-center justify-center text-xl shadow-inner uppercase">${name.charAt(0)}</div>`;
-                const phoneNumVal = s.Contact || s.contact || "N/A";
-                const guardNameVal = s.GuardianName || s.guardianname || "N/A";
-                const trackingActionBtn = isRegularModel 
-                    ? `<button type="button" onclick="openPaymentModal('${sid}')" class="bg-indigo-50 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-[11px]">Fee Particulars</button>`
-                    : `<span class="text-[10px] bg-slate-100 px-2 py-1 rounded text-slate-400 font-bold">Monthly</span>`;
-
-                grid.insertAdjacentHTML('beforeend', `
-                    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-14 h-14 rounded-xl bg-indigo-50 border flex-shrink-0 overflow-hidden">${imageContent}</div>
-                            <div class="flex-1 min-w-0">
-                                <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded uppercase">${s.Class === 'DayCare' ? 'DayCare' : s.Class}</span>
-                                <h4 class="font-black text-slate-900 text-sm truncate mt-1">${name}</h4>
-                                <p class="text-[11px] text-slate-600 font-bold mt-1">Guardian: ${guardNameVal}</p>
-                                <p class="text-[11px] text-indigo-700 font-mono font-bold mt-0.5">${phoneNumVal}</p>
-                            </div>
-                        </div>
-                        <div class="mt-3 pt-2 border-t flex justify-end">${trackingActionBtn}</div>
+    list.forEach((s, index) => {
+        const sid = s.StudentID || s.studentid;
+        const name = s.StudentName || s.studentname || "";
+        const isRegular = (s.BillingModel === "Regular" || s.billingmodel === "Regular");
+        const color = AVATAR_COLORS[index % AVATAR_COLORS.length];
+        const img = (s.PhotoBase64 && s.PhotoBase64 !== "N/A" && s.PhotoBase64.length > 50)
+            ? `<img src="${s.PhotoBase64}" class="w-full h-full object-cover">`
+            : `<div class="w-full h-full ${color} text-white font-black flex items-center justify-center text-xl uppercase">${name.charAt(0)}</div>`;
+        const guard = s.GuardianName || s.guardianname || "N/A";
+        const phone = s.Contact || s.contact || "N/A";
+        const action = isRegular
+            ? `<button type="button" onclick="openPaymentModal('${sid}')" class="bg-indigo-50 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-[11px]">Fee Particulars</button>`
+            : `<span class="text-[10px] bg-slate-100 px-2 py-1 rounded text-slate-400 font-bold">Monthly</span>`;
+        grid.insertAdjacentHTML("beforeend", `
+            <div class="bg-white rounded-2xl p-4 border shadow-sm">
+                <div class="flex items-start gap-3">
+                    <div class="w-14 h-14 rounded-xl overflow-hidden border flex-shrink-0">${img}</div>
+                    <div class="min-w-0 flex-1">
+                        <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded uppercase">${s.Class === "DayCare" ? "DayCare" : s.Class}</span>
+                        <h4 class="font-black text-sm mt-1 truncate">${name}</h4>
+                        <p class="text-[11px] text-slate-600 font-bold mt-1">Guardian: ${guard}</p>
+                        <p class="text-[11px] text-indigo-700 font-mono font-bold">${phone}</p>
                     </div>
-                `);
-            });
-        }
+                </div>
+                <div class="mt-3 pt-2 border-t flex justify-end">${action}</div>
+            </div>`);
+    });
+}
 
-        function renderEditStudentCards() {
-            const grid = document.getElementById('editStudentCardsGrid');
-            if (!grid) return;
-            grid.innerHTML = '';
-            let list = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED");
-            const search = (document.getElementById('editStudentSearch')?.value || "").toLowerCase().trim();
-            if (search) list = list.filter(s => (s.StudentName || s.studentname || "").toLowerCase().includes(search));
-            else list = list.slice(0, 40);
+function renderEditStudentCards() {
+    const grid = document.getElementById("editStudentCardsGrid");
+    if (!grid) return;
+    grid.innerHTML = "";
+    let list = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED");
+    const search = (document.getElementById("editStudentSearch")?.value || "").toLowerCase().trim();
+    if (search) list = list.filter(s => (s.StudentName || "").toLowerCase().includes(search));
+    else list = list.slice(0, 40);
+    if (!list.length) { grid.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">No matching students.</p>'; return; }
 
-            if (!list.length) {
-                grid.innerHTML = '<p class="text-xs text-slate-400 font-medium py-6 text-center">No matching students.</p>';
-                return;
-            }
+    list.forEach((s, index) => {
+        const sid = s.StudentID || s.studentid;
+        const name = s.StudentName || "";
+        const color = AVATAR_COLORS[index % AVATAR_COLORS.length];
+        const img = (s.PhotoBase64 && s.PhotoBase64 !== "N/A" && s.PhotoBase64.length > 50)
+            ? `<img src="${s.PhotoBase64}" class="w-full h-full object-cover">`
+            : `<div class="w-full h-full ${color} text-white font-black flex items-center justify-center uppercase">${name.charAt(0)}</div>`;
+        grid.insertAdjacentHTML("beforeend", `
+            <button type="button" onclick="openStudentDetailModal('${sid}')" class="w-full text-left bg-white rounded-2xl p-4 border border-violet-100 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl overflow-hidden border flex-shrink-0">${img}</div>
+                    <div class="min-w-0 flex-1">
+                        <h4 class="font-black text-sm truncate">${name}</h4>
+                        <p class="text-[10px] font-bold text-violet-700 uppercase">${s.Class || ""}</p>
+                        <p class="text-[11px] text-slate-600 font-semibold mt-1">${s.GuardianName || s.guardianname || "N/A"} · ${s.Contact || s.contact || "N/A"}</p>
+                    </div>
+                    <span class="text-violet-600 text-xs font-black">Edit →</span>
+                </div>
+            </button>`);
+    });
+}
 
-            list.forEach((s, index) => {
-                const sid = s.StudentID || s.studentid;
-                const name = s.StudentName || s.studentname || "";
-                const colorClass = AVATAR_COLORS[index % AVATAR_COLORS.length];
-                const imageContent = (s.PhotoBase64 && s.PhotoBase64 !== "N/A" && s.PhotoBase64.length > 50) 
-                    ? `<img src="${s.PhotoBase64}" class="w-full h-full object-cover">` 
-                    : `<div class="w-full h-full ${colorClass} text-white font-black flex items-center justify-center text-lg uppercase">${name.charAt(0)}</div>`;
-                const phoneNumVal = s.Contact || s.contact || "N/A";
-                const guardNameVal = s.GuardianName || s.guardianname || "N/A";
+function filterCohort(type, btn) {
+    currentActiveCohortFilter = type;
+    document.querySelectorAll(".cohort-filter-btn").forEach(b => {
+        b.classList.remove("bg-indigo-600", "text-white");
+        b.classList.add("bg-slate-100", "text-slate-700");
+    });
+    if (btn) { btn.classList.remove("bg-slate-100", "text-slate-700"); btn.classList.add("bg-indigo-600", "text-white"); }
+    renderStudentCards();
+}
 
-                grid.insertAdjacentHTML('beforeend', `
-                    <button type="button" onclick="openStudentDetailModal('${sid}')" class="w-full text-left bg-white rounded-2xl p-4 border border-violet-100 shadow-sm active:scale-[0.99] transition">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 border">${imageContent}</div>
-                            <div class="min-w-0 flex-1">
-                                <h4 class="font-black text-sm text-slate-900 truncate">${name}</h4>
-                                <p class="text-[10px] font-bold text-violet-700 uppercase mt-0.5">${s.Class || s.class || ""}</p>
-                                <p class="text-[11px] text-slate-600 font-semibold mt-1">${guardNameVal} · ${phoneNumVal}</p>
-                            </div>
-                            <span class="text-violet-600 text-xs font-black self-center">Edit →</span>
+function renderFrontPageReminders() {
+    const vanBox = document.getElementById("containerVanReminders");
+    const dcBox = document.getElementById("containerDayCareReminders");
+    const optBox = document.getElementById("containerOptReminders");
+    if (vanBox) vanBox.innerHTML = "";
+    if (dcBox) dcBox.innerHTML = "";
+    if (optBox) optBox.innerHTML = "";
+    let vCount = 0, dCount = 0, oCount = 0;
+    const period = activeSystemMonthContext;
+    const badge = document.getElementById("reminderPeriodBadge");
+    if (badge) badge.innerText = period;
+
+    const emptyMsg = '<p class="text-slate-400 text-[11px]">No outstanding dues.</p>';
+
+    globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED").forEach(s => {
+        const sid = s.StudentID || s.studentid;
+        const logs = getStudentPayments(sid);
+        const monthRow = getOrCreateMonthPaymentMeta(sid, period) || {};
+        const flags = (monthRow.NullifiedServices || monthRow.nullifiedservices || "").toString().split(",").map(x => x.trim());
+        const elapsed = getElapsedMonthsToBill(s, period);
+        const name = s.StudentName || s.studentname;
+
+        const renderDueCard = (box, serviceKey, due, modeIdPrefix, countRef) => {
+            if (due <= 0 || !box) return countRef;
+            const frozen = flags.includes(serviceKey);
+            box.insertAdjacentHTML("beforeend", `
+                <div class="bg-slate-50 p-3 rounded-xl border mb-2 space-y-2">
+                    <div class="flex justify-between"><span class="font-bold text-slate-800">${name}</span><span class="text-rose-600 font-black">₹${due}</span></div>
+                    <div class="flex items-center justify-between gap-1 pt-1 border-t">
+                        <label class="flex items-center gap-1 text-[10px] text-rose-500">
+                            <input type="checkbox" onchange="toggleReminderNullify('${sid}','${serviceKey}',this.checked)" ${frozen ? "checked" : ""}>
+                            <span>Freeze</span>
+                        </label>
+                        <div class="flex items-center gap-1">
+                            <select id="${modeIdPrefix}-${sid}" class="text-[10px] bg-white border rounded p-0.5"><option value="Cash">Cash</option><option value="UPI">UPI</option></select>
+                            <button type="button" onclick="commitReminderSettlement('${sid}','${serviceKey}',${due})" class="bg-emerald-500 text-white font-bold px-2 py-0.5 rounded text-[10px]">Settle</button>
                         </div>
-                    </button>
-                `);
-            });
+                    </div>
+                </div>`);
+            return countRef + 1;
+        };
+
+        if (Number(s.VanFee || s.vanfee) > 0) {
+            let billed = elapsed * Number(s.VanFee || s.vanfee), paid = 0;
+            logs.forEach(p => { if (isServicePayment(p.Remarks || p.remarks, "Van")) paid += Number(p.AmountPaid || p.amountpaid) || 0; });
+            let due = billed - paid;
+            if (flags.includes("Van")) due -= Number(s.VanFee || s.vanfee);
+            vCount = renderDueCard(vanBox, "Van", due, "mode-van", vCount);
         }
 
-        // Variable formatting configuration shielded from case and text mutations completely
-        function formatToInputDate(dateVal) {
-            if (!dateVal) return "";
-            let cleanStr = dateVal.toString().trim().split('T')[0].replace(/[\/\s]/g, "-");
-            let parts = cleanStr.split('-');
-            if (parts.length < 3) return "";
-            
-            if (parts[0].length === 4) {
-                return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
-            }
-            if (parts[2].length === 4) {
-                return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-            }
-            return "";
+        const isDC = (s.Class || s.class) === "DayCare";
+        if (Number(s.DayCareFee || s.daycarefee) > 0 || isDC) {
+            const rate = isDC ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : Number(s.DayCareFee || s.daycarefee);
+            let billed = elapsed * rate, paid = 0;
+            logs.forEach(p => { if (isServicePayment(p.Remarks || p.remarks, "DayCare")) paid += Number(p.AmountPaid || p.amountpaid) || 0; });
+            let due = billed - paid;
+            if (flags.includes("DayCare")) due -= rate;
+            dCount = renderDueCard(dcBox, "DayCare", due, "mode-dc", dCount);
         }
 
-        function renderFrontPageReminders() {
-            const vanBox = document.getElementById('containerVanReminders'); if(vanBox) vanBox.innerHTML = '';
-            const dcBox = document.getElementById('containerDayCareReminders'); if(dcBox) dcBox.innerHTML = '';
-            const optBox = document.getElementById('containerOptReminders'); if(optBox) optBox.innerHTML = '';
-            let vCount = 0, dCount = 0, oCount = 0;
-
-            const targetPeriodMonthStr = activeSystemMonthContext;
-            if(document.getElementById('reminderPeriodBadge')) document.getElementById('reminderPeriodBadge').innerText = `${targetPeriodMonthStr} Context View`;
-
-            globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED").forEach(s => {
-                const sid = s.StudentID || s.studentid;
-                const studentPaymentsLog = getStudentPayments(sid);
-                const activeMonthPaymentRow = getOrCreateMonthPaymentMeta(sid, targetPeriodMonthStr) || {};
-                const activeNullifiedFlags = (activeMonthPaymentRow.NullifiedServices || activeMonthPaymentRow.nullifiedservices || "").toString().split(',').map(x => x.trim());
-
-                const elapsedMonthsToBillCount = getElapsedMonthsToBill(s, targetPeriodMonthStr);
-
-                if (Number(s.VanFee || s.vanfee) > 0) {
-                    let totalBilledVan = elapsedMonthsToBillCount * Number(s.VanFee || s.vanfee);
-                    let totalPaidVan = 0;
-                    studentPaymentsLog.forEach(p => {
-                        if(isServicePayment(p.Remarks || p.remarks, "Van")) {
-                            totalPaidVan += Number(p.AmountPaid || p.amountpaid) || 0;
-                        }
-                    });
-                    const netVanOutstanding = totalBilledVan - totalPaidVan;
-                    const isFrozenThisMonth = activeNullifiedFlags.includes('Van');
-                    const finalVanDisplayDue = isFrozenThisMonth ? (netVanOutstanding - Number(s.VanFee || s.vanfee)) : netVanOutstanding;
-
-                    if (finalVanDisplayDue > 0 && vanBox) {
-                        vCount++;
-                        vanBox.insertAdjacentHTML('beforeend', `
-                            <div class="bg-white p-3 rounded-xl border mb-2 shadow-sm space-y-2">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-bold text-slate-800">${s.StudentName || s.studentname}</span>
-                                    <span class="text-rose-600 font-black">₹${finalVanDisplayDue}</span>
-                                </div>
-                                <div class="flex items-center justify-between gap-1 pt-1 border-t">
-                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
-                                        <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID || s.studentid}','Van',this.checked)" ${isFrozenThisMonth?'checked':''}>
-                                        <span>Freeze Month</span>
-                                    </label>
-                                    <div class="flex items-center space-x-1">
-                                        <select id="mode-van-${s.StudentID || s.studentid}" class="text-[10px] bg-slate-50 border rounded p-0.5">
-                                            <option value="Cash">Cash</option><option value="UPI">UPI</option>
-                                        </select>
-                                        <button onclick="commitReminderSettlement('${s.StudentID || s.studentid}','Van',${finalVanDisplayDue})" class="bg-emerald-500 text-white font-bold px-2 py-0.5 rounded text-[10px]">Settle</button>
-                                    </div>
-                                </div>
-                            </div>
-                        `);
-                    }
-                }
-
-                const isDayCareTrackActive = Number(s.DayCareFee || s.daycarefee) > 0 || s.Class === "DayCare" || s.class === "DayCare";
-                if (isDayCareTrackActive) {
-                    const monthlyBaseRateValue = (s.Class === "DayCare" || s.class === "DayCare") ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : Number(s.DayCareFee || s.daycarefee);
-                    let totalBilledDC = elapsedMonthsToBillCount * monthlyBaseRateValue;
-                    let totalPaidDC = 0;
-                    studentPaymentsLog.forEach(p => {
-                        if(isServicePayment(p.Remarks || p.remarks, "DayCare")) {
-                            totalPaidDC += Number(p.AmountPaid || p.amountpaid) || 0;
-                        }
-                    });
-                    const netDCOutstanding = totalBilledDC - totalPaidDC;
-                    const isFrozenThisMonth = activeNullifiedFlags.includes('DayCare');
-                    const finalDCDisplayDue = isFrozenThisMonth ? (netDCOutstanding - monthlyBaseRateValue) : netDCOutstanding;
-
-                    if (finalDCDisplayDue > 0 && dcBox) {
-                        dCount++;
-                        dcBox.insertAdjacentHTML('beforeend', `
-                            <div class="bg-white p-3 rounded-xl border mb-2 shadow-sm space-y-2">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-bold text-slate-800">${s.StudentName || s.studentname}</span>
-                                    <span class="text-rose-600 font-black">₹${finalDCDisplayDue}</span>
-                                </div>
-                                <div class="flex items-center justify-between gap-1 pt-1 border-t">
-                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
-                                        <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID || s.studentid}','DayCare',this.checked)" ${isFrozenThisMonth?'checked':''}>
-                                        <span>Freeze Month</span>
-                                    </label>
-                                    <div class="flex items-center space-x-1">
-                                        <select id="mode-dc-${s.StudentID || s.studentid}" class="text-[10px] bg-slate-50 border rounded p-0.5">
-                                            <option value="Cash">Cash</option><option value="UPI">UPI</option>
-                                        </select>
-                                        <button onclick="commitReminderSettlement('${s.StudentID || s.studentid}','DayCare',${finalDCDisplayDue})" class="bg-emerald-500 text-white font-bold px-2 py-0.5 rounded text-[10px]">Settle</button>
-                                    </div>
-                                </div>
-                            </div>
-                        `);
-                    }
-                }
-
-                if ((s.BillingModel === "Monthly" || s.billingmodel === "Monthly") && Number(s.OptMonthlyFee || s.optmonthlyfee) > 0 && s.Class !== "DayCare" && s.class !== "DayCare") {
-                    let totalBilledOpt = elapsedMonthsToBillCount * Number(s.OptMonthlyFee || s.optmonthlyfee);
-                    let totalPaidOpt = 0;
-                    studentPaymentsLog.forEach(p => {
-                        if(isServicePayment(p.Remarks || p.remarks, "OptMonthly")) {
-                            totalPaidOpt += Number(p.AmountPaid || p.amountpaid) || 0;
-                        }
-                    });
-                    const netOptOutstanding = totalBilledOpt - totalPaidOpt;
-                    const isFrozenThisMonth = activeNullifiedFlags.includes('OptMonthly');
-                    const finalOptDisplayDue = isFrozenThisMonth ? (netOptOutstanding - Number(s.OptMonthlyFee || s.optmonthlyfee)) : netOptOutstanding;
-
-                    if (finalOptDisplayDue > 0 && optBox) {
-                        oCount++;
-                        optBox.insertAdjacentHTML('beforeend', `
-                            <div class="bg-white p-3 rounded-xl border mb-2 shadow-sm space-y-2">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-bold text-slate-800">${s.StudentName || s.studentname}</span>
-                                    <span class="text-rose-600 font-black">₹${finalOptDisplayDue}</span>
-                                </div>
-                                <div class="flex items-center justify-between gap-1 pt-1 border-t">
-                                    <label class="flex items-center space-x-1 text-[10px] text-rose-500 cursor-pointer">
-                                        <input type="checkbox" onchange="toggleReminderNullify('${s.StudentID || s.studentid}','OptMonthly',this.checked)" ${isFrozenThisMonth?'checked':''}>
-                                        <span>Freeze Month</span>
-                                    </label>
-                                    <div class="flex items-center space-x-1">
-                                        <select id="mode-opt-${s.StudentID || s.studentid}" class="text-[10px] bg-slate-50 border rounded p-0.5">
-                                            <option value="Cash">Cash</option><option value="UPI">UPI</option>
-                                        </select>
-                                        <button onclick="commitReminderSettlement('${s.StudentID || s.studentid}','OptMonthly',${finalOptDisplayDue})" class="bg-emerald-500 text-white font-bold px-2 py-0.5 rounded text-[10px]">Settle</button>
-                                    </div>
-                                </div>
-                            </div>
-                        `);
-                    }
-                }
-            });
-
-            if(document.getElementById('countVanDues')) document.getElementById('countVanDues').innerText = vCount;
-            if(document.getElementById('countDayCareDues')) document.getElementById('countDayCareDues').innerText = dCount;
-            if(document.getElementById('countOptDues')) document.getElementById('countOptDues').innerText = oCount;
-            updateTileBadge('tileBadgeFees', vCount + dCount + oCount);
+        if ((s.BillingModel === "Monthly" || s.billingmodel === "Monthly") && Number(s.OptMonthlyFee || s.optmonthlyfee) > 0 && !isDC) {
+            let billed = elapsed * Number(s.OptMonthlyFee || s.optmonthlyfee), paid = 0;
+            logs.forEach(p => { if (isServicePayment(p.Remarks || p.remarks, "OptMonthly")) paid += Number(p.AmountPaid || p.amountpaid) || 0; });
+            let due = billed - paid;
+            if (flags.includes("OptMonthly")) due -= Number(s.OptMonthlyFee || s.optmonthlyfee);
+            oCount = renderDueCard(optBox, "OptMonthly", due, "mode-opt", oCount);
         }
+    });
 
-        // Safe Defensive Modal populator wraps element target mapping securely to prevent runtime locks
-        function openStudentDetailModal(sid) {
-            const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
-            if(!s) return;
-            
-            const elementMaps = {
-                'detailStudentID': sid,
-                'editStudentName': s.StudentName || s.studentname || "",
-                'editDOB': formatToInputDate(s.DOB || s.dob),
-                'editDOJ': formatToInputDate(s.DOJ || s.doj),
-                'editGender': s.Gender || s.gender || "Boy",
-                'editClass': s.Class || s.class || "DR",
-                'editGuardianName': s.GuardianName || s.guardianname || "",
-                'editContact': s.Contact || s.contact || "",
-                'editAltContact': s.AltContact || s.altcontact || "N/A",
-                'editAddress': s.Address || s.address || "N/A",
-                'editBloodGroup': s.BloodGroup || s.bloodgroup || "",
-                'detailPhotoBase64': s.PhotoBase64 || s.photobase64 || "N/A"
-            };
+    if (vanBox && !vCount) vanBox.innerHTML = emptyMsg;
+    if (dcBox && !dCount) dcBox.innerHTML = emptyMsg;
+    if (optBox && !oCount) optBox.innerHTML = emptyMsg;
+    const setC = (id, n) => { const el = document.getElementById(id); if (el) el.innerText = n; };
+    setC("countVanDues", vCount); setC("countDayCareDues", dCount); setC("countOptDues", oCount);
+    updateTileBadge("tileBadgeFees", vCount + dCount + oCount);
+}
 
-            Object.keys(elementMaps).forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.value = elementMaps[id];
-            });
+function openPaymentModal(sid) {
+    const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+    if (!s) return;
+    const logs = getStudentPayments(sid);
+    const totalBilled = getOneTimeTuitionBilled(s);
+    let totalPaid = 0;
+    logs.forEach(p => { if (isTuitionPayment(p.Remarks || p.remarks)) totalPaid += Number(p.AmountPaid || p.amountpaid) || 0; });
+    const outstanding = Math.max(0, totalBilled - totalPaid);
+    document.getElementById("modalTargetStudentID").value = sid;
+    document.getElementById("modalStudentTitleName").innerText = s.StudentName || "Fee Particulars";
+    document.getElementById("modalStudentCohortSubtitle").innerText = `${s.Class || ""} Balance`;
+    document.getElementById("lblModalTotalBilled").innerText = `₹${totalBilled}`;
+    document.getElementById("lblModalTotalPaid").innerText = `₹${totalPaid}`;
+    document.getElementById("lblModalOutstandingBalance").innerText = `₹${outstanding}`;
+    document.getElementById("txAmountPaid").value = outstanding > 0 ? outstanding : "";
+    document.getElementById("txPaymentDate").value = new Date().toISOString().substring(0, 10);
+    document.getElementById("txPaymentMode").value = "Cash";
+    document.getElementById("txRemarks").value = "";
+    document.getElementById("paymentModalOverlay").classList.remove("hidden");
+}
+function closePaymentModal() { document.getElementById("paymentModalOverlay").classList.add("hidden"); }
 
-            if(document.getElementById('detailStudentNameHeader')) document.getElementById('detailStudentNameHeader').innerText = s.StudentName || s.studentname || "Master Record";
-            if(document.getElementById('detailStudentClassHeader')) document.getElementById('detailStudentClassHeader').innerText = `${s.Class || s.class || 'DR'} Campus View`;
+async function commitParticularsTransaction(e) {
+    e.preventDefault();
+    const sid = document.getElementById("modalTargetStudentID").value;
+    const amount = Number(document.getElementById("txAmountPaid").value) || 0;
+    if (amount <= 0) { alert("Enter a valid amount."); return; }
+    const row = ["PAY-" + sid + "-" + Date.now(), sid, activeSystemMonthContext, amount,
+        document.getElementById("txPaymentDate").value, document.getElementById("txPaymentMode").value,
+        document.getElementById("txRemarks").value.trim() || "Tuition Installment", "Active", ""];
+    await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row }) });
+    alert("Payment logged!");
+    closePaymentModal();
+    await refreshApplicationState(false);
+}
 
-            updateEditClassFeeDashboardDisplay(s);
-            if(document.getElementById('studentDetailModalOverlay')) document.getElementById('studentDetailModalOverlay').classList.remove('hidden');
+async function toggleReminderNullify(sid, serviceKey, isChecked) {
+    const period = activeSystemMonthContext;
+    const existing = getOrCreateMonthPaymentMeta(sid, period);
+    let flags = (existing?.NullifiedServices || existing?.nullifiedservices || "").toString().split(",").map(x => x.trim()).filter(Boolean);
+    if (isChecked) { if (!flags.includes(serviceKey)) flags.push(serviceKey); }
+    else flags = flags.filter(f => f !== serviceKey);
+    const payId = (existing && (existing.PaymentID || existing.paymentid)) || ("PAY-" + sid + "-" + period);
+    const row = [payId, sid, period, Number(existing?.AmountPaid || existing?.amountpaid) || 0,
+        existing?.PaymentDate || existing?.paymentdate || new Date().toISOString().substring(0, 10),
+        existing?.PaymentMode || existing?.paymentmode || "Cash",
+        existing?.Remarks || existing?.remarks || "Month Meta",
+        existing?.Status || existing?.status || "Active", flags.join(",")];
+    await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: existing ? "updateRow" : "addRow", targetSheet: "Fee_Payments", rowId: payId, rowData: row }) });
+    await refreshApplicationState(false);
+}
+
+async function commitReminderSettlement(sid, serviceKey, dueAmount) {
+    const amount = Number(dueAmount) || 0;
+    if (amount <= 0) { alert("Nothing to settle."); return; }
+    let modeElId = "mode-van-" + sid;
+    if (serviceKey === "DayCare") modeElId = "mode-dc-" + sid;
+    if (serviceKey === "OptMonthly") modeElId = "mode-opt-" + sid;
+    const mode = document.getElementById(modeElId)?.value || "Cash";
+    const tag = serviceKey === "DayCare" ? "DayCare Settlement" : (serviceKey === "OptMonthly" ? "OptMonthly Settlement" : "Van Settlement");
+    const row = ["PAY-" + sid + "-" + serviceKey + "-" + Date.now(), sid, activeSystemMonthContext, amount, new Date().toISOString().substring(0, 10), mode, tag, "Active", ""];
+    await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row }) });
+    alert(`${serviceKey} settled (₹${amount})`);
+    await refreshApplicationState(false);
+}
+
+function openStudentDetailModal(sid) {
+    const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+    if (!s) return;
+    const maps = {
+        detailStudentID: sid,
+        editStudentName: s.StudentName || "",
+        editDOB: formatToInputDate(s.DOB || s.dob),
+        editDOJ: formatToInputDate(s.DOJ || s.doj),
+        editGender: s.Gender || s.gender || "Boy",
+        editClass: s.Class || s.class || "DR",
+        editGuardianName: s.GuardianName || s.guardianname || "",
+        editContact: s.Contact || s.contact || "",
+        editAltContact: s.AltContact || s.altcontact || "N/A",
+        editAddress: s.Address || s.address || "N/A",
+        editBloodGroup: s.BloodGroup || s.bloodgroup || "",
+        detailPhotoBase64: s.PhotoBase64 || s.photobase64 || "N/A"
+    };
+    Object.keys(maps).forEach(id => { const el = document.getElementById(id); if (el) el.value = maps[id]; });
+    document.getElementById("detailStudentNameHeader").innerText = s.StudentName || "";
+    document.getElementById("detailStudentClassHeader").innerText = `${s.Class || ""} Campus`;
+    const bModel = s.BillingModel || s.billingmodel || "Regular";
+    if (bModel === "Regular") { document.getElementById("editModelRegular").checked = true; handleEditFormBillingTypeChange("Regular"); }
+    else { document.getElementById("editModelMonthly").checked = true; handleEditFormBillingTypeChange("Monthly"); }
+    const fees = {
+        editCustomFee: s.CustomFee || s.customfee || 0,
+        editAdmissionFee: s.AdmissionFee || s.admissionfee || 0,
+        editStudentKitFee: s.StudentKitFee || s.studentkitfee || 0,
+        editSpareUniformFee: s.SpareUniformFee || s.spareuniformfee || 0,
+        editVanFee: s.VanFee || s.vanfee || 0,
+        editDayCareFee: s.DayCareFee || s.daycarefee || 0,
+        editOptMonthlyFee: s.OptMonthlyFee || s.optmonthlyfee || 0
+    };
+    Object.keys(fees).forEach(id => { const el = document.getElementById(id); if (el) el.value = fees[id]; });
+    if ((s.Class || s.class) === "DayCare") updateEditClassFeeDefault();
+    calculateEditDiscount();
+    const photoSlot = document.getElementById("detailProfilePhotoSlot");
+    const imgCache = s.PhotoBase64 || "N/A";
+    photoSlot.innerHTML = (imgCache !== "N/A" && imgCache.length > 50) ? `<img src="${imgCache}" class="w-full h-full object-cover">` : (s.StudentName || "LM").charAt(0);
+    document.getElementById("studentDetailModalOverlay").classList.remove("hidden");
+}
+function closeStudentDetailModal() { document.getElementById("studentDetailModalOverlay").classList.add("hidden"); }
+
+async function handleStudentDetailUpdate(e) {
+    e.preventDefault();
+    const sid = document.getElementById("detailStudentID").value;
+    const model = document.querySelector('input[name="EditBillingModel"]:checked')?.value || "Regular";
+    const rowData = [
+        sid, document.getElementById("editStudentName").value, document.getElementById("editDOB").value,
+        document.getElementById("editGender").value, document.getElementById("editClass").value,
+        document.getElementById("editGuardianName").value, document.getElementById("editContact").value,
+        document.getElementById("editAltContact").value, document.getElementById("editAddress").value,
+        document.getElementById("detailPhotoBase64").value || "N/A", model,
+        Number(document.getElementById("editCustomFee").value) || 0, Number(document.getElementById("editAdmissionFee").value) || 0,
+        Number(document.getElementById("editStudentKitFee").value) || 0, Number(document.getElementById("editSpareUniformFee").value) || 0,
+        Number(document.getElementById("editVanFee").value) || 0, Number(document.getElementById("editDayCareFee").value) || 0,
+        Number(document.getElementById("editOptMonthlyFee").value) || 0, document.getElementById("editBloodGroup").value,
+        document.getElementById("editDOJ").value
+    ];
+    await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData }) });
+    alert("Saved!");
+    closeStudentDetailModal();
+    await refreshApplicationState(false);
+}
+
+function triggerDeleteStudent() {
+    const sid = document.getElementById("detailStudentID").value;
+    if (!confirm("Delete this student?")) return;
+    const deletedRow = [sid, "DELETED", "", "", "", "", "", "", "", "N/A", "Regular", 0, 0, 0, 0, 0, 0, 0, "", ""];
+    fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: deletedRow }) }).then(() => {
+        alert("Deleted!"); closeStudentDetailModal(); refreshApplicationState(false);
+    });
+}
+
+function setExpenseGraphTimeframe(frame) {
+    currentExpenseTimeframeContext = frame;
+    document.querySelectorAll('[id^="btnExpTime-"]').forEach(btn => {
+        btn.classList.remove("bg-white", "text-indigo-950", "shadow-sm");
+        btn.classList.add("text-slate-600");
+    });
+    const b = document.getElementById("btnExpTime-" + frame);
+    if (b) { b.classList.add("bg-white", "text-indigo-950", "shadow-sm"); b.classList.remove("text-slate-600"); }
+    renderFinanceLedger();
+}
+
+function renderFinanceLedger() {
+    let totalReceivables = 0, totalCollected = 0, totalExpenses = 0;
+    const cats = {};
+    const expenseStreamBox = document.getElementById("containerRunningExpensesList");
+    if (expenseStreamBox) expenseStreamBox.innerHTML = "";
+    const now = new Date();
+    const selectedMonth = parseInt(document.getElementById("expensePeriodMonth")?.value ?? now.getMonth(), 10);
+    const selectedYear = parseInt(document.getElementById("expensePeriodYear")?.value ?? now.getFullYear(), 10);
+
+    globalAppState.payments.forEach(p => { totalCollected += Number(p.amountpaid || p.AmountPaid) || 0; });
+    globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED").forEach(s => {
+        totalReceivables += getStudentReceivables(s);
+    });
+
+    let filtered = globalAppState.expenses.filter(x => x && (x.Date || x.date));
+    filtered = filtered.filter(e => {
+        const raw = (e.Date || e.date || "").toString().replace(/[\/\s]/g, "-");
+        const parts = raw.split("-");
+        if (parts.length < 2) return false;
+        let yr = parseInt(parts[0], 10), mo = parseInt(parts[1], 10) - 1;
+        if (parts[0].length < 4) { yr = parseInt(parts[2], 10); mo = parseInt(parts[1], 10) - 1; }
+        if (currentExpenseTimeframeContext === "monthly") return mo === selectedMonth && yr === selectedYear;
+        if (currentExpenseTimeframeContext === "currentYear") return (yr === selectedYear && mo >= 5) || (yr === selectedYear + 1 && mo < 5);
+        return true;
+    });
+
+    filtered.forEach(e => {
+        if ((e.Date || e.date || "").toString().includes("DELETED") || (e.Category || e.category) === "DELETED") return;
+        const cat = e.Category || e.category || "General";
+        const a = Number(e.Amount || e.amount) || 0;
+        totalExpenses += a;
+        cats[cat] = (cats[cat] || 0) + a;
+        const id = e.ExpenseID || e.expenseid || "";
+        if (expenseStreamBox) {
+            expenseStreamBox.insertAdjacentHTML("beforeend", `
+                <div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border">
+                    <div><strong>${cat}</strong> <span class="text-slate-400">${(e.Date || e.date || "").toString().substring(0,10)}</span>
+                    <p class="text-[10px] text-slate-400">${e.Description || e.description || ""}</p></div>
+                    <div class="flex items-center gap-2"><span class="font-bold text-rose-600">₹${a}</span>
+                    <button type="button" onclick="loadExpenseToEditForm('${id}')" class="text-indigo-600 text-[11px] font-bold">Edit</button></div>
+                </div>`);
         }
+    });
 
-        function closeStudentDetailModal() { if(document.getElementById('studentDetailModalOverlay')) document.getElementById('studentDetailModalOverlay').classList.add('hidden'); }
+    const setK = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+    setK("kpiGrossRevenue", `₹${totalReceivables}`);
+    setK("kpiCollectedRevenue", `₹${totalCollected}`);
+    setK("kpiDuesPending", `₹${Math.max(0, totalReceivables - totalCollected)}`);
+    setK("kpiTotalExpenses", `₹${totalExpenses}`);
 
-        function updateEditClassFeeDashboardDisplay(s) {
-            const bModel = s.BillingModel || s.billingmodel || "Regular";
-            const radRegular = document.getElementById('editModelRegular');
-            const radMonthly = document.getElementById('editModelMonthly');
-            if(bModel === "Regular" && radRegular) { radRegular.checked = true; handleEditFormBillingTypeChange('Regular'); }
-            else if(radMonthly) { radMonthly.checked = true; handleEditFormBillingTypeChange('Monthly'); }
-            
-            const feeMaps = {
-                'editCustomFee': s.CustomFee || s.customfee || 0,
-                'editAdmissionFee': s.AdmissionFee || s.admissionfee || 0,
-                'editStudentKitFee': s.StudentKitFee || s.studentkitfee || 0,
-                'editSpareUniformFee': s.SpareUniformFee || s.spareuniformfee || 0,
-                'editVanFee': s.VanFee || s.vanfee || 0,
-                'editDayCareFee': s.DayCareFee || s.daycarefee || 0,
-                'editOptMonthlyFee': s.OptMonthlyFee || s.optmonthlyfee || 0
-            };
-
-            Object.keys(feeMaps).forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.value = feeMaps[id];
-            });
-
-            if((s.Class || s.class) === 'DayCare') { updateEditClassFeeDefault(); }
-            calculateEditDiscount();
-            
-            const photoSlot = document.getElementById('detailProfilePhotoSlot');
-            if(photoSlot) {
-                const imgCache = s.PhotoBase64 || s.photobase64 || "N/A";
-                photoSlot.innerHTML = (imgCache !== "N/A" && imgCache.length > 50) ? `<img src="${imgCache}" class="w-full h-full object-cover">` : (s.StudentName || s.studentname || "LM").charAt(0);
-            }
-        }
-
-        async function handleStudentDetailUpdate(e) {
-            e.preventDefault(); 
-            const sid = document.getElementById('detailStudentID').value;
-            const rModelEl = document.querySelector('input[name="EditBillingModel"]:checked');
-            const rowData = [
-                sid, 
-                document.getElementById('editStudentName').value, 
-                document.getElementById('editDOB').value,
-                document.getElementById('editGender').value, 
-                document.getElementById('editClass').value,
-                document.getElementById('editGuardianName').value, 
-                document.getElementById('editContact').value,
-                document.getElementById('editAltContact').value, 
-                document.getElementById('editAddress').value,
-                document.getElementById('detailPhotoBase64').value || "N/A", 
-                rModelEl ? rModelEl.value : "Regular",
-                Number(document.getElementById('editCustomFee').value)||0, 
-                Number(document.getElementById('editAdmissionFee').value)||0,
-                Number(document.getElementById('editStudentKitFee').value)||0, 
-                Number(document.getElementById('editSpareUniformFee').value)||0,
-                Number(document.getElementById('editVanFee').value)||0, 
-                Number(document.getElementById('editDayCareFee').value)||0,
-                Number(document.getElementById('editOptMonthlyFee').value)||0, 
-                document.getElementById('editBloodGroup').value,
-                document.getElementById('editDOJ').value
-            ];
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: rowData })});
-            alert("✅ Modifications committed cleanly!"); closeStudentDetailModal(); await refreshApplicationState(false);
-        }
-
-        function setExpenseGraphTimeframe(frame) {
-            currentExpenseTimeframeContext = frame;
-            document.querySelectorAll('[id^="btnExpTime-"]').forEach(btn => btn.classList.replace('bg-white', 'text-slate-600'));
-            const b = document.getElementById('btnExpTime-' + frame); if(b) b.classList.add('bg-white', 'text-indigo-950', 'shadow-sm');
-            renderFinanceLedger();
-        }
-
-        function renderFinanceLedger() {
-            let totalReceivables = 0, totalCollected = 0, totalExpenses = 0; const cats = {};
-            const expenseStreamBox = document.getElementById('containerRunningExpensesList'); if(expenseStreamBox) expenseStreamBox.innerHTML = '';
-            
-            const selectedMonthEl = document.getElementById('expensePeriodMonth');
-            const selectedYearEl = document.getElementById('expensePeriodYear');
-            const now = new Date();
-            const selectedMonth = selectedMonthEl ? parseInt(selectedMonthEl.value, 10) : now.getMonth();
-            const selectedYear = selectedYearEl ? parseInt(selectedYearEl.value, 10) : now.getFullYear();
-
-            globalAppState.payments.forEach(p => {
-                totalCollected += (Number(p.amountpaid || p.AmountPaid) || 0);
-            });
-
-            globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED").forEach(s => {
-                totalReceivables += getStudentReceivables(s);
-            });
-
-            let filteredExpenses = globalAppState.expenses.filter(x => x && (x.Date || x.date));
-            
-            filteredExpenses = filteredExpenses.filter(e => {
-                const rawDate = e.Date || e.date || "";
-                const dateClean = rawDate.toString().replace(/[\/\s]/g, "-");
-                const parts = dateClean.split('-');
-                if(parts.length < 2) return false;
-                
-                let yr = parseInt(parts[0], 10); let mo = parseInt(parts[1], 10) - 1;
-                if(parts[0].length < 4) { yr = parseInt(parts[2], 10); mo = parseInt(parts[1], 10) - 1; }
-                
-                if (currentExpenseTimeframeContext === 'monthly') {
-                    return mo === selectedMonth && yr === selectedYear;
-                } else if (currentExpenseTimeframeContext === 'currentYear') {
-                    return (yr === selectedYear && mo >= 5) || (yr === (selectedYear + 1) && mo < 5);
-                }
-                return true;
-            });
-
-            filteredExpenses.forEach(e => {
-                const rawCat = e.Category || e.category || "General";
-                const rawDate = e.Date || e.date || "";
-                const rawDesc = e.Description || e.description || "";
-                const rawId = e.ExpenseID || e.expenseid || "";
-                const a = Number(e.Amount || e.amount)||0; totalExpenses += a; cats[rawCat] = (cats[rawCat]||0) + a;
-                if(expenseStreamBox) expenseStreamBox.insertAdjacentHTML('beforeend', `<div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border"><div><strong>${rawCat}</strong> - <span class="text-slate-400">${rawDate.toString().substring(0,10)}</span><p class="text-[10px] text-slate-400 font-medium">${rawDesc}</p></div><div class="flex items-center space-x-2"><span class="font-bold text-rose-600">₹${a}</span><button onclick="loadExpenseToEditForm('${rawId}')" class="text-indigo-600 hover:underline">Edit</button></div></div>`);
-            });
-
-            if(document.getElementById('kpiGrossRevenue')) document.getElementById('kpiGrossRevenue').innerText = `₹${totalReceivables}`;
-            if(document.getElementById('kpiCollectedRevenue')) document.getElementById('kpiCollectedRevenue').innerText = `₹${totalCollected}`;
-            if(document.getElementById('kpiDuesPending')) document.getElementById('kpiDuesPending').innerText = `₹${totalReceivables - totalCollected}`;
-            if(document.getElementById('kpiTotalExpenses')) document.getElementById('kpiTotalExpenses').innerText = `₹${totalExpenses}`;
-
-            try {
-                const ctx1 = document.getElementById('collectionsBalanceChart');
-                if (ctx1 && window.myCollectionChart) window.myCollectionChart.destroy();
-                if (ctx1) window.myCollectionChart = new Chart(ctx1.getContext('2d'), { type: 'bar', data: { labels: ['Receivables', 'Collected', 'Pending Dues'], datasets: [{ data: [totalReceivables, totalCollected, totalReceivables - totalCollected], backgroundColor: ['#4f46e5', '#10b981', '#f59e0b'] }] }, options: { responsive: true, plugins: { legend: { display: false } } } });
-
-                const ctx2 = document.getElementById('expenseCategoryChart');
-                if (ctx2 && window.myExpenseChart) window.myExpenseChart.destroy();
-                if (ctx2) window.myExpenseChart = new Chart(ctx2.getContext('2d'), { type: 'doughnut', data: { labels: Object.keys(cats), datasets: [{ data: Object.values(cats), backgroundColor: ['#4f46e5','#f43f5e','#eab308','#10b981','#a855f7'] }] }, options: { responsive: true } });
-            } catch(e) {
-                console.log("Canvas rendering deferred safely.");
-            }
-        }
-
-        function loadExpenseToEditForm(expId) {
-            showView('expenses');
-            const e = globalAppState.expenses.find(x => (x.expenseid || x.ExpenseID) === expId);
-            if(!e) return;
-            if(document.getElementById('expenseFormID')) document.getElementById('expenseFormID').value = expId;
-            const rawDate = e.date || e.Date || "";
-            if(document.getElementById('expenseInputDate')) document.getElementById('expenseInputDate').value = rawDate ? rawDate.toString().substring(0,10) : '';
-            if(document.getElementById('expenseInputCategory')) document.getElementById('expenseInputCategory').value = e.category || e.Category || "";
-            if(document.getElementById('expenseInputAmount')) document.getElementById('expenseInputAmount').value = e.amount || e.Amount || 0;
-            if(document.getElementById('expenseInputType')) document.getElementById('expenseInputType').value = e.type || e.Type || "";
-            if(document.getElementById('expenseInputDescription')) document.getElementById('expenseInputDescription').value = e.description || e.Description || '';
-            
-            if(document.getElementById('expenseFormHeader')) document.getElementById('expenseFormHeader').innerText = "Modify Existing Outflow Record Entry";
-            if(document.getElementById('expenseFormActions')) document.getElementById('expenseFormActions').innerHTML = `
-                <button type="submit" class="w-2/3 bg-indigo-600 text-white font-bold py-2 rounded-xl">Save Changes</button>
-                <button type="button" onclick="triggerDeleteExpense('${expId}')" class="w-1/3 bg-rose-100 text-rose-600 font-bold py-2 rounded-xl">Delete</button>
-            `;
-        }
-
-        function resetExpenseForm() {
-            if(document.getElementById('expenseForm')) document.getElementById('expenseForm').reset(); 
-            if(document.getElementById('expenseFormID')) document.getElementById('expenseFormID').value = "";
-            if(document.getElementById('expenseFormHeader')) document.getElementById('expenseFormHeader').innerText = "Commit Operational Expenditure Row";
-            if(document.getElementById('expenseFormActions')) document.getElementById('expenseFormActions').innerHTML = `<button type="submit" class="w-full bg-rose-600 text-white font-bold py-2.5 rounded-xl shadow hover:bg-rose-700 transition">Save Ledger Entry</button>`;
-        }
-
-        async function handleExpenseSubmission(e) {
-            e.preventDefault(); const f = new FormData(e.target); const expId = document.getElementById('expenseFormID').value;
-            const actionType = expId ? "updateRow" : "addRow"; const id = expId || "EXP-" + Date.now();
-            const row = [id, f.get('Date'), f.get('Category'), Number(f.get('Amount')), f.get('Description'), f.get('Type')];
-            await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: actionType, targetSheet: "Expenses", rowId: id, rowData: row })});
-            alert("✅ Outflow ledger record submitted!"); resetExpenseForm(); await refreshApplicationState(false);
-        }
-
-        async function triggerDeleteExpense(expId) {
-            if(confirm("Permanently wipe this outflow row out from the database ledgers?")) {
-                await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Expenses", rowId: expId, rowData: [expId, "DELETED", "Rent", 0, "", "Fixed"] })});
-                alert("Row Purged!"); resetExpenseForm(); await refreshApplicationState(false);
-            }
-        }
-
-        function renderCalendarAgenda() {
-            const stream = document.getElementById('calendarAgendaStream'); if(!stream) return; stream.innerHTML = '';
-            if(!globalAppState.events.length) { stream.innerHTML = '<p class="text-xs text-slate-400">No events yet.</p>'; return; }
-            const sorted = [...globalAppState.events].sort((a, b) => {
-                const da = formatToInputDate(a.Date || a.date || "") || "";
-                const db = formatToInputDate(b.Date || b.date || "") || "";
-                return da.localeCompare(db);
-            });
-            sorted.forEach(e => {
-                const titleVal = e.Title || e.title || "";
-                const dateVal = e.Date || e.date || "";
-                const timeVal = e.Time || e.time || "";
-                const catVal = e.Category || e.category || "";
-                stream.insertAdjacentHTML('beforeend', `<div class="p-3 border-l-4 border-indigo-500 bg-indigo-50 text-slate-900 text-xs font-semibold"><h5 class="font-black">${titleVal}</h5><span>${dateVal.toString().substring(0,10)}${timeVal ? " · " + timeVal : ""}</span>${catVal ? `<p class="text-[10px] text-indigo-700 font-bold mt-1 uppercase">${catVal}</p>` : ""}</div>`);
-            });
-        }
-
-        function triggerDeleteStudent() {
-            const sid = document.getElementById('detailStudentID').value;
-            if(confirm("Permanently wipe out student enrollment data row?")) {
-                const deletedRow = [sid, "DELETED", "", "", "", "", "", "", "", "N/A", "Regular", 0, 0, 0, 0, 0, 0, 0, "", ""];
-                fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: deletedRow })}).then(() => {
-                    alert("Profile Terminated!"); closeStudentDetailModal(); refreshApplicationState(false);
-                });
-            }
-        }
-
-        function executeSearchFilter() { renderStudentCards(); }
-        function filterCohort(type, btn) {
-            currentActiveCohortFilter = type;
-            document.querySelectorAll('.cohort-filter-btn').forEach(b => {
-                b.classList.remove('bg-indigo-600', 'text-white');
-                b.classList.add('bg-slate-100', 'text-slate-700');
-            });
-            const target = btn || (typeof event !== 'undefined' ? event?.target : null);
-            if (target) {
-                target.classList.remove('bg-slate-100', 'text-slate-700');
-                target.classList.add('bg-indigo-600', 'text-white');
-            }
-            renderStudentCards();
-        }
-        function processImageUpload(input) { const file = input.files[0]; if (!file) return; const r = new FileReader(); r.onloadend = () => { const cache = document.getElementById('base64PayloadCache'); if(cache) cache.value = r.result; }; r.readAsDataURL(file); }
-        function processEditImageUpload(input) { const file = input.files[0]; if (!file) return; const r = new FileReader(); r.onloadend = () => { const cache = document.getElementById('detailPhotoBase64'); if(cache) cache.value = r.result; }; r.readAsDataURL(file); }
-        
-        async function handleStudentSubmission(event) {
-            event.preventDefault();
-            const bModelEl = document.querySelector('input[name="BillingModel"]:checked');
-            const bModel = bModelEl ? bModelEl.value : "Regular";
-            const cacheEl = document.getElementById('base64PayloadCache');
-            const photo = cacheEl ? cacheEl.value || "N/A" : "N/A";
-            const sid = "STU-" + Date.now();
-
-            const studentRow = [
-                sid,
-                document.getElementById('intakeStudentName').value,
-                document.getElementById('intakeDOB').value,
-                document.getElementById('intakeGender').value,
-                document.getElementById('intakeClassSelect').value,
-                document.getElementById('intakeGuardianName').value,
-                document.getElementById('intakeContact').value,
-                document.getElementById('intakeAltContact').value,
-                document.getElementById('intakeAddress').value,
-                photo,
-                bModel,
-                Number(document.getElementById('intakeAnnualTuition').value) || 0,
-                Number(document.getElementById('intakeAdmissionFee').value) || 0,
-                Number(document.getElementById('intakeKitFee').value) || 0,
-                Number(document.getElementById('intakeUniformFee').value) || 0,
-                Number(document.getElementById('FormVanFee').value) || 0,
-                Number(document.getElementById('FormDayCareFee').value) || 0,
-                Number(document.getElementById('FormOptMonthlyFee').value) || 0,
-                document.getElementById('intakeBloodGroup').value,
-                document.getElementById('intakeDOJ').value
-            ];
-
-            try {
-                await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Students", rowData: studentRow })});
-                const pRow = ["PAY-"+sid+"-"+activeSystemMonthContext, sid, activeSystemMonthContext, 0, "", "Cash", "Admission Record Initialized", "Active", ""];
-                await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: pRow })});
-                
-                alert("Admissions Intake Saved!");
-                event.target.reset();
-                const cacheReset = document.getElementById('base64PayloadCache');
-                if (cacheReset) cacheReset.value = "N/A";
-                await refreshApplicationState(false);
-                showView('home');
-            } catch(e) { console.error(e); }
-        }
-
-        async function handleEventSubmission(e) { e.preventDefault(); const f = new FormData(e.target); const row = ["EVT-"+Date.now(), f.get('Title'), f.get('Date'), f.get('Time'), f.get('Category')]; await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Events", rowData: row })}); alert("✅ Calendar Event Pinned!"); e.target.reset(); await refreshApplicationState(false); }
-
-        (() => {
-            const checkFormInpExistLoop = setInterval(() => {
-                const dojInp = document.getElementById('intakeDOJ');
-                if( dojInp ) {
-                    clearInterval(checkFormInpExistLoop);
-                    dojInp.value = new Date().toISOString().substring(0,10);
-                    handleFormBillingTypeChange('Regular');
-                    const now = new Date();
-                    const monthSel = document.getElementById('expensePeriodMonth');
-                    const yearSel = document.getElementById('expensePeriodYear');
-                    if (monthSel) monthSel.value = String(now.getMonth());
-                    if (yearSel) {
-                        const y = String(now.getFullYear());
-                        if (![...yearSel.options].some(o => o.value === y)) {
-                            yearSel.insertAdjacentHTML('beforeend', `<option value="${y}">${y}</option>`);
-                        }
-                        yearSel.value = y;
-                    }
-                    if (document.getElementById('reminderPeriodBadge')) {
-                        document.getElementById('reminderPeriodBadge').innerText = activeSystemMonthContext;
-                    }
-                }
-            }, 50);
-        })();
-
-        document.addEventListener('click', (e) => {
-            const menu = document.getElementById('headerMenu');
-            if (!menu || menu.classList.contains('hidden')) return;
-            if (!e.target.closest('#headerMenu') && !e.target.closest('button[onclick*="toggleHeaderMenu"]')) {
-                menu.classList.add('hidden');
-            }
+    try {
+        const ctx1 = document.getElementById("collectionsBalanceChart");
+        if (ctx1 && window.myCollectionChart) window.myCollectionChart.destroy();
+        if (ctx1) window.myCollectionChart = new Chart(ctx1.getContext("2d"), {
+            type: "bar",
+            data: { labels: ["Billed", "Collected", "Pending"], datasets: [{ data: [totalReceivables, totalCollected, Math.max(0, totalReceivables - totalCollected)], backgroundColor: ["#4f46e5", "#10b981", "#f59e0b"] }] },
+            options: { responsive: true, plugins: { legend: { display: false } } }
         });
-    </script>
+        const ctx2 = document.getElementById("expenseCategoryChart");
+        if (ctx2 && window.myExpenseChart) window.myExpenseChart.destroy();
+        if (ctx2) window.myExpenseChart = new Chart(ctx2.getContext("2d"), {
+            type: "doughnut",
+            data: { labels: Object.keys(cats), datasets: [{ data: Object.values(cats), backgroundColor: ["#4f46e5","#f43f5e","#eab308","#10b981","#a855f7"] }] },
+            options: { responsive: true }
+        });
+    } catch (e) { console.log("Chart deferred"); }
+}
+
+function loadExpenseToEditForm(expId) {
+    showView("expenses");
+    const e = globalAppState.expenses.find(x => (x.expenseid || x.ExpenseID) === expId);
+    if (!e) return;
+    document.getElementById("expenseFormID").value = expId;
+    document.getElementById("expenseInputDate").value = formatToInputDate(e.date || e.Date) || "";
+    document.getElementById("expenseInputCategory").value = e.category || e.Category || "Salaries";
+    document.getElementById("expenseInputAmount").value = e.amount || e.Amount || 0;
+    document.getElementById("expenseInputType").value = e.type || e.Type || "Fixed";
+    document.getElementById("expenseInputDescription").value = e.description || e.Description || "";
+    document.getElementById("expenseFormHeader").innerText = "Edit Expense";
+    document.getElementById("expenseFormActions").innerHTML = `
+        <button type="submit" class="w-2/3 bg-indigo-600 text-white font-bold py-2.5 rounded-xl">Save</button>
+        <button type="button" onclick="triggerDeleteExpense('${expId}')" class="w-1/3 bg-rose-100 text-rose-600 font-bold py-2.5 rounded-xl">Delete</button>`;
+}
+
+function resetExpenseForm() {
+    document.getElementById("expenseForm").reset();
+    document.getElementById("expenseFormID").value = "";
+    document.getElementById("expenseFormHeader").innerText = "Add Expense";
+    document.getElementById("expenseFormActions").innerHTML = `<button type="submit" class="w-full bg-rose-600 text-white font-bold py-3 rounded-xl">Save Expense</button>`;
+}
+
+async function handleExpenseSubmission(e) {
+    e.preventDefault();
+    const f = new FormData(e.target);
+    const expId = document.getElementById("expenseFormID").value;
+    const id = expId || "EXP-" + Date.now();
+    const row = [id, f.get("Date"), f.get("Category"), Number(f.get("Amount")), f.get("Description"), f.get("Type")];
+    await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: expId ? "updateRow" : "addRow", targetSheet: "Expenses", rowId: id, rowData: row }) });
+    alert("Expense saved!");
+    resetExpenseForm();
+    await refreshApplicationState(false);
+}
+
+async function triggerDeleteExpense(expId) {
+    if (!confirm("Delete this expense?")) return;
+    await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Expenses", rowId: expId, rowData: [expId, "DELETED", "Rent", 0, "", "Fixed"] }) });
+    alert("Deleted!");
+    resetExpenseForm();
+    await refreshApplicationState(false);
+}
+
+function renderCalendarAgenda() {
+    const stream = document.getElementById("calendarAgendaStream");
+    if (!stream) return;
+    stream.innerHTML = "";
+    if (!globalAppState.events.length) { stream.innerHTML = '<p class="text-xs text-slate-400">No events yet.</p>'; return; }
+    const sorted = [...globalAppState.events].sort((a, b) => (formatToInputDate(a.Date || a.date) || "").localeCompare(formatToInputDate(b.Date || b.date) || ""));
+    sorted.forEach(e => {
+        stream.insertAdjacentHTML("beforeend", `
+            <div class="p-3 border-l-4 border-indigo-500 bg-indigo-50 rounded-r-xl text-xs">
+                <h5 class="font-black">${e.Title || e.title || ""}</h5>
+                <span>${(e.Date || e.date || "").toString().substring(0,10)}${(e.Time || e.time) ? " · " + (e.Time || e.time) : ""}</span>
+                ${(e.Category || e.category) ? `<p class="text-[10px] text-indigo-700 font-bold mt-1 uppercase">${e.Category || e.category}</p>` : ""}
+            </div>`);
+    });
+}
+
+function processImageUpload(input) {
+    const file = input.files[0]; if (!file) return;
+    const r = new FileReader();
+    r.onloadend = () => { const c = document.getElementById("base64PayloadCache"); if (c) c.value = r.result; };
+    r.readAsDataURL(file);
+}
+function processEditImageUpload(input) {
+    const file = input.files[0]; if (!file) return;
+    const r = new FileReader();
+    r.onloadend = () => { const c = document.getElementById("detailPhotoBase64"); if (c) c.value = r.result; };
+    r.readAsDataURL(file);
+}
+
+async function handleStudentSubmission(event) {
+    event.preventDefault();
+    const bModel = document.querySelector('input[name="BillingModel"]:checked')?.value || "Regular";
+    const photo = document.getElementById("base64PayloadCache")?.value || "N/A";
+    const sid = "STU-" + Date.now();
+    const studentRow = [
+        sid, document.getElementById("intakeStudentName").value, document.getElementById("intakeDOB").value,
+        document.getElementById("intakeGender").value, document.getElementById("intakeClassSelect").value,
+        document.getElementById("intakeGuardianName").value, document.getElementById("intakeContact").value,
+        document.getElementById("intakeAltContact").value, document.getElementById("intakeAddress").value,
+        photo, bModel,
+        Number(document.getElementById("intakeAnnualTuition").value) || 0,
+        Number(document.getElementById("intakeAdmissionFee").value) || 0,
+        Number(document.getElementById("intakeKitFee").value) || 0,
+        Number(document.getElementById("intakeUniformFee").value) || 0,
+        Number(document.getElementById("FormVanFee").value) || 0,
+        Number(document.getElementById("FormDayCareFee").value) || 0,
+        Number(document.getElementById("FormOptMonthlyFee").value) || 0,
+        document.getElementById("intakeBloodGroup").value, document.getElementById("intakeDOJ").value
+    ];
+    try {
+        await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Students", rowData: studentRow }) });
+        const pRow = ["PAY-" + sid + "-" + activeSystemMonthContext, sid, activeSystemMonthContext, 0, "", "Cash", "Admission Record Initialized", "Active", ""];
+        await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: pRow }) });
+        alert("Admission saved!");
+        event.target.reset();
+        document.getElementById("base64PayloadCache").value = "N/A";
+        await refreshApplicationState(false);
+        showView("home");
+    } catch (e) { console.error(e); }
+}
+
+async function handleEventSubmission(e) {
+    e.preventDefault();
+    const f = new FormData(e.target);
+    const row = ["EVT-" + Date.now(), f.get("Title"), f.get("Date"), f.get("Time"), f.get("Category")];
+    await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Events", rowData: row }) });
+    alert("Event saved!");
+    e.target.reset();
+    await refreshApplicationState(false);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const now = new Date();
+    const monthSel = document.getElementById("expensePeriodMonth");
+    const yearSel = document.getElementById("expensePeriodYear");
+    if (monthSel) monthSel.value = String(now.getMonth());
+    if (yearSel) {
+        const y = String(now.getFullYear());
+        if (![...yearSel.options].some(o => o.value === y)) yearSel.insertAdjacentHTML("beforeend", `<option value="${y}">${y}</option>`);
+        yearSel.value = y;
+    }
+    const doj = document.getElementById("intakeDOJ");
+    if (doj) doj.value = now.toISOString().substring(0, 10);
+    handleFormBillingTypeChange("Regular");
+});
+
+document.addEventListener("click", (e) => {
+    const menu = document.getElementById("headerMenu");
+    if (!menu || menu.classList.contains("hidden")) return;
+    if (!e.target.closest("#headerMenu") && !e.target.closest("button[onclick*='toggleHeaderMenu']")) menu.classList.add("hidden");
+});
+</script>
 </body>
 </html>
