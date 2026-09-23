@@ -585,6 +585,21 @@
         </div>
     </div>
 
+    <!-- Fee Receipt Preview -->
+    <div id="receiptModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-[1.5rem] max-w-sm w-full p-5 shadow-2xl space-y-3 border max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="font-black text-indigo-950 text-sm">Fee Receipt</h3>
+                <button type="button" onclick="closeReceiptModal()" class="text-2xl text-slate-400 font-bold">&times;</button>
+            </div>
+            <pre id="receiptPreviewBody" class="text-[11px] leading-relaxed font-mono whitespace-pre-wrap bg-slate-50 border rounded-xl p-3 overflow-x-auto"></pre>
+            <div class="flex gap-2">
+                <button type="button" onclick="closeReceiptModal()" class="w-1/3 bg-slate-100 font-bold py-2.5 rounded-xl text-xs">Close</button>
+                <button type="button" id="btnDownloadReceipt" onclick="downloadCurrentReceipt()" class="w-2/3 bg-indigo-600 text-white font-bold py-2.5 rounded-xl text-xs">Download Receipt</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Password Modal -->
     <div id="changePasswordModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border-2 border-amber-400 text-center space-y-4">
@@ -828,10 +843,12 @@ function parseViewFromHash() {
 
 function goAppBack() {
     // Close open overlays first
+    const receipt = document.getElementById("receiptModalOverlay");
     const pay = document.getElementById("paymentModalOverlay");
     const term = document.getElementById("termPaymentsModalOverlay");
     const detail = document.getElementById("studentDetailModalOverlay");
     const pwd = document.getElementById("changePasswordModalOverlay");
+    if (receipt && !receipt.classList.contains("hidden")) { closeReceiptModal(); return; }
     if (pay && !pay.classList.contains("hidden")) { closePaymentModal(); return; }
     if (term && !term.classList.contains("hidden")) { closeTermPaymentsModal(); return; }
     if (detail && !detail.classList.contains("hidden")) { closeStudentDetailModal(); return; }
@@ -885,10 +902,16 @@ function showView(viewId, opts = {}) {
 window.addEventListener("popstate", (e) => {
     if (localStorage.getItem("LM_SESSION") !== "1") return;
     // Prefer closing modals when back is pressed
+    const receipt = document.getElementById("receiptModalOverlay");
     const pay = document.getElementById("paymentModalOverlay");
     const term = document.getElementById("termPaymentsModalOverlay");
     const detail = document.getElementById("studentDetailModalOverlay");
     const pwd = document.getElementById("changePasswordModalOverlay");
+    if (receipt && !receipt.classList.contains("hidden")) {
+        closeReceiptModal();
+        history.pushState({ appNav: true, view: currentViewId }, "", "#/" + currentViewId);
+        return;
+    }
     if (pay && !pay.classList.contains("hidden")) {
         closePaymentModal();
         history.pushState({ appNav: true, view: currentViewId }, "", "#/" + currentViewId);
@@ -1342,16 +1365,218 @@ function isMonthlyServicePayment(remarks) {
 }
 
 function paymentHistoryRowHtml(p) {
+    const payId = (p.PaymentID || p.paymentid || "").toString().replace(/'/g, "");
     const amt = Number(p.AmountPaid || p.amountpaid) || 0;
     const date = formatToInputDate(p.PaymentDate || p.paymentdate) || "—";
     const month = (p.MonthYear || p.monthyear || "").toString() || "—";
     const mode = (p.PaymentMode || p.paymentmode || "—").toString();
     const rem = (p.Remarks || p.remarks || "").toString();
+    const canReceipt = payId && (isTermPayment(rem) || isMonthlyServicePayment(rem));
+    const receiptBtn = canReceipt
+        ? `<button type="button" onclick="viewPaymentReceipt('${payId}')" class="mt-2 w-full bg-indigo-50 text-indigo-700 font-bold py-1.5 rounded-lg text-[10px]">View / Download Receipt</button>`
+        : "";
     return `<div class="bg-slate-50 border rounded-xl p-3 text-[11px]">
         <div class="flex justify-between font-black"><span>₹${amt}</span><span class="text-slate-500 font-bold">${date}</span></div>
         <div class="flex justify-between mt-1 text-slate-600 font-semibold"><span>${month}</span><span>${mode}</span></div>
         <p class="mt-1 text-slate-500 font-medium break-words">${rem || "—"}</p>
+        ${receiptBtn}
     </div>`;
+}
+
+function formatReceiptMoney(n) {
+    return "₹" + Number(n || 0).toLocaleString("en-IN") + "/-";
+}
+
+function formatReceiptDate(dateVal) {
+    const iso = formatToInputDate(dateVal) || "";
+    if (!iso) {
+        const d = new Date();
+        return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+    }
+    const [y, m, d] = iso.split("-");
+    return `${d}/${m}/${y}`;
+}
+
+function receiptDivider() {
+    return "====================";
+}
+
+function buildFeeReceiptText(data) {
+    const lines = [];
+    lines.push("Little Millennium");
+    lines.push("THE FIRST BIG STEP");
+    lines.push("Little Millennium Preschool-Sullurpeta");
+    lines.push(formatReceiptDate(data.date));
+    lines.push(receiptDivider());
+    lines.push(`${data.serial || 1}  ${data.studentName || ""}  ${data.className || ""}`);
+    lines.push(receiptDivider());
+    (data.items || []).forEach(it => {
+        const label = (it.label || "").toString();
+        const amt = formatReceiptMoney(it.amount);
+        const pad = Math.max(1, 28 - label.length - amt.length);
+        lines.push(label + " ".repeat(pad) + amt);
+    });
+    if (data.mode) lines.push(`Mode: ${data.mode}`);
+    if (data.note) lines.push(`Note: ${data.note}`);
+    lines.push(receiptDivider());
+    if (data.balanceLabel != null) {
+        lines.push(`${data.balanceLabel}- ${formatReceiptMoney(data.balanceAmount)}`);
+    }
+    lines.push("Thank you!");
+    lines.push(receiptDivider());
+    return lines.join("\n");
+}
+
+function getReceiptStore() {
+    try { return JSON.parse(localStorage.getItem("LM_RECEIPTS") || "{}"); }
+    catch (e) { return {}; }
+}
+
+function saveReceiptRecord(payId, record) {
+    if (!payId) return;
+    const store = getReceiptStore();
+    store[payId] = record;
+    try { localStorage.setItem("LM_RECEIPTS", JSON.stringify(store)); }
+    catch (e) { console.warn("Receipt cache full:", e); }
+}
+
+function getPackageBalanceAfterPayment(sid, payId) {
+    const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+    if (!s) return 0;
+    const total = getOneTimeTuitionBilled(s);
+    const pays = getStudentPayments(sid)
+        .filter(p => isTermPayment(p.Remarks || p.remarks) && isMeaningfulPayment(p))
+        .sort((a, b) => {
+            const da = formatToInputDate(a.PaymentDate || a.paymentdate) || "";
+            const db = formatToInputDate(b.PaymentDate || b.paymentdate) || "";
+            if (da !== db) return da.localeCompare(db);
+            return String(a.PaymentID || a.paymentid || "").localeCompare(String(b.PaymentID || b.paymentid || ""));
+        });
+    let paid = 0;
+    for (const p of pays) {
+        paid += Number(p.AmountPaid || p.amountpaid) || 0;
+        if (String(p.PaymentID || p.paymentid) === String(payId)) break;
+    }
+    // If payment not in state yet (just posted), include amount from pending build
+    return Math.max(0, total - paid);
+}
+
+function buildReceiptForPayment(payId, extras = {}) {
+    const p = globalAppState.payments.find(x => String(x.PaymentID || x.paymentid) === String(payId));
+    const sid = extras.sid || (p && (p.StudentID || p.studentid)) || "";
+    const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid) || {};
+    const amount = extras.amount != null ? extras.amount : (Number(p?.AmountPaid || p?.amountpaid) || 0);
+    const date = extras.date || (p && (p.PaymentDate || p.paymentdate)) || new Date().toISOString().substring(0, 10);
+    const mode = extras.mode || (p && (p.PaymentMode || p.paymentmode)) || "Cash";
+    const remarks = extras.remarks || (p && (p.Remarks || p.remarks)) || "Term Fee";
+    const note = extras.note || "";
+    const isMonthlySvc = isMonthlyServicePayment(remarks);
+    const packageTotal = getOneTimeTuitionBilled(s);
+    let balanceAfter = extras.balanceAfter;
+    if (balanceAfter == null && !isMonthlySvc) {
+        balanceAfter = getPackageBalanceAfterPayment(sid, payId);
+        // If payment not yet in globalAppState, subtract this amount from current package balance before payment
+        if (!p && extras.amount != null) {
+            const before = getPackageBalance(s).balance;
+            balanceAfter = Math.max(0, before - Number(extras.amount));
+        }
+    }
+
+    const items = [];
+    if (isMonthlySvc) {
+        let label = "Fee Collected";
+        if (String(remarks).includes("Van")) label = `Van Fee- ${(p && (p.MonthYear || p.monthyear)) || activeSystemMonthContext}`;
+        else if (String(remarks).includes("DayCare") || String(remarks).includes("Day Care")) label = `Day Care- ${(p && (p.MonthYear || p.monthyear)) || activeSystemMonthContext}`;
+        else if (String(remarks).includes("OptMonthly")) label = `Monthly Fee- ${(p && (p.MonthYear || p.monthyear)) || activeSystemMonthContext}`;
+        items.push({ label, amount });
+    } else {
+        items.push({ label: "Fee Collected", amount });
+    }
+
+    const serial = Math.max(1, getStudentPayments(sid).filter(x => isMeaningfulPayment(x) && isTermPayment(x.Remarks || x.remarks)).length);
+
+    return {
+        payId,
+        text: buildFeeReceiptText({
+            serial: extras.serial || serial,
+            studentName: s.StudentName || s.studentname || extras.studentName || "",
+            className: s.Class || s.class || extras.className || "",
+            date,
+            items,
+            mode,
+            note: note || (String(remarks).includes("—") ? String(remarks).split("—").slice(1).join("—").trim() : ""),
+            balanceLabel: isMonthlySvc ? null : "Balance Payment (School Fee)",
+            balanceAmount: isMonthlySvc ? null : (balanceAfter != null ? balanceAfter : Math.max(0, packageTotal - amount))
+        }),
+        meta: { sid, amount, date, mode, remarks, studentName: s.StudentName || s.studentname || "", className: s.Class || s.class || "" }
+    };
+}
+
+let currentReceiptPayId = "";
+let currentReceiptText = "";
+
+function openReceiptModal(payId, text) {
+    currentReceiptPayId = payId || "";
+    currentReceiptText = text || "";
+    document.getElementById("receiptPreviewBody").innerText = currentReceiptText;
+    document.getElementById("receiptModalOverlay").classList.remove("hidden");
+}
+
+function closeReceiptModal() {
+    document.getElementById("receiptModalOverlay").classList.add("hidden");
+}
+
+function downloadReceiptText(text, payId, studentName) {
+    const safeName = (studentName || "student").toString().replace(/[^\w\-]+/g, "_").slice(0, 40);
+    const filename = `LM_Receipt_${safeName}_${(payId || Date.now()).toString().slice(-8)}.txt`;
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+}
+
+function downloadCurrentReceipt() {
+    if (!currentReceiptText) return;
+    const store = getReceiptStore()[currentReceiptPayId] || {};
+    downloadReceiptText(currentReceiptText, currentReceiptPayId, store.studentName || "");
+}
+
+function viewPaymentReceipt(payId) {
+    const store = getReceiptStore();
+    if (store[payId] && store[payId].text) {
+        openReceiptModal(payId, store[payId].text);
+        return;
+    }
+    const built = buildReceiptForPayment(payId);
+    saveReceiptRecord(payId, { text: built.text, ...built.meta, savedAt: Date.now() });
+    openReceiptModal(payId, built.text);
+}
+
+function issueFeeReceipt(payId, extras) {
+    // Ensure payment exists in memory for balance calc when just saved
+    if (extras && extras.sid && !globalAppState.payments.some(x => String(x.PaymentID || x.paymentid) === String(payId))) {
+        globalAppState.payments.push({
+            PaymentID: payId,
+            StudentID: extras.sid,
+            MonthYear: extras.monthYear || activeSystemMonthContext,
+            AmountPaid: extras.amount,
+            PaymentDate: extras.date,
+            PaymentMode: extras.mode,
+            Remarks: extras.remarks,
+            Status: "Active",
+            NullifiedServices: ""
+        });
+    }
+    const built = buildReceiptForPayment(payId, extras || {});
+    saveReceiptRecord(payId, { text: built.text, ...built.meta, savedAt: Date.now() });
+    openReceiptModal(payId, built.text);
+    downloadReceiptText(built.text, payId, built.meta.studentName);
+    return built;
 }
 
 function renderStudentCards() {
@@ -1629,18 +1854,31 @@ async function commitParticularsTransaction(e) {
     e.preventDefault();
     const sid = document.getElementById("modalTargetStudentID").value;
     const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
-    const isMonthly = s && (s.BillingModel === "Monthly" || s.billingmodel === "Monthly");
     const amount = Number(document.getElementById("txAmountPaid").value) || 0;
     if (amount <= 0) { alert("Enter a valid amount."); return; }
     const note = document.getElementById("txRemarks").value.trim();
     const remark = "Term Fee" + (note ? " — " + note : "");
-    const row = ["PAY-" + sid + "-" + Date.now(), sid, activeSystemMonthContext, amount,
-        document.getElementById("txPaymentDate").value, document.getElementById("txPaymentMode").value,
-        remark, "Active", ""];
+    const payDate = document.getElementById("txPaymentDate").value;
+    const payMode = document.getElementById("txPaymentMode").value;
+    const payId = "PAY-" + sid + "-" + Date.now();
+    const balanceBefore = getPackageBalance(s).balance;
+    const balanceAfter = Math.max(0, balanceBefore - amount);
+    const row = [payId, sid, activeSystemMonthContext, amount, payDate, payMode, remark, "Active", ""];
     await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row }) });
-    alert(isMonthly ? "Initial balance payment logged!" : "Term fee logged!");
     closePaymentModal();
-    await refreshApplicationState(false);
+    issueFeeReceipt(payId, {
+        sid,
+        amount,
+        date: payDate,
+        mode: payMode,
+        remarks: remark,
+        note,
+        balanceAfter,
+        studentName: s?.StudentName || s?.studentname,
+        className: s?.Class || s?.class,
+        monthYear: activeSystemMonthContext
+    });
+    refreshApplicationState(false);
 }
 
 async function toggleReminderNullify(sid, serviceKey, isChecked) {
