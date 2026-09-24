@@ -542,48 +542,64 @@
                 <button type="button" onclick="goAppBack()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Back</button>
                 <h3 class="font-black text-sm text-indigo-950">Finances</h3>
             </div>
-            <div class="view-scroll space-y-4">
-                <div class="grid grid-cols-3 gap-2">
-                    <div class="bg-white p-2.5 rounded-2xl border text-center"><span class="text-[9px] uppercase font-bold text-slate-400">Billed</span><h4 class="text-sm font-black text-indigo-950 mt-0.5" id="kpiGrossRevenue">₹0</h4></div>
-                    <div class="bg-white p-2.5 rounded-2xl border text-center"><span class="text-[9px] uppercase font-bold text-slate-400">Collected</span><h4 class="text-sm font-black text-emerald-600 mt-0.5" id="kpiCollectedRevenue">₹0</h4></div>
-                    <div class="bg-white p-2.5 rounded-2xl border text-center"><span class="text-[9px] uppercase font-bold text-slate-400">Pending</span><h4 class="text-sm font-black text-amber-600 mt-0.5" id="kpiDuesPending">₹0</h4></div>
+            <div class="view-scroll space-y-3">
+                <div class="flex gap-1 bg-slate-100 p-1 rounded-xl text-[11px] font-bold">
+                    <button type="button" id="btnFinTabCurrent" onclick="setFinanceTab('current')" class="flex-1 py-2 rounded-lg bg-white text-indigo-950 shadow-sm">Current</button>
+                    <button type="button" id="btnFinTabOverall" onclick="setFinanceTab('overall')" class="flex-1 py-2 rounded-lg text-slate-600">Overall</button>
+                    <button type="button" id="btnFinTabProj" onclick="setFinanceTab('projections')" class="flex-1 py-2 rounded-lg text-slate-600">Projections</button>
                 </div>
-                <div class="grid grid-cols-3 gap-2">
-                    <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-2.5 text-center">
-                        <p class="text-[9px] font-black uppercase text-indigo-500 tracking-wide">Avg fee</p>
-                        <p class="text-[9px] text-slate-500 font-semibold">Regular</p>
-                        <p class="text-sm font-black text-indigo-950 mt-0.5" id="kpiAvgRegularFee">₹0</p>
+
+                <!-- CURRENT AY -->
+                <div id="finPanelCurrent" class="space-y-3">
+                    <p id="finCurrentAyLabel" class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Academic year</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="bg-white p-2.5 rounded-2xl border text-center"><span class="text-[9px] uppercase font-bold text-slate-400">Billed</span><h4 class="text-sm font-black text-indigo-950 mt-0.5" id="kpiGrossRevenue">₹0</h4></div>
+                        <div class="bg-white p-2.5 rounded-2xl border text-center"><span class="text-[9px] uppercase font-bold text-slate-400">Collected</span><h4 class="text-sm font-black text-emerald-600 mt-0.5" id="kpiCollectedRevenue">₹0</h4></div>
+                        <div class="bg-white p-2.5 rounded-2xl border text-center"><span class="text-[9px] uppercase font-bold text-slate-400">Pending</span><h4 class="text-sm font-black text-amber-600 mt-0.5" id="kpiDuesPending">₹0</h4></div>
                     </div>
-                    <div class="bg-sky-50 border border-sky-100 rounded-2xl p-2.5 text-center">
-                        <p class="text-[9px] font-black uppercase text-sky-600 tracking-wide">Van / mo</p>
-                        <p class="text-[9px] text-slate-500 font-semibold">Expected</p>
-                        <p class="text-sm font-black text-sky-900 mt-0.5" id="kpiVanMonthly">₹0</p>
-                        <p class="text-[9px] text-emerald-600 font-bold mt-0.5" id="kpiVanCollected">Coll ₹0</p>
+                    <div class="bg-rose-50 border border-rose-100 rounded-2xl p-3 flex justify-between items-center">
+                        <div>
+                            <p class="text-[10px] font-black uppercase text-rose-600 tracking-wide">Total expenses</p>
+                            <p class="text-[9px] text-slate-500 font-semibold">This academic year (Jun–May)</p>
+                        </div>
+                        <p class="text-lg font-black text-rose-700" id="kpiAyTotalExpenses">₹0</p>
                     </div>
-                    <div class="bg-violet-50 border border-violet-100 rounded-2xl p-2.5 text-center">
-                        <p class="text-[9px] font-black uppercase text-violet-600 tracking-wide">Day Care / mo</p>
-                        <p class="text-[9px] text-slate-500 font-semibold">Expected</p>
-                        <p class="text-sm font-black text-violet-900 mt-0.5" id="kpiDayCareMonthly">₹0</p>
-                        <p class="text-[9px] text-emerald-600 font-bold mt-0.5" id="kpiDayCareCollected">Coll ₹0</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-2.5 text-center">
+                            <p class="text-[9px] font-black uppercase text-indigo-500 tracking-wide">Avg fee</p>
+                            <p class="text-[9px] text-slate-500 font-semibold">Regular</p>
+                            <p class="text-sm font-black text-indigo-950 mt-0.5" id="kpiAvgRegularFee">₹0</p>
+                        </div>
+                        <div class="bg-sky-50 border border-sky-100 rounded-2xl p-2.5 text-center">
+                            <p class="text-[9px] font-black uppercase text-sky-600 tracking-wide">Van / mo</p>
+                            <p class="text-[9px] text-slate-500 font-semibold">Expected</p>
+                            <p class="text-sm font-black text-sky-900 mt-0.5" id="kpiVanMonthly">₹0</p>
+                            <p class="text-[9px] text-emerald-600 font-bold mt-0.5" id="kpiVanCollected">Coll ₹0</p>
+                        </div>
+                        <div class="bg-violet-50 border border-violet-100 rounded-2xl p-2.5 text-center">
+                            <p class="text-[9px] font-black uppercase text-violet-600 tracking-wide">Day Care / mo</p>
+                            <p class="text-[9px] text-slate-500 font-semibold">Expected</p>
+                            <p class="text-sm font-black text-violet-900 mt-0.5" id="kpiDayCareMonthly">₹0</p>
+                            <p class="text-[9px] text-emerald-600 font-bold mt-0.5" id="kpiDayCareCollected">Coll ₹0</p>
+                        </div>
                     </div>
-                </div>
-                <div class="bg-white p-3 rounded-2xl border space-y-3">
-                    <h4 class="font-black text-xs text-slate-700 uppercase tracking-wide">Expenses tracker</h4>
-                    <div class="flex gap-2 text-xs font-bold">
-                        <select id="expensePeriodMonth" onchange="renderFinanceLedger()" class="p-2 border rounded-xl bg-slate-50 flex-1">
-                            <option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option>
-                            <option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option>
-                            <option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option>
-                        </select>
-                        <select id="expensePeriodYear" onchange="renderFinanceLedger()" class="p-2 border rounded-xl bg-slate-50">
-                            <option value="2026">2026</option><option value="2027">2027</option>
-                        </select>
-                    </div>
-                    <div class="flex justify-between items-center bg-rose-50 border border-rose-100 rounded-xl px-3 py-2">
-                        <span class="text-[11px] font-bold text-rose-700">Month total</span>
-                        <span class="text-sm font-black text-rose-700" id="kpiTotalExpenses">₹0</span>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-start">
+                    <div class="bg-white p-3 rounded-2xl border space-y-3">
+                        <h4 class="font-black text-xs text-slate-700 uppercase tracking-wide">Expenses tracker</h4>
+                        <div class="flex gap-2 text-xs font-bold">
+                            <select id="expensePeriodMonth" onchange="renderFinanceLedger()" class="p-2 border rounded-xl bg-slate-50 flex-1">
+                                <option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option>
+                                <option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option>
+                                <option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option>
+                            </select>
+                            <select id="expensePeriodYear" onchange="renderFinanceLedger()" class="p-2 border rounded-xl bg-slate-50">
+                                <option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option>
+                            </select>
+                        </div>
+                        <div class="flex justify-between items-center bg-rose-50 border border-rose-100 rounded-xl px-3 py-2">
+                            <span class="text-[11px] font-bold text-rose-700">Month total</span>
+                            <span class="text-sm font-black text-rose-700" id="kpiTotalExpenses">₹0</span>
+                        </div>
+                        <div class="max-h-48 flex justify-center"><canvas id="expenseCategoryChart"></canvas></div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-[11px] font-semibold">
                                 <thead>
@@ -597,7 +613,84 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="max-h-44 flex justify-center"><canvas id="expenseCategoryChart"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- OVERALL -->
+                <div id="finPanelOverall" class="space-y-3 hidden">
+                    <div class="flex items-center gap-2">
+                        <label class="text-[10px] font-black uppercase text-slate-500">Academic year</label>
+                        <select id="overallAySelect" onchange="renderFinanceLedger()" class="p-2 border rounded-xl bg-white text-xs font-bold flex-1"></select>
+                    </div>
+                    <p id="overallAyRangeLabel" class="text-[10px] text-slate-500 font-semibold"></p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="bg-white p-3 rounded-2xl border text-center">
+                            <p class="text-[9px] uppercase font-bold text-slate-400">Billed</p>
+                            <p class="text-base font-black text-indigo-950 mt-0.5" id="kpiOverallBilled">₹0</p>
+                        </div>
+                        <div class="bg-white p-3 rounded-2xl border text-center">
+                            <p class="text-[9px] uppercase font-bold text-slate-400">Total collected</p>
+                            <p class="text-base font-black text-emerald-600 mt-0.5" id="kpiOverallCollected">₹0</p>
+                        </div>
+                        <div class="bg-sky-50 border border-sky-100 p-3 rounded-2xl text-center">
+                            <p class="text-[9px] uppercase font-bold text-sky-600">Van collected</p>
+                            <p class="text-sm font-black text-sky-900 mt-0.5" id="kpiOverallVan">₹0</p>
+                        </div>
+                        <div class="bg-violet-50 border border-violet-100 p-3 rounded-2xl text-center">
+                            <p class="text-[9px] uppercase font-bold text-violet-600">Day Care collected</p>
+                            <p class="text-sm font-black text-violet-900 mt-0.5" id="kpiOverallDC">₹0</p>
+                        </div>
+                        <div class="bg-amber-50 border border-amber-100 p-3 rounded-2xl text-center">
+                            <p class="text-[9px] uppercase font-bold text-amber-700">Other services</p>
+                            <p class="text-sm font-black text-amber-950 mt-0.5" id="kpiOverallOther">₹0</p>
+                        </div>
+                        <div class="bg-rose-50 border border-rose-100 p-3 rounded-2xl text-center">
+                            <p class="text-[9px] uppercase font-bold text-rose-600">Total expenses</p>
+                            <p class="text-sm font-black text-rose-700 mt-0.5" id="kpiOverallExpenses">₹0</p>
+                        </div>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-3 space-y-1">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-[10px] font-black uppercase text-emerald-700 tracking-wide">Expected profit</p>
+                                <p class="text-[9px] text-slate-500 font-semibold">Collected − Expenses</p>
+                            </div>
+                            <p class="text-xl font-black text-emerald-800" id="kpiOverallProfit">₹0</p>
+                        </div>
+                        <p class="text-[10px] text-slate-500 font-semibold">If fully collected: <span id="kpiOverallProfitIfBilled" class="font-black text-slate-700">₹0</span></p>
+                    </div>
+                </div>
+
+                <!-- PROJECTIONS -->
+                <div id="finPanelProjections" class="space-y-3 hidden">
+                    <p class="text-[10px] text-slate-500 font-semibold">Based on active students and recent expense run-rate for the current academic year.</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="bg-white p-3 rounded-2xl border text-center col-span-2">
+                            <p class="text-[9px] uppercase font-bold text-slate-400">Projected annual billable</p>
+                            <p class="text-lg font-black text-indigo-950 mt-0.5" id="kpiProjBillable">₹0</p>
+                            <p class="text-[9px] text-slate-500 font-semibold mt-0.5">Package + remaining monthly services</p>
+                        </div>
+                        <div class="bg-sky-50 border border-sky-100 p-3 rounded-2xl text-center">
+                            <p class="text-[9px] uppercase font-bold text-sky-600">Monthly collection capacity</p>
+                            <p class="text-sm font-black text-sky-900 mt-0.5" id="kpiProjMonthlyCap">₹0</p>
+                        </div>
+                        <div class="bg-rose-50 border border-rose-100 p-3 rounded-2xl text-center">
+                            <p class="text-[9px] uppercase font-bold text-rose-600">Expense run-rate / mo</p>
+                            <p class="text-sm font-black text-rose-700 mt-0.5" id="kpiProjExpRate">₹0</p>
+                        </div>
+                        <div class="bg-white p-3 rounded-2xl border text-center">
+                            <p class="text-[9px] uppercase font-bold text-slate-400">Projected year expenses</p>
+                            <p class="text-sm font-black text-slate-800 mt-0.5" id="kpiProjYearExp">₹0</p>
+                        </div>
+                        <div class="bg-emerald-50 border border-emerald-100 p-3 rounded-2xl text-center">
+                            <p class="text-[9px] uppercase font-bold text-emerald-700">Projected profit</p>
+                            <p class="text-sm font-black text-emerald-800 mt-0.5" id="kpiProjProfit">₹0</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 border rounded-2xl p-3 space-y-1.5 text-[10px] font-semibold text-slate-600">
+                        <p class="font-black text-slate-800 uppercase text-[9px]">Stress check</p>
+                        <div class="flex justify-between"><span>−10% collection</span><span id="kpiProjStressLow" class="font-black">₹0</span></div>
+                        <div class="flex justify-between"><span>+10% expenses</span><span id="kpiProjStressHighExp" class="font-black">₹0</span></div>
                     </div>
                 </div>
             </div>
@@ -3168,16 +3261,117 @@ function setExpenseGraphTimeframe(frame) {
     renderFinanceLedger();
 }
 
-function renderFinanceLedger() {
-    let totalReceivables = 0, totalCollected = 0, totalExpenses = 0;
-    const cats = {};
+/** Academic year: Jun 1 (startYear) → May 31 (startYear+1). Label "2026" = Jun 2026–May 2027. */
+function currentAcademicYearStart() {
+    const d = new Date();
+    return d.getMonth() >= 5 ? d.getFullYear() : d.getFullYear() - 1;
+}
+
+function getAcademicYearRange(ayStartYear) {
+    const y = Number(ayStartYear) || currentAcademicYearStart();
+    return {
+        startYear: y,
+        startIso: `${y}-06-01`,
+        endIso: `${y + 1}-05-31`,
+        label: `AY ${y}–${String(y + 1).slice(-2)}`,
+        rangeText: `Jun ${y} – May ${y + 1}`
+    };
+}
+
+function inAcademicYear(dateVal, ayStartYear) {
+    const iso = formatToInputDate(dateVal);
+    if (!iso) return false;
+    const { startIso, endIso } = getAcademicYearRange(ayStartYear);
+    return iso >= startIso && iso <= endIso;
+}
+
+function paymentInAcademicYear(p, ayStartYear) {
+    const payIso = formatToInputDate(p.PaymentDate || p.paymentdate);
+    if (payIso && inAcademicYear(payIso, ayStartYear)) return true;
+    const my = normalizeMonthYear(p.MonthYear || p.monthyear);
+    if (!my) return false;
+    const parsed = parseMonthYearLabel(my);
+    if (!parsed) return false;
+    // Map month-year into AY: Jun–Dec of startYear, Jan–May of startYear+1
+    if (parsed.month >= 5) return parsed.year === ayStartYear;
+    return parsed.year === ayStartYear + 1;
+}
+
+function isActiveExpenseRow(e) {
+    if (!e) return false;
+    if ((e.Date || e.date || "").toString().includes("DELETED")) return false;
+    if ((e.Category || e.category) === "DELETED") return false;
+    return true;
+}
+
+function monthsRemainingInAcademicYear(ayStartYear = currentAcademicYearStart()) {
     const now = new Date();
-    const selectedMonth = parseInt(document.getElementById("expensePeriodMonth")?.value ?? now.getMonth(), 10);
-    const selectedYear = parseInt(document.getElementById("expensePeriodYear")?.value ?? now.getFullYear(), 10);
+    const { endIso } = getAcademicYearRange(ayStartYear);
+    const end = new Date(endIso + "T00:00:00");
+    if (now > end) return 0;
+    let months = (end.getFullYear() - now.getFullYear()) * 12 + (end.getMonth() - now.getMonth()) + 1;
+    return Math.max(0, Math.min(12, months));
+}
+
+let currentFinanceTab = "current";
+
+function setFinanceTab(tab) {
+    currentFinanceTab = tab === "overall" ? "overall" : (tab === "projections" ? "projections" : "current");
+    const panels = {
+        current: document.getElementById("finPanelCurrent"),
+        overall: document.getElementById("finPanelOverall"),
+        projections: document.getElementById("finPanelProjections")
+    };
+    Object.keys(panels).forEach(k => {
+        if (panels[k]) panels[k].classList.toggle("hidden", k !== currentFinanceTab);
+    });
+    const style = (id, on) => {
+        const b = document.getElementById(id);
+        if (!b) return;
+        b.classList.toggle("bg-white", on);
+        b.classList.toggle("text-indigo-950", on);
+        b.classList.toggle("shadow-sm", on);
+        b.classList.toggle("text-slate-600", !on);
+    };
+    style("btnFinTabCurrent", currentFinanceTab === "current");
+    style("btnFinTabOverall", currentFinanceTab === "overall");
+    style("btnFinTabProj", currentFinanceTab === "projections");
+    renderFinanceLedger();
+}
+
+function ensureOverallAyOptions() {
+    const sel = document.getElementById("overallAySelect");
+    if (!sel) return;
+    const cur = currentAcademicYearStart();
+    const years = [cur - 1, cur, cur + 1];
+    const existing = [...sel.options].map(o => o.value);
+    if (existing.join() === years.map(String).join()) return;
+    sel.innerHTML = years.map(y => {
+        const r = getAcademicYearRange(y);
+        return `<option value="${y}">${r.label} (${r.rangeText})</option>`;
+    }).join("");
+    if (![...sel.options].some(o => o.value === String(cur))) sel.value = String(years[1]);
+    else sel.value = String(cur);
+}
+
+function renderFinanceLedger() {
+    const setK = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+    const fmt = (n) => `₹${Math.round(Number(n) || 0).toLocaleString("en-IN")}`;
+    const now = new Date();
+    const ayCurrent = currentAcademicYearStart();
+    const ayRange = getAcademicYearRange(ayCurrent);
+    const ayLabel = document.getElementById("finCurrentAyLabel");
+    if (ayLabel) ayLabel.innerText = `${ayRange.label} · ${ayRange.rangeText}`;
+
+    ensureOverallAyOptions();
+    const overallAy = parseInt(document.getElementById("overallAySelect")?.value || ayCurrent, 10);
+    const overallRange = getAcademicYearRange(overallAy);
+    const overallRangeEl = document.getElementById("overallAyRangeLabel");
+    if (overallRangeEl) overallRangeEl.innerText = overallRange.rangeText;
 
     const activeStudents = globalAppState.students.filter(isActiveStudent);
-    globalAppState.payments.forEach(p => { totalCollected += Number(p.amountpaid || p.AmountPaid) || 0; });
-    activeStudents.forEach(s => { totalReceivables += getStudentReceivables(s); });
+    let billed = 0;
+    activeStudents.forEach(s => { billed += getStudentReceivables(s); });
 
     const regularFees = activeStudents
         .filter(s => (s.BillingModel === "Regular" || s.billingmodel === "Regular" || !(s.BillingModel || s.billingmodel)))
@@ -3187,73 +3381,78 @@ function renderFinanceLedger() {
         ? Math.round(regularFees.reduce((a, b) => a + b, 0) / regularFees.length)
         : 0;
 
-    let vanExpected = 0, dayCareExpected = 0;
+    let vanExpected = 0, dayCareExpected = 0, monthlyCapacity = 0;
     activeStudents.forEach(s => {
-        vanExpected += Number(s.VanFee || s.vanfee) || 0;
+        const van = Number(s.VanFee || s.vanfee) || 0;
+        vanExpected += van;
         const isDC = (s.Class || s.class) === "DayCare";
-        if (isDC) dayCareExpected += Number(s.OptMonthlyFee || s.optmonthlyfee) || 0;
-        else dayCareExpected += Number(s.DayCareFee || s.daycarefee) || 0;
+        const dc = isDC ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : (Number(s.DayCareFee || s.daycarefee) || 0);
+        dayCareExpected += dc;
+        const opt = (!isDC && (s.BillingModel === "Monthly" || s.billingmodel === "Monthly"))
+            ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : 0;
+        monthlyCapacity += van + dc + opt;
     });
 
-    const periodLabel = getMonthYearLabel(new Date(selectedYear, selectedMonth, 1));
-    let vanCollected = 0, dayCareCollected = 0;
-    globalAppState.payments.forEach(p => {
-        const rem = (p.Remarks || p.remarks || "").toString();
-        const amt = Number(p.AmountPaid || p.amountpaid) || 0;
-        if (!amt) return;
-        const my = normalizeMonthYear(p.MonthYear || p.monthyear);
-        let inPeriod = my === periodLabel;
-        if (!inPeriod) {
-            const iso = formatToInputDate(p.PaymentDate || p.paymentdate);
-            if (!iso) return;
-            const [y, m] = iso.split("-").map(Number);
-            inPeriod = y === selectedYear && (m - 1) === selectedMonth;
-        }
-        if (!inPeriod) return;
-        if (isServicePayment(rem, "Van")) vanCollected += amt;
-        if (isServicePayment(rem, "DayCare")) dayCareCollected += amt;
-    });
-
-    const isActiveExpense = (e) => {
-        if (!e) return false;
-        if ((e.Date || e.date || "").toString().includes("DELETED")) return false;
-        if ((e.Category || e.category) === "DELETED") return false;
-        return true;
+    const sumPaymentsForAy = (ay) => {
+        let collected = 0, van = 0, dc = 0, other = 0;
+        globalAppState.payments.forEach(p => {
+            const amt = Number(p.AmountPaid || p.amountpaid) || 0;
+            if (!amt) return;
+            if (!paymentInAcademicYear(p, ay)) return;
+            const rem = (p.Remarks || p.remarks || "").toString();
+            collected += amt;
+            if (isServicePayment(rem, "Van")) van += amt;
+            else if (isServicePayment(rem, "DayCare")) dc += amt;
+            else if (isMeaningfulPayment(p)) other += amt;
+        });
+        return { collected, van, dc, other };
     };
 
-    const expenseInSelectedMonth = (e) => {
+    const sumExpensesForAy = (ay) => {
+        let total = 0;
+        globalAppState.expenses.filter(isActiveExpenseRow).forEach(e => {
+            if (!inAcademicYear(e.Date || e.date, ay)) return;
+            total += Number(e.Amount || e.amount) || 0;
+        });
+        return total;
+    };
+
+    // --- Current tab ---
+    const curPay = sumPaymentsForAy(ayCurrent);
+    const ayExpenses = sumExpensesForAy(ayCurrent);
+    setK("kpiGrossRevenue", fmt(billed));
+    setK("kpiCollectedRevenue", fmt(curPay.collected));
+    setK("kpiDuesPending", fmt(Math.max(0, billed - curPay.collected)));
+    setK("kpiAyTotalExpenses", fmt(ayExpenses));
+    setK("kpiAvgRegularFee", fmt(avgRegular));
+    setK("kpiVanMonthly", fmt(vanExpected));
+    setK("kpiDayCareMonthly", fmt(dayCareExpected));
+    setK("kpiVanCollected", `Coll ${fmt(curPay.van)}`);
+    setK("kpiDayCareCollected", `Coll ${fmt(curPay.dc)}`);
+
+    const selectedMonth = parseInt(document.getElementById("expensePeriodMonth")?.value ?? now.getMonth(), 10);
+    const selectedYear = parseInt(document.getElementById("expensePeriodYear")?.value ?? now.getFullYear(), 10);
+    const cats = {};
+    let monthExpenses = 0;
+    globalAppState.expenses.filter(isActiveExpenseRow).forEach(e => {
         const iso = formatToInputDate(e.Date || e.date);
-        if (!iso) return false;
+        if (!iso) return;
         const [y, m] = iso.split("-").map(Number);
-        return (m - 1) === selectedMonth && y === selectedYear;
-    };
-
-    const filtered = globalAppState.expenses.filter(isActiveExpense).filter(expenseInSelectedMonth);
-    filtered.forEach(e => {
+        if ((m - 1) !== selectedMonth || y !== selectedYear) return;
         const cat = e.Category || e.category || "General";
         const a = Number(e.Amount || e.amount) || 0;
-        totalExpenses += a;
+        monthExpenses += a;
         cats[cat] = (cats[cat] || 0) + a;
     });
+    setK("kpiTotalExpenses", fmt(monthExpenses));
 
     const catTable = document.getElementById("financeExpenseCategoryTable");
     if (catTable) {
         const entries = Object.entries(cats).sort((a, b) => b[1] - a[1]);
         catTable.innerHTML = entries.length
-            ? entries.map(([cat, amt]) => `<tr class="border-b border-slate-100"><td class="py-1.5 pr-2 text-slate-700">${cat}</td><td class="py-1.5 text-right font-black text-rose-600">₹${amt}</td></tr>`).join("")
+            ? entries.map(([cat, amt]) => `<tr class="border-b border-slate-100"><td class="py-1.5 pr-2 text-slate-700">${cat}</td><td class="py-1.5 text-right font-black text-rose-600">${fmt(amt)}</td></tr>`).join("")
             : '<tr><td colspan="2" class="py-3 text-slate-400 text-center">No expenses this month.</td></tr>';
     }
-
-    const setK = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
-    setK("kpiGrossRevenue", `₹${totalReceivables}`);
-    setK("kpiCollectedRevenue", `₹${totalCollected}`);
-    setK("kpiDuesPending", `₹${Math.max(0, totalReceivables - totalCollected)}`);
-    setK("kpiTotalExpenses", `₹${totalExpenses}`);
-    setK("kpiAvgRegularFee", `₹${avgRegular}`);
-    setK("kpiVanMonthly", `₹${vanExpected}`);
-    setK("kpiDayCareMonthly", `₹${dayCareExpected}`);
-    setK("kpiVanCollected", `Coll ₹${vanCollected}`);
-    setK("kpiDayCareCollected", `Coll ₹${dayCareCollected}`);
 
     try {
         const ctx2 = document.getElementById("expenseCategoryChart");
@@ -3270,6 +3469,65 @@ function renderFinanceLedger() {
             });
         }
     } catch (e) { console.log("Chart deferred"); }
+
+    // --- Overall tab ---
+    const oPay = sumPaymentsForAy(overallAy);
+    const oExp = sumExpensesForAy(overallAy);
+    const oProfit = oPay.collected - oExp;
+    const oProfitIfBilled = billed - oExp; // billed is live roster; OK as "if fully collected" proxy
+    setK("kpiOverallBilled", fmt(billed));
+    setK("kpiOverallCollected", fmt(oPay.collected));
+    setK("kpiOverallVan", fmt(oPay.van));
+    setK("kpiOverallDC", fmt(oPay.dc));
+    setK("kpiOverallOther", fmt(oPay.other));
+    setK("kpiOverallExpenses", fmt(oExp));
+    setK("kpiOverallProfit", fmt(oProfit));
+    setK("kpiOverallProfitIfBilled", fmt(oProfitIfBilled));
+    const profitEl = document.getElementById("kpiOverallProfit");
+    if (profitEl) profitEl.className = `text-xl font-black ${oProfit >= 0 ? "text-emerald-800" : "text-rose-700"}`;
+
+    // --- Projections ---
+    const remaining = monthsRemainingInAcademicYear(ayCurrent);
+    let projectedBillable = 0;
+    activeStudents.forEach(s => {
+        projectedBillable += getOneTimeTuitionBilled(s);
+        const van = Number(s.VanFee || s.vanfee) || 0;
+        const isDC = (s.Class || s.class) === "DayCare";
+        const dc = isDC ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : (Number(s.DayCareFee || s.daycarefee) || 0);
+        const opt = (!isDC && (s.BillingModel === "Monthly" || s.billingmodel === "Monthly"))
+            ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : 0;
+        projectedBillable += (van + dc + opt) * remaining;
+    });
+    // Already collected this AY reduces remaining billable projection of one-time? Keep simple: package + remaining months.
+
+    // Expense run-rate: average of last up to 3 months with expenses in current AY
+    const monthTotals = {};
+    globalAppState.expenses.filter(isActiveExpenseRow).forEach(e => {
+        if (!inAcademicYear(e.Date || e.date, ayCurrent)) return;
+        const iso = formatToInputDate(e.Date || e.date);
+        if (!iso) return;
+        const key = iso.slice(0, 7);
+        monthTotals[key] = (monthTotals[key] || 0) + (Number(e.Amount || e.amount) || 0);
+    });
+    const recentKeys = Object.keys(monthTotals).sort().slice(-3);
+    const runRate = recentKeys.length
+        ? Math.round(recentKeys.reduce((a, k) => a + monthTotals[k], 0) / recentKeys.length)
+        : Math.round(ayExpenses / Math.max(1, 12 - remaining + 1));
+
+    const projectedYearExp = ayExpenses + runRate * remaining;
+    const projectedProfit = projectedBillable - projectedYearExp;
+    const stressLow = Math.round(projectedBillable * 0.9) - projectedYearExp;
+    const stressHighExp = projectedBillable - Math.round(projectedYearExp * 1.1);
+
+    setK("kpiProjBillable", fmt(projectedBillable));
+    setK("kpiProjMonthlyCap", fmt(monthlyCapacity));
+    setK("kpiProjExpRate", fmt(runRate));
+    setK("kpiProjYearExp", fmt(projectedYearExp));
+    setK("kpiProjProfit", fmt(projectedProfit));
+    setK("kpiProjStressLow", fmt(stressLow));
+    setK("kpiProjStressHighExp", fmt(stressHighExp));
+    const projProfitEl = document.getElementById("kpiProjProfit");
+    if (projProfitEl) projProfitEl.className = `text-sm font-black mt-0.5 ${projectedProfit >= 0 ? "text-emerald-800" : "text-rose-700"}`;
 }
 
 function loadExpenseToEditForm(expId) {
@@ -3526,6 +3784,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (![...yearSel.options].some(o => o.value === y)) yearSel.insertAdjacentHTML("beforeend", `<option value="${y}">${y}</option>`);
         yearSel.value = y;
     }
+    ensureOverallAyOptions();
     const doj = document.getElementById("intakeDOJ");
     if (doj) doj.value = now.toISOString().substring(0, 10);
     handleFormBillingTypeChange("Regular");
