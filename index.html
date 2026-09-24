@@ -15,30 +15,55 @@
         .view-screen { display: none !important; }
         .view-screen.active { display: block !important; }
         #view-home.active {
-            display: grid !important;
+            display: flex !important;
+            flex-direction: column;
             height: calc(100dvh - var(--header-h) - env(safe-area-inset-bottom, 0px));
+            gap: 0.4rem;
+            padding: 0.45rem;
+            overflow: hidden;
+        }
+        .home-counts {
+            display: flex; gap: 0.28rem; flex-shrink: 0; width: 100%;
+        }
+        .home-count-chip {
+            flex: 1; min-width: 0; text-align: center;
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 0.55rem;
+            padding: 0.28rem 0.15rem; box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+        }
+        .home-count-chip .chip-label {
+            display: block; font-size: 0.52rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.02em; color: #64748b; line-height: 1.1;
+        }
+        .home-count-chip .chip-value {
+            display: block; font-size: 0.85rem; font-weight: 900; color: #0f172a; line-height: 1.15; margin-top: 0.1rem;
+        }
+        .home-count-chip.chip-total { background: #1e1b4b; border-color: #1e1b4b; }
+        .home-count-chip.chip-total .chip-label { color: #c7d2fe; }
+        .home-count-chip.chip-total .chip-value { color: #fbbf24; }
+        .home-tiles-grid {
+            flex: 1; min-height: 0;
+            display: grid;
             grid-template-columns: 1fr 1fr;
             grid-template-rows: repeat(4, minmax(0, 1fr));
-            gap: 0.5rem;
-            padding: 0.5rem;
-            overflow: hidden;
+            gap: 0.4rem;
         }
         .home-tile {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; border-radius: 1rem; padding: 0.5rem; min-height: 0;
+            text-align: center; border-radius: 0.85rem; padding: 0.3rem 0.35rem; min-height: 0;
             box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
             transition: transform 0.15s ease;
             -webkit-tap-highlight-color: transparent; user-select: none; position: relative;
             background: #fff; cursor: pointer; border: 1px solid #e2e8f0;
             width: 100%; height: 100%;
         }
+        .home-tile.home-tile-wide { grid-column: 1 / -1; }
         .home-tile:active { transform: scale(0.97); }
-        .home-tile .tile-icon { font-size: 1.85rem; line-height: 1; margin-bottom: 0.35rem; pointer-events: none; }
-        .home-tile .tile-label { font-size: 0.78rem; font-weight: 800; line-height: 1.2; pointer-events: none; }
+        .home-tile .tile-icon { font-size: 1.35rem; line-height: 1; margin-bottom: 0.2rem; pointer-events: none; }
+        .home-tile .tile-label { font-size: 0.68rem; font-weight: 800; line-height: 1.15; pointer-events: none; }
         .home-tile .tile-badge {
-            position: absolute; top: 0.35rem; right: 0.35rem;
-            min-width: 1.25rem; height: 1.25rem; padding: 0 0.3rem;
-            border-radius: 999px; font-size: 0.6rem; font-weight: 800;
+            position: absolute; top: 0.28rem; right: 0.28rem;
+            min-width: 1.1rem; height: 1.1rem; padding: 0 0.25rem;
+            border-radius: 999px; font-size: 0.55rem; font-weight: 800;
             display: none; align-items: center; justify-content: center;
             background: #f43f5e; color: #fff; pointer-events: none;
         }
@@ -92,32 +117,38 @@
 
         <!-- HOME TILES -->
         <section id="view-home" class="view-screen active">
-            <button type="button" class="home-tile border-indigo-100" data-view="intake">
-                <span class="tile-icon">📝</span><span class="tile-label text-indigo-950">Admission Intake Form</span>
-            </button>
-            <button type="button" class="home-tile border-sky-100" data-view="search">
-                <span class="tile-icon">🔍</span><span class="tile-label text-sky-950">Student Details</span>
-            </button>
-            <button type="button" class="home-tile border-rose-100" data-view="fees">
-                <span class="tile-icon">💰</span><span class="tile-label text-rose-950">Monthly Fee Check</span>
-                <span id="tileBadgeFees" class="tile-badge">0</span>
-            </button>
-            <button type="button" class="home-tile border-amber-100" data-view="rosters">
-                <span class="tile-icon">👥</span><span class="tile-label text-amber-950">Total Rosters</span>
-                <span id="tileBadgeRosters" class="tile-badge" style="background:#f59e0b">0</span>
-            </button>
-            <button type="button" class="home-tile border-orange-100" data-view="expenses">
-                <span class="tile-icon">🧾</span><span class="tile-label text-orange-950">Expenses Entry</span>
-            </button>
-            <button type="button" class="home-tile border-emerald-100" data-view="events">
-                <span class="tile-icon">🗓️</span><span class="tile-label text-emerald-950">Events Entry</span>
-            </button>
-            <button type="button" class="home-tile border-violet-100" data-view="edit">
-                <span class="tile-icon">✏️</span><span class="tile-label text-violet-950">Edit Student Data</span>
-            </button>
-            <button type="button" class="home-tile border-indigo-200" data-view="finances">
-                <span class="tile-icon">📊</span><span class="tile-label text-indigo-950">Finances</span>
-            </button>
+            <div class="home-counts" aria-label="Class headcounts">
+                <div class="home-count-chip chip-total"><span class="chip-label">Total</span><span class="chip-value" id="homeCountTotal">0</span></div>
+                <div class="home-count-chip"><span class="chip-label">DR</span><span class="chip-value" id="homeCountDR">0</span></div>
+                <div class="home-count-chip"><span class="chip-label">EW</span><span class="chip-value" id="homeCountEW">0</span></div>
+                <div class="home-count-chip"><span class="chip-label">RTF1</span><span class="chip-value" id="homeCountRTF1">0</span></div>
+                <div class="home-count-chip"><span class="chip-label">RTF2</span><span class="chip-value" id="homeCountRTF2">0</span></div>
+                <div class="home-count-chip"><span class="chip-label">DC</span><span class="chip-value" id="homeCountDC">0</span></div>
+            </div>
+            <div class="home-tiles-grid">
+                <button type="button" class="home-tile border-indigo-100" data-view="intake">
+                    <span class="tile-icon">📝</span><span class="tile-label text-indigo-950">Admission Intake</span>
+                </button>
+                <button type="button" class="home-tile border-sky-100" data-view="search">
+                    <span class="tile-icon">🔍</span><span class="tile-label text-sky-950">Student Details</span>
+                </button>
+                <button type="button" class="home-tile border-rose-100" data-view="fees">
+                    <span class="tile-icon">💰</span><span class="tile-label text-rose-950">Monthly Fee Check</span>
+                    <span id="tileBadgeFees" class="tile-badge">0</span>
+                </button>
+                <button type="button" class="home-tile border-violet-100" data-view="edit">
+                    <span class="tile-icon">✏️</span><span class="tile-label text-violet-950">Student Actions</span>
+                </button>
+                <button type="button" class="home-tile border-orange-100" data-view="expenses">
+                    <span class="tile-icon">🧾</span><span class="tile-label text-orange-950">Expenses Entry</span>
+                </button>
+                <button type="button" class="home-tile border-emerald-100" data-view="events">
+                    <span class="tile-icon">🗓️</span><span class="tile-label text-emerald-950">Events Entry</span>
+                </button>
+                <button type="button" class="home-tile home-tile-wide border-indigo-200" data-view="finances">
+                    <span class="tile-icon">📊</span><span class="tile-label text-indigo-950">Finances</span>
+                </button>
+            </div>
         </section>
 
         <!-- INTAKE -->
@@ -417,11 +448,11 @@
         <section id="view-edit" class="view-screen px-3 pb-6 pt-2">
             <div class="view-back-bar">
                 <button type="button" onclick="goAppBack()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Back</button>
-                <h3 class="font-black text-sm text-indigo-950">Edit Student Data</h3>
+                <h3 class="font-black text-sm text-indigo-950">Student Actions</h3>
             </div>
             <div class="view-scroll space-y-3">
                 <input type="text" id="editStudentSearch" oninput="renderEditStudentCards()" placeholder="Search by student name..." class="w-full px-3 py-3 rounded-xl text-sm border bg-white shadow-sm">
-                <p class="text-[11px] text-slate-500 font-semibold">Tap a student to edit.</p>
+                <p class="text-[11px] text-slate-500 font-semibold">Tap a student to edit profile or fees.</p>
                 <div id="editStudentCardsGrid" class="grid grid-cols-1 gap-3"></div>
             </div>
         </section>
@@ -433,30 +464,50 @@
                 <h3 class="font-black text-sm text-indigo-950">Finances</h3>
             </div>
             <div class="view-scroll space-y-4">
-                <div class="bg-white p-3 rounded-2xl border flex gap-2 text-xs font-bold">
-                    <select id="expensePeriodMonth" onchange="renderFinanceLedger()" class="p-2 border rounded-xl bg-slate-50 flex-1">
-                        <option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option>
-                        <option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option>
-                        <option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option>
-                    </select>
-                    <select id="expensePeriodYear" onchange="renderFinanceLedger()" class="p-2 border rounded-xl bg-slate-50">
-                        <option value="2026">2026</option><option value="2027">2027</option>
-                    </select>
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="bg-white p-2.5 rounded-2xl border text-center"><span class="text-[9px] uppercase font-bold text-slate-400">Billed</span><h4 class="text-sm font-black text-indigo-950 mt-0.5" id="kpiGrossRevenue">₹0</h4></div>
+                    <div class="bg-white p-2.5 rounded-2xl border text-center"><span class="text-[9px] uppercase font-bold text-slate-400">Collected</span><h4 class="text-sm font-black text-emerald-600 mt-0.5" id="kpiCollectedRevenue">₹0</h4></div>
+                    <div class="bg-white p-2.5 rounded-2xl border text-center"><span class="text-[9px] uppercase font-bold text-slate-400">Pending</span><h4 class="text-sm font-black text-amber-600 mt-0.5" id="kpiDuesPending">₹0</h4></div>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-white p-3 rounded-2xl border"><span class="text-[10px] uppercase font-bold text-slate-400">Billed</span><h4 class="text-lg font-black text-indigo-950 mt-1" id="kpiGrossRevenue">₹0</h4></div>
-                    <div class="bg-white p-3 rounded-2xl border"><span class="text-[10px] uppercase font-bold text-slate-400">Collected</span><h4 class="text-lg font-black text-emerald-600 mt-1" id="kpiCollectedRevenue">₹0</h4></div>
-                    <div class="bg-white p-3 rounded-2xl border"><span class="text-[10px] uppercase font-bold text-slate-400">Pending</span><h4 class="text-lg font-black text-amber-600 mt-1" id="kpiDuesPending">₹0</h4></div>
-                    <div class="bg-white p-3 rounded-2xl border"><span class="text-[10px] uppercase font-bold text-slate-400">Expenses</span><h4 class="text-lg font-black text-rose-600 mt-1" id="kpiTotalExpenses">₹0</h4></div>
-                </div>
-                <div class="bg-white p-4 rounded-2xl border space-y-3">
-                    <div class="flex flex-wrap gap-1 bg-slate-100 p-1 rounded-xl text-[10px] font-bold">
-                        <button type="button" onclick="setExpenseGraphTimeframe('monthly')" id="btnExpTime-monthly" class="px-2 py-1.5 rounded-lg bg-white text-indigo-950 shadow-sm flex-1">Monthly</button>
-                        <button type="button" onclick="setExpenseGraphTimeframe('currentYear')" id="btnExpTime-currentYear" class="px-2 py-1.5 rounded-lg text-slate-600 flex-1">FY</button>
-                        <button type="button" onclick="setExpenseGraphTimeframe('overall')" id="btnExpTime-overall" class="px-2 py-1.5 rounded-lg text-slate-600 flex-1">Overall</button>
+                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-3 flex justify-between items-center">
+                    <div>
+                        <p class="text-[10px] font-black uppercase text-indigo-500 tracking-wide">Avg student fee</p>
+                        <p class="text-[10px] text-slate-500 font-semibold">Regular Base · Fee agreed</p>
                     </div>
-                    <div class="max-h-52 flex justify-center"><canvas id="collectionsBalanceChart"></canvas></div>
-                    <div class="max-h-52 flex justify-center"><canvas id="expenseCategoryChart"></canvas></div>
+                    <p class="text-lg font-black text-indigo-950" id="kpiAvgRegularFee">₹0</p>
+                </div>
+                <div class="bg-white p-3 rounded-2xl border space-y-3">
+                    <h4 class="font-black text-xs text-slate-700 uppercase tracking-wide">Expenses tracker</h4>
+                    <div class="flex gap-2 text-xs font-bold">
+                        <select id="expensePeriodMonth" onchange="renderFinanceLedger()" class="p-2 border rounded-xl bg-slate-50 flex-1">
+                            <option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option>
+                            <option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option>
+                            <option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option>
+                        </select>
+                        <select id="expensePeriodYear" onchange="renderFinanceLedger()" class="p-2 border rounded-xl bg-slate-50">
+                            <option value="2026">2026</option><option value="2027">2027</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-between items-center bg-rose-50 border border-rose-100 rounded-xl px-3 py-2">
+                        <span class="text-[11px] font-bold text-rose-700">Month total</span>
+                        <span class="text-sm font-black text-rose-700" id="kpiTotalExpenses">₹0</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-start">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-[11px] font-semibold">
+                                <thead>
+                                    <tr class="text-left text-slate-400 uppercase text-[9px] border-b">
+                                        <th class="py-1.5 pr-2">Category</th>
+                                        <th class="py-1.5 text-right">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="financeExpenseCategoryTable">
+                                    <tr><td colspan="2" class="py-3 text-slate-400 text-center">No expenses this month.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="max-h-44 flex justify-center"><canvas id="expenseCategoryChart"></canvas></div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -560,26 +611,31 @@
         </div>
     </div>
 
-    <!-- Term Payments History Modal -->
+    <!-- Payments History Modal -->
     <div id="termPaymentsModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-[1.5rem] max-w-md w-full p-5 shadow-2xl space-y-4 border max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-[1.5rem] max-w-md w-full p-5 shadow-2xl space-y-3 border max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
                 <div>
-                    <h3 id="termPayTitleName" class="font-black text-indigo-950 text-sm">Term payments</h3>
+                    <h3 id="termPayTitleName" class="font-black text-indigo-950 text-sm">Payments</h3>
                     <p id="termPaySubtitle" class="text-[10px] font-bold text-amber-600 uppercase">History</p>
                 </div>
                 <button type="button" onclick="closeTermPaymentsModal()" class="text-2xl text-slate-400 font-bold">&times;</button>
             </div>
-            <div class="bg-slate-50 p-3 rounded-2xl border text-xs font-bold flex justify-between items-center">
-                <span>Package status</span>
-                <span id="termPayPackageStatus" class="text-rose-600">Pending ₹0</span>
+            <div class="flex gap-1 bg-slate-100 p-1 rounded-xl text-[11px] font-bold">
+                <button type="button" id="btnPayTabPackage" onclick="setPaymentsModalTab('package')" class="flex-1 py-2 rounded-lg bg-white text-indigo-950 shadow-sm">Package</button>
+                <button type="button" id="btnPayTabMonthly" onclick="setPaymentsModalTab('monthly')" class="flex-1 py-2 rounded-lg text-slate-600">Monthly Fee Check</button>
             </div>
-            <div id="termPayPackageSection" class="space-y-2">
-                <h4 class="font-black text-[10px] uppercase tracking-wider text-slate-400">Package / term payments</h4>
+            <div id="termPayPackagePanel" class="space-y-2">
+                <div class="bg-slate-50 p-3 rounded-2xl border text-xs font-bold flex justify-between items-center">
+                    <span>Package status</span>
+                    <span id="termPayPackageStatus" class="text-rose-600">Pending ₹0</span>
+                </div>
+                <h4 class="font-black text-[10px] uppercase tracking-wider text-slate-400">Package / regular payments</h4>
                 <div id="termPayPackageList" class="space-y-2"></div>
             </div>
-            <div id="termPayMonthlySection" class="space-y-2 hidden">
-                <h4 class="font-black text-[10px] uppercase tracking-wider text-slate-400">Month-wise (Monthly Fee Check)</h4>
+            <div id="termPayMonthlyPanel" class="space-y-3 hidden">
+                <div id="termPayMonthlyStatus" class="space-y-2"></div>
+                <h4 class="font-black text-[10px] uppercase tracking-wider text-slate-400">Month-wise payment history</h4>
                 <div id="termPayMonthlyList" class="space-y-2"></div>
             </div>
             <button type="button" onclick="closeTermPaymentsModal()" class="w-full bg-slate-100 font-bold py-2.5 rounded-xl text-xs">Close</button>
@@ -1351,13 +1407,23 @@ async function handleStudentSubmission(event) {
 function renderCohortHeadcounts() {
     const list = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED");
     const set = (id, t) => { const el = document.getElementById(id); if (el) el.innerText = t; };
-    set("countCohortDR", `${list.filter(s => s.Class === "DR").length} Kids`);
-    set("countCohortEW", `${list.filter(s => s.Class === "EW").length} Kids`);
-    set("countCohortRTF1", `${list.filter(s => s.Class === "RTF1").length} Kids`);
-    set("countCohortRTF2", `${list.filter(s => s.Class === "RTF2").length} Kids`);
-    set("countCohortDC", `${list.filter(s => s.Class === "DayCare").length} Kids`);
+    const nDR = list.filter(s => s.Class === "DR").length;
+    const nEW = list.filter(s => s.Class === "EW").length;
+    const n1 = list.filter(s => s.Class === "RTF1").length;
+    const n2 = list.filter(s => s.Class === "RTF2").length;
+    const nDC = list.filter(s => s.Class === "DayCare").length;
+    set("countCohortDR", `${nDR} Kids`);
+    set("countCohortEW", `${nEW} Kids`);
+    set("countCohortRTF1", `${n1} Kids`);
+    set("countCohortRTF2", `${n2} Kids`);
+    set("countCohortDC", `${nDC} Kids`);
     set("countCohortTotal", `${list.length} Active`);
-    updateTileBadge("tileBadgeRosters", list.length);
+    set("homeCountTotal", String(list.length));
+    set("homeCountDR", String(nDR));
+    set("homeCountEW", String(nEW));
+    set("homeCountRTF1", String(n1));
+    set("homeCountRTF2", String(n2));
+    set("homeCountDC", String(nDC));
 }
 
 function getPackageBalance(s) {
@@ -1810,7 +1876,7 @@ function renderStudentCards() {
                 </div>
                 <div class="mt-3 pt-2 border-t flex gap-2">
                     <button type="button" onclick="openPaymentModal('${sid}')" class="flex-1 bg-indigo-50 text-indigo-700 font-bold px-2 py-1.5 rounded-xl text-[11px]">Update Fee</button>
-                    <button type="button" onclick="openTermPaymentsModal('${sid}')" class="flex-1 bg-slate-100 text-slate-700 font-bold px-2 py-1.5 rounded-xl text-[11px]">Term payments</button>
+                    <button type="button" onclick="openTermPaymentsModal('${sid}')" class="flex-1 bg-slate-100 text-slate-700 font-bold px-2 py-1.5 rounded-xl text-[11px]">Payments</button>
                 </div>
             </div>`);
     });
@@ -1992,14 +2058,89 @@ function openPaymentModal(sid) {
 }
 function closePaymentModal() { document.getElementById("paymentModalOverlay").classList.add("hidden"); }
 
+let currentPaymentsModalSid = "";
+let currentPaymentsModalTab = "package";
+
+function setPaymentsModalTab(tab) {
+    currentPaymentsModalTab = tab === "monthly" ? "monthly" : "package";
+    const pkg = document.getElementById("termPayPackagePanel");
+    const mon = document.getElementById("termPayMonthlyPanel");
+    const btnP = document.getElementById("btnPayTabPackage");
+    const btnM = document.getElementById("btnPayTabMonthly");
+    if (pkg) pkg.classList.toggle("hidden", currentPaymentsModalTab !== "package");
+    if (mon) mon.classList.toggle("hidden", currentPaymentsModalTab !== "monthly");
+    if (btnP) {
+        btnP.classList.toggle("bg-white", currentPaymentsModalTab === "package");
+        btnP.classList.toggle("text-indigo-950", currentPaymentsModalTab === "package");
+        btnP.classList.toggle("shadow-sm", currentPaymentsModalTab === "package");
+        btnP.classList.toggle("text-slate-600", currentPaymentsModalTab !== "package");
+    }
+    if (btnM) {
+        btnM.classList.toggle("bg-white", currentPaymentsModalTab === "monthly");
+        btnM.classList.toggle("text-indigo-950", currentPaymentsModalTab === "monthly");
+        btnM.classList.toggle("shadow-sm", currentPaymentsModalTab === "monthly");
+        btnM.classList.toggle("text-slate-600", currentPaymentsModalTab !== "monthly");
+    }
+}
+
+function buildStudentMonthlyStatusHtml(s) {
+    const sid = s.StudentID || s.studentid;
+    const logs = getStudentPayments(sid);
+    const period = activeSystemMonthContext;
+    const monthRow = getOrCreateMonthPaymentMeta(sid, period) || {};
+    const flags = (monthRow.NullifiedServices || monthRow.nullifiedservices || "").toString().split(",").map(x => x.trim());
+    const elapsed = getElapsedMonthsToBill(s, period);
+    const rows = [];
+
+    const pushStatus = (label, due, rate) => {
+        if (rate <= 0 && due <= 0) return;
+        const settled = due <= 0;
+        rows.push(`<div class="flex justify-between items-center bg-slate-50 border rounded-lg px-2.5 py-1.5 text-[10px]">
+            <div><span class="font-black text-slate-800">${label}</span>
+            <p class="text-slate-400 font-semibold">${period} · ₹${rate}/mo</p></div>
+            <span class="font-black ${settled ? "text-emerald-600" : "text-rose-600"}">${settled ? "Settled" : "Pending ₹" + due}</span>
+        </div>`);
+    };
+
+    if (Number(s.VanFee || s.vanfee) > 0) {
+        const rate = Number(s.VanFee || s.vanfee);
+        let billed = elapsed * rate, paid = 0;
+        logs.forEach(p => { if (isServicePayment(p.Remarks || p.remarks, "Van")) paid += Number(p.AmountPaid || p.amountpaid) || 0; });
+        let due = billed - paid;
+        if (flags.includes("Van")) due -= rate;
+        pushStatus("Van", Math.max(0, due), rate);
+    }
+    const isDC = (s.Class || s.class) === "DayCare";
+    if (Number(s.DayCareFee || s.daycarefee) > 0 || isDC) {
+        const rate = isDC ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : Number(s.DayCareFee || s.daycarefee);
+        let billed = elapsed * rate, paid = 0;
+        logs.forEach(p => { if (isServicePayment(p.Remarks || p.remarks, "DayCare")) paid += Number(p.AmountPaid || p.amountpaid) || 0; });
+        let due = billed - paid;
+        if (flags.includes("DayCare")) due -= rate;
+        pushStatus("Day Care", Math.max(0, due), rate);
+    }
+    if ((s.BillingModel === "Monthly" || s.billingmodel === "Monthly") && Number(s.OptMonthlyFee || s.optmonthlyfee) > 0 && !isDC) {
+        const rate = Number(s.OptMonthlyFee || s.optmonthlyfee);
+        let billed = elapsed * rate, paid = 0;
+        logs.forEach(p => { if (isServicePayment(p.Remarks || p.remarks, "OptMonthly")) paid += Number(p.AmountPaid || p.amountpaid) || 0; });
+        let due = billed - paid;
+        if (flags.includes("OptMonthly")) due -= rate;
+        pushStatus("Custom Monthly", Math.max(0, due), rate);
+    }
+
+    if (!rows.length) return '<p class="text-[11px] text-slate-400">No monthly opted services for this student.</p>';
+    return `<p class="text-[10px] font-bold text-slate-500">Status for ${period}</p>` + rows.join("");
+}
+
 function openTermPaymentsModal(sid) {
     const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
     if (!s) return;
+    currentPaymentsModalSid = sid;
     const isMonthly = (s.BillingModel === "Monthly" || s.billingmodel === "Monthly");
     const { total, balance } = getPackageBalance(s);
     const logs = getStudentPayments(sid).filter(isMeaningfulPayment);
 
-    document.getElementById("termPayTitleName").innerText = s.StudentName || "Term payments";
+    document.getElementById("termPayTitleName").innerText = s.StudentName || "Payments";
     document.getElementById("termPaySubtitle").innerText = `${s.Class || ""} · ${isMonthly ? "Custom Monthly" : "Regular Base"}`;
     const statusEl = document.getElementById("termPayPackageStatus");
     if (total <= 0) {
@@ -2014,31 +2155,28 @@ function openTermPaymentsModal(sid) {
     }
 
     const packagePays = logs.filter(p => isTermPayment(p.Remarks || p.remarks))
-        .sort((a, b) => String(b.PaymentDate || b.paymentdate || "").localeCompare(String(a.PaymentDate || a.paymentdate || "")));
+        .sort((a, b) => String(formatToInputDate(b.PaymentDate || b.paymentdate) || "").localeCompare(String(formatToInputDate(a.PaymentDate || a.paymentdate) || "")));
     const pkgList = document.getElementById("termPayPackageList");
     pkgList.innerHTML = packagePays.length
         ? packagePays.map(paymentHistoryRowHtml).join("")
-        : '<p class="text-[11px] text-slate-400">No package / term payments yet.</p>';
+        : '<p class="text-[11px] text-slate-400">No package / regular payments yet.</p>';
 
-    const monthlySec = document.getElementById("termPayMonthlySection");
+    const statusBox = document.getElementById("termPayMonthlyStatus");
+    if (statusBox) statusBox.innerHTML = buildStudentMonthlyStatusHtml(s);
+
+    const monthlyPays = logs.filter(p => isMonthlyServicePayment(p.Remarks || p.remarks))
+        .sort((a, b) => {
+            const ma = String(a.MonthYear || a.monthyear || "");
+            const mb = String(b.MonthYear || b.monthyear || "");
+            if (ma !== mb) return mb.localeCompare(ma);
+            return String(formatToInputDate(b.PaymentDate || b.paymentdate) || "").localeCompare(String(formatToInputDate(a.PaymentDate || a.paymentdate) || ""));
+        });
     const monthlyList = document.getElementById("termPayMonthlyList");
-    if (isMonthly) {
-        monthlySec.classList.remove("hidden");
-        const monthlyPays = logs.filter(p => isMonthlyServicePayment(p.Remarks || p.remarks))
-            .sort((a, b) => {
-                const ma = String(a.MonthYear || a.monthyear || "");
-                const mb = String(b.MonthYear || b.monthyear || "");
-                if (ma !== mb) return mb.localeCompare(ma);
-                return String(b.PaymentDate || b.paymentdate || "").localeCompare(String(a.PaymentDate || a.paymentdate || ""));
-            });
-        monthlyList.innerHTML = monthlyPays.length
-            ? monthlyPays.map(paymentHistoryRowHtml).join("")
-            : '<p class="text-[11px] text-slate-400">No month-wise payments yet.</p>';
-    } else {
-        monthlySec.classList.add("hidden");
-        monthlyList.innerHTML = "";
-    }
+    monthlyList.innerHTML = monthlyPays.length
+        ? monthlyPays.map(paymentHistoryRowHtml).join("")
+        : '<p class="text-[11px] text-slate-400">No monthly fee check settlements yet.</p>';
 
+    setPaymentsModalTab("package");
     document.getElementById("termPaymentsModalOverlay").classList.remove("hidden");
 }
 function closeTermPaymentsModal() { document.getElementById("termPaymentsModalOverlay").classList.add("hidden"); }
@@ -2191,13 +2329,7 @@ function triggerDeleteStudent() {
 }
 
 function setExpenseGraphTimeframe(frame) {
-    currentExpenseTimeframeContext = frame;
-    document.querySelectorAll('[id^="btnExpTime-"]').forEach(btn => {
-        btn.classList.remove("bg-white", "text-indigo-950", "shadow-sm");
-        btn.classList.add("text-slate-600");
-    });
-    const b = document.getElementById("btnExpTime-" + frame);
-    if (b) { b.classList.add("bg-white", "text-indigo-950", "shadow-sm"); b.classList.remove("text-slate-600"); }
+    currentExpenseTimeframeContext = frame || "monthly";
     renderFinanceLedger();
 }
 
@@ -2210,25 +2342,30 @@ function renderFinanceLedger() {
     const selectedMonth = parseInt(document.getElementById("expensePeriodMonth")?.value ?? now.getMonth(), 10);
     const selectedYear = parseInt(document.getElementById("expensePeriodYear")?.value ?? now.getFullYear(), 10);
 
+    const activeStudents = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED");
     globalAppState.payments.forEach(p => { totalCollected += Number(p.amountpaid || p.AmountPaid) || 0; });
-    globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED").forEach(s => {
-        totalReceivables += getStudentReceivables(s);
-    });
+    activeStudents.forEach(s => { totalReceivables += getStudentReceivables(s); });
+
+    const regularFees = activeStudents
+        .filter(s => (s.BillingModel === "Regular" || s.billingmodel === "Regular" || !(s.BillingModel || s.billingmodel)))
+        .map(s => Number(s.CustomFee || s.customfee) || 0)
+        .filter(v => v > 0);
+    const avgRegular = regularFees.length
+        ? Math.round(regularFees.reduce((a, b) => a + b, 0) / regularFees.length)
+        : 0;
 
     let filtered = globalAppState.expenses.filter(x => x && (x.Date || x.date));
     filtered = filtered.filter(e => {
+        if ((e.Date || e.date || "").toString().includes("DELETED") || (e.Category || e.category) === "DELETED") return false;
         const raw = (e.Date || e.date || "").toString().replace(/[\/\s]/g, "-");
         const parts = raw.split("-");
         if (parts.length < 2) return false;
         let yr = parseInt(parts[0], 10), mo = parseInt(parts[1], 10) - 1;
         if (parts[0].length < 4) { yr = parseInt(parts[2], 10); mo = parseInt(parts[1], 10) - 1; }
-        if (currentExpenseTimeframeContext === "monthly") return mo === selectedMonth && yr === selectedYear;
-        if (currentExpenseTimeframeContext === "currentYear") return (yr === selectedYear && mo >= 5) || (yr === selectedYear + 1 && mo < 5);
-        return true;
+        return mo === selectedMonth && yr === selectedYear;
     });
 
     filtered.forEach(e => {
-        if ((e.Date || e.date || "").toString().includes("DELETED") || (e.Category || e.category) === "DELETED") return;
         const cat = e.Category || e.category || "General";
         const a = Number(e.Amount || e.amount) || 0;
         totalExpenses += a;
@@ -2245,27 +2382,35 @@ function renderFinanceLedger() {
         }
     });
 
+    const catTable = document.getElementById("financeExpenseCategoryTable");
+    if (catTable) {
+        const entries = Object.entries(cats).sort((a, b) => b[1] - a[1]);
+        catTable.innerHTML = entries.length
+            ? entries.map(([cat, amt]) => `<tr class="border-b border-slate-100"><td class="py-1.5 pr-2 text-slate-700">${cat}</td><td class="py-1.5 text-right font-black text-rose-600">₹${amt}</td></tr>`).join("")
+            : '<tr><td colspan="2" class="py-3 text-slate-400 text-center">No expenses this month.</td></tr>';
+    }
+
     const setK = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
     setK("kpiGrossRevenue", `₹${totalReceivables}`);
     setK("kpiCollectedRevenue", `₹${totalCollected}`);
     setK("kpiDuesPending", `₹${Math.max(0, totalReceivables - totalCollected)}`);
     setK("kpiTotalExpenses", `₹${totalExpenses}`);
+    setK("kpiAvgRegularFee", `₹${avgRegular}`);
 
     try {
-        const ctx1 = document.getElementById("collectionsBalanceChart");
-        if (ctx1 && window.myCollectionChart) window.myCollectionChart.destroy();
-        if (ctx1) window.myCollectionChart = new Chart(ctx1.getContext("2d"), {
-            type: "bar",
-            data: { labels: ["Billed", "Collected", "Pending"], datasets: [{ data: [totalReceivables, totalCollected, Math.max(0, totalReceivables - totalCollected)], backgroundColor: ["#4f46e5", "#10b981", "#f59e0b"] }] },
-            options: { responsive: true, plugins: { legend: { display: false } } }
-        });
         const ctx2 = document.getElementById("expenseCategoryChart");
         if (ctx2 && window.myExpenseChart) window.myExpenseChart.destroy();
-        if (ctx2) window.myExpenseChart = new Chart(ctx2.getContext("2d"), {
-            type: "doughnut",
-            data: { labels: Object.keys(cats), datasets: [{ data: Object.values(cats), backgroundColor: ["#4f46e5","#f43f5e","#eab308","#10b981","#a855f7"] }] },
-            options: { responsive: true }
-        });
+        if (ctx2) {
+            const labels = Object.keys(cats);
+            window.myExpenseChart = new Chart(ctx2.getContext("2d"), {
+                type: "doughnut",
+                data: {
+                    labels: labels.length ? labels : ["None"],
+                    datasets: [{ data: labels.length ? Object.values(cats) : [1], backgroundColor: labels.length ? ["#4f46e5","#f43f5e","#eab308","#10b981","#a855f7","#06b6d4"] : ["#e2e8f0"] }]
+                },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: "bottom", labels: { boxWidth: 10, font: { size: 9 } } } } }
+            });
+        }
     } catch (e) { console.log("Chart deferred"); }
 }
 
