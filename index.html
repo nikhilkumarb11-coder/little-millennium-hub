@@ -40,6 +40,21 @@
         .home-count-chip.chip-total { background: #1e1b4b; border-color: #1e1b4b; }
         .home-count-chip.chip-total .chip-label { color: #c7d2fe; }
         .home-count-chip.chip-total .chip-value { color: #fbbf24; }
+        .home-count-chip.chip-dr { background: #e0f2fe; border-color: #7dd3fc; }
+        .home-count-chip.chip-dr .chip-label { color: #0369a1; }
+        .home-count-chip.chip-dr .chip-value { color: #0c4a6e; }
+        .home-count-chip.chip-ew { background: #d1fae5; border-color: #6ee7b7; }
+        .home-count-chip.chip-ew .chip-label { color: #047857; }
+        .home-count-chip.chip-ew .chip-value { color: #064e3b; }
+        .home-count-chip.chip-rtf1 { background: #fef3c7; border-color: #fcd34d; }
+        .home-count-chip.chip-rtf1 .chip-label { color: #b45309; }
+        .home-count-chip.chip-rtf1 .chip-value { color: #78350f; }
+        .home-count-chip.chip-rtf2 { background: #ffe4e6; border-color: #fda4af; }
+        .home-count-chip.chip-rtf2 .chip-label { color: #be123c; }
+        .home-count-chip.chip-rtf2 .chip-value { color: #881337; }
+        .home-count-chip.chip-dc { background: #ede9fe; border-color: #c4b5fd; }
+        .home-count-chip.chip-dc .chip-label { color: #6d28d9; }
+        .home-count-chip.chip-dc .chip-value { color: #4c1d95; }
         .home-tiles-grid {
             flex: 1; min-height: 0;
             display: grid;
@@ -119,11 +134,11 @@
         <section id="view-home" class="view-screen active">
             <div class="home-counts" aria-label="Class headcounts">
                 <div class="home-count-chip chip-total"><span class="chip-label">Total</span><span class="chip-value" id="homeCountTotal">0</span></div>
-                <div class="home-count-chip"><span class="chip-label">DR</span><span class="chip-value" id="homeCountDR">0</span></div>
-                <div class="home-count-chip"><span class="chip-label">EW</span><span class="chip-value" id="homeCountEW">0</span></div>
-                <div class="home-count-chip"><span class="chip-label">RTF1</span><span class="chip-value" id="homeCountRTF1">0</span></div>
-                <div class="home-count-chip"><span class="chip-label">RTF2</span><span class="chip-value" id="homeCountRTF2">0</span></div>
-                <div class="home-count-chip"><span class="chip-label">DC</span><span class="chip-value" id="homeCountDC">0</span></div>
+                <div class="home-count-chip chip-dr"><span class="chip-label">DR</span><span class="chip-value" id="homeCountDR">0</span></div>
+                <div class="home-count-chip chip-ew"><span class="chip-label">EW</span><span class="chip-value" id="homeCountEW">0</span></div>
+                <div class="home-count-chip chip-rtf1"><span class="chip-label">RTF1</span><span class="chip-value" id="homeCountRTF1">0</span></div>
+                <div class="home-count-chip chip-rtf2"><span class="chip-label">RTF2</span><span class="chip-value" id="homeCountRTF2">0</span></div>
+                <div class="home-count-chip chip-dc"><span class="chip-label">DC</span><span class="chip-value" id="homeCountDC">0</span></div>
             </div>
             <div class="home-tiles-grid">
                 <button type="button" class="home-tile border-indigo-100" data-view="intake">
@@ -406,7 +421,7 @@
                             </select>
                         </div>
                         <div><label class="block mb-1 text-slate-500">Description</label><input type="text" id="expenseInputDescription" name="Description" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
-                        <div id="expenseFormActions"><button type="submit" class="w-full bg-rose-600 text-white font-bold py-3 rounded-xl">Save Expense</button></div>
+                        <div id="expenseFormActions"><button type="submit" id="btnSaveExpense" class="w-full bg-rose-600 text-white font-bold py-3 rounded-xl disabled:opacity-60">Save Expense</button></div>
                     </form>
                 </div>
                 <div class="bg-white p-4 rounded-2xl border shadow-sm">
@@ -469,12 +484,24 @@
                     <div class="bg-white p-2.5 rounded-2xl border text-center"><span class="text-[9px] uppercase font-bold text-slate-400">Collected</span><h4 class="text-sm font-black text-emerald-600 mt-0.5" id="kpiCollectedRevenue">₹0</h4></div>
                     <div class="bg-white p-2.5 rounded-2xl border text-center"><span class="text-[9px] uppercase font-bold text-slate-400">Pending</span><h4 class="text-sm font-black text-amber-600 mt-0.5" id="kpiDuesPending">₹0</h4></div>
                 </div>
-                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-3 flex justify-between items-center">
-                    <div>
-                        <p class="text-[10px] font-black uppercase text-indigo-500 tracking-wide">Avg student fee</p>
-                        <p class="text-[10px] text-slate-500 font-semibold">Regular Base · Fee agreed</p>
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-2.5 text-center">
+                        <p class="text-[9px] font-black uppercase text-indigo-500 tracking-wide">Avg fee</p>
+                        <p class="text-[9px] text-slate-500 font-semibold">Regular</p>
+                        <p class="text-sm font-black text-indigo-950 mt-0.5" id="kpiAvgRegularFee">₹0</p>
                     </div>
-                    <p class="text-lg font-black text-indigo-950" id="kpiAvgRegularFee">₹0</p>
+                    <div class="bg-sky-50 border border-sky-100 rounded-2xl p-2.5 text-center">
+                        <p class="text-[9px] font-black uppercase text-sky-600 tracking-wide">Van / mo</p>
+                        <p class="text-[9px] text-slate-500 font-semibold">Expected</p>
+                        <p class="text-sm font-black text-sky-900 mt-0.5" id="kpiVanMonthly">₹0</p>
+                        <p class="text-[9px] text-emerald-600 font-bold mt-0.5" id="kpiVanCollected">Coll ₹0</p>
+                    </div>
+                    <div class="bg-violet-50 border border-violet-100 rounded-2xl p-2.5 text-center">
+                        <p class="text-[9px] font-black uppercase text-violet-600 tracking-wide">Day Care / mo</p>
+                        <p class="text-[9px] text-slate-500 font-semibold">Expected</p>
+                        <p class="text-sm font-black text-violet-900 mt-0.5" id="kpiDayCareMonthly">₹0</p>
+                        <p class="text-[9px] text-emerald-600 font-bold mt-0.5" id="kpiDayCareCollected">Coll ₹0</p>
+                    </div>
                 </div>
                 <div class="bg-white p-3 rounded-2xl border space-y-3">
                     <h4 class="font-black text-xs text-slate-700 uppercase tracking-wide">Expenses tracker</h4>
@@ -606,7 +633,7 @@
                     </div>
                 </div>
                 <div><label class="block mb-1 text-slate-500">Remarks (optional)</label><input type="text" id="txRemarks" class="w-full p-2 rounded-xl border bg-slate-50"></div>
-                <div class="flex gap-2"><button type="button" onclick="closePaymentModal()" class="w-1/3 bg-slate-100 font-bold py-2.5 rounded-xl">Close</button><button type="submit" id="btnModalLogFee" class="w-2/3 bg-emerald-600 text-white font-bold py-2.5 rounded-xl">Update Fee</button></div>
+                <div class="flex gap-2"><button type="button" onclick="closePaymentModal()" class="w-1/3 bg-slate-100 font-bold py-2.5 rounded-xl">Close</button><button type="submit" id="btnModalLogFee" class="w-2/3 bg-emerald-600 text-white font-bold py-2.5 rounded-xl disabled:opacity-60">Update Fee</button></div>
             </form>
         </div>
     </div>
@@ -725,6 +752,47 @@ function formatDisplayDate(dateVal) {
     if (!iso) return "—";
     const [y, m, d] = iso.split("-");
     return `${d}/${m}/${y}`;
+}
+
+/** Normalize MonthYear from Sheets (may be Date/GMT) → "July-2026" */
+function normalizeMonthYear(val) {
+    if (val == null || val === "") return "";
+    if (val instanceof Date && !isNaN(val.getTime())) return getMonthYearLabel(val);
+    const raw = String(val).trim();
+    if (MONTH_NAMES.some(m => raw.startsWith(m + "-"))) {
+        const parsed = parseMonthYearLabel(raw);
+        return parsed ? getMonthYearLabel(new Date(parsed.year, parsed.month, 1)) : raw;
+    }
+    if (/GMT|[A-Za-z]{3}\s+[A-Za-z]{3}\s+\d{1,2}/.test(raw) || /^\d{4}-\d{2}/.test(raw)) {
+        const d = new Date(raw);
+        if (!isNaN(d.getTime())) return getMonthYearLabel(d);
+    }
+    const iso = formatToInputDate(raw);
+    if (iso) {
+        const [y, m] = iso.split("-").map(Number);
+        return getMonthYearLabel(new Date(y, m - 1, 1));
+    }
+    return raw;
+}
+
+function monthYearShortLabel(val) {
+    const norm = normalizeMonthYear(val) || activeSystemMonthContext;
+    return String(norm).split("-")[0] || norm;
+}
+
+let isLmBusy = false;
+async function withBusy(btnOrId, work, busyLabel) {
+    if (isLmBusy) return;
+    isLmBusy = true;
+    const btn = typeof btnOrId === "string" ? document.getElementById(btnOrId) : btnOrId;
+    const prev = btn ? btn.innerText : "";
+    if (btn) { btn.disabled = true; btn.innerText = busyLabel || "Saving…"; }
+    try {
+        return await work();
+    } finally {
+        isLmBusy = false;
+        if (btn) { btn.disabled = false; btn.innerText = prev || "Save"; }
+    }
 }
 
 function calculateExactAge(dateVal) {
@@ -852,7 +920,8 @@ function getStudentReceivables(s) {
     return oneTime + ((van + dayCareMonthly + optMonthly) * elapsed);
 }
 function getOrCreateMonthPaymentMeta(sid, periodLabel = activeSystemMonthContext) {
-    return getStudentPayments(sid).find(x => (x.MonthYear || x.monthyear) === periodLabel) || null;
+    const want = normalizeMonthYear(periodLabel) || periodLabel;
+    return getStudentPayments(sid).find(x => normalizeMonthYear(x.MonthYear || x.monthyear) === want) || null;
 }
 
 function updateTileBadge(id, count) {
@@ -1293,7 +1362,11 @@ async function refreshApplicationState(showUserAlert) {
         const result = await response.json();
         if (result.success) {
             globalAppState.students = result.data.students || [];
-            globalAppState.payments = result.data.payments || [];
+            globalAppState.payments = (result.data.payments || []).map(p => {
+                const my = normalizeMonthYear(p.MonthYear || p.monthyear);
+                if (my) { p.MonthYear = my; if (p.monthyear != null) p.monthyear = my; }
+                return p;
+            });
             globalAppState.expenses = result.data.expenses || [];
             globalAppState.events = result.data.events || [];
             saveLocalCache();
@@ -1435,9 +1508,21 @@ function getPackageBalance(s) {
 
 function formatPackageStatusChip(s) {
     const { total, balance } = getPackageBalance(s);
-    if (total <= 0) return '<span class="text-[10px] font-bold text-slate-400">No package</span>';
-    if (balance <= 0) return '<span class="bg-emerald-50 text-emerald-700 text-[10px] font-black px-2 py-1 rounded-lg">Settled</span>';
-    return `<span class="bg-rose-50 text-rose-700 text-[10px] font-black px-2 py-1 rounded-lg">Pending ₹${balance}</span>`;
+    if (total <= 0) return '<span class="bg-slate-100 text-slate-500 text-[9px] font-black px-2 py-0.5 rounded uppercase">No pkg</span>';
+    if (balance <= 0) return '<span class="bg-emerald-100 text-emerald-700 text-[9px] font-black px-2 py-0.5 rounded uppercase">Settled</span>';
+    return `<span class="bg-rose-100 text-rose-700 text-[9px] font-black px-2 py-0.5 rounded uppercase">Due ₹${balance}</span>`;
+}
+
+function formatOptedServiceChips(s) {
+    const chips = [];
+    if (Number(s.VanFee || s.vanfee) > 0) chips.push('<span class="bg-sky-100 text-sky-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">Van</span>');
+    const isDC = (s.Class || s.class) === "DayCare";
+    if (Number(s.DayCareFee || s.daycarefee) > 0 || isDC) chips.push('<span class="bg-violet-100 text-violet-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">DC</span>');
+    if ((s.BillingModel === "Monthly" || s.billingmodel === "Monthly") && !isDC) chips.push('<span class="bg-slate-200 text-slate-700 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">MO</span>');
+    if (Number(s.StudentKitFee || s.studentkitfee) > 0) chips.push('<span class="bg-amber-100 text-amber-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">Kit</span>');
+    if (Number(s.SpareUniformFee || s.spareuniformfee) > 0) chips.push('<span class="bg-orange-100 text-orange-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">Uni</span>');
+    if (Number(s.AdmissionFee || s.admissionfee) > 0) chips.push('<span class="bg-indigo-100 text-indigo-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">Adm</span>');
+    return chips.join("");
 }
 
 function isMeaningfulPayment(p) {
@@ -1467,7 +1552,7 @@ function paymentHistoryRowHtml(p) {
     const payId = (p.PaymentID || p.paymentid || "").toString().replace(/'/g, "");
     const amt = Number(p.AmountPaid || p.amountpaid) || 0;
     const date = formatDisplayDate(p.PaymentDate || p.paymentdate);
-    const month = (p.MonthYear || p.monthyear || "").toString() || "—";
+    const month = normalizeMonthYear(p.MonthYear || p.monthyear) || "—";
     const mode = (p.PaymentMode || p.paymentmode || "—").toString();
     const rem = (p.Remarks || p.remarks || "").toString();
     const label = friendlyPaymentLabel(rem, month);
@@ -1701,31 +1786,58 @@ function closeReceiptModal() {
 }
 
 async function downloadCurrentReceipt() {
-    const store = getReceiptStore()[currentReceiptPayId] || {};
-    let data = currentReceiptData || store.data;
-    if (!data && currentReceiptPayId) {
-        const built = buildReceiptForPayment(currentReceiptPayId);
-        data = built.data;
-        currentReceiptData = data;
-    }
-    if (!data) {
-        alert("Unable to build PDF receipt for this payment.");
-        return;
-    }
-    await downloadReceiptPdf({ data }, currentReceiptPayId, store.studentName || data.studentName || "");
+    return withBusy("btnDownloadReceipt", async () => {
+        const store = getReceiptStore()[currentReceiptPayId] || {};
+        let data = currentReceiptData || store.data;
+        if (!data && currentReceiptPayId) {
+            const built = buildReceiptForPayment(currentReceiptPayId);
+            data = built.data;
+            currentReceiptData = data;
+        }
+        if (!data) {
+            alert("Unable to build PDF receipt for this payment.");
+            return;
+        }
+        await downloadReceiptPdf({ data }, currentReceiptPayId, store.studentName || data.studentName || "");
+    }, "Preparing…");
 }
 
 function viewPaymentReceipt(payId) {
+    // Prefer live rebuild so MonthYear GMT from Sheets never shows
+    if (globalAppState.payments.some(x => String(x.PaymentID || x.paymentid) === String(payId))) {
+        const built = buildReceiptForPayment(payId);
+        saveReceiptRecord(payId, { text: built.text, data: built.data, ...built.meta, savedAt: Date.now() });
+        openReceiptModal(payId, built.text, built.data);
+        return;
+    }
     const store = getReceiptStore();
     if (store[payId] && (store[payId].data || store[payId].text)) {
         const rec = store[payId];
-        const text = rec.text || (rec.data ? buildFeeReceiptText(rec.data) : "");
-        openReceiptModal(payId, text, rec.data || null);
+        if (rec.data) {
+            const cleaned = rebuildReceiptDataDates(rec.data);
+            openReceiptModal(payId, buildFeeReceiptText(cleaned), cleaned);
+            return;
+        }
+        openReceiptModal(payId, rec.text || "", null);
         return;
     }
     const built = buildReceiptForPayment(payId);
     saveReceiptRecord(payId, { text: built.text, data: built.data, ...built.meta, savedAt: Date.now() });
     openReceiptModal(payId, built.text, built.data);
+}
+
+function rebuildReceiptDataDates(data) {
+    if (!data) return data;
+    const copy = { ...data, items: (data.items || []).map(it => ({ ...it, label: String(it.label || "") })) };
+    copy.date = formatToInputDate(copy.date) || copy.date;
+    (copy.items || []).forEach(it => {
+        if (!/GMT|India Standard Time/i.test(it.label)) return;
+        if (/Van/i.test(it.label)) it.label = `Van Fee- ${monthYearShortLabel(activeSystemMonthContext)}`;
+        else if (/Day Care|DayCare/i.test(it.label)) it.label = `Day Care- ${monthYearShortLabel(activeSystemMonthContext)}`;
+        else if (/Monthly/i.test(it.label)) it.label = `Monthly Fee- ${monthYearShortLabel(activeSystemMonthContext)}`;
+        else it.label = "Fee Collected";
+    });
+    return copy;
 }
 
 function issueFeeReceipt(payId, extras) {
@@ -1806,11 +1918,12 @@ function buildReceiptForPayment(payId, extras = {}) {
 
     const items = [];
     if (isMonthlySvc) {
-        const my = (p && (p.MonthYear || p.monthyear)) || extras.monthYear || activeSystemMonthContext;
+        const my = normalizeMonthYear((p && (p.MonthYear || p.monthyear)) || extras.monthYear || activeSystemMonthContext);
+        const monthShort = monthYearShortLabel(my);
         let label = "Fee Collected";
-        if (String(remarks).includes("Van")) label = `Van Fee- ${String(my).split("-")[0] || my}`;
-        else if (String(remarks).includes("DayCare") || String(remarks).includes("Day Care")) label = `Day Care- ${String(my).split("-")[0] || my}`;
-        else if (String(remarks).includes("OptMonthly")) label = `Monthly Fee- ${String(my).split("-")[0] || my}`;
+        if (String(remarks).includes("Van")) label = `Van Fee- ${monthShort}`;
+        else if (String(remarks).includes("DayCare") || String(remarks).includes("Day Care")) label = `Day Care- ${monthShort}`;
+        else if (String(remarks).includes("OptMonthly")) label = `Monthly Fee- ${monthShort}`;
         items.push({ label, amount });
     } else {
         items.push({ label: "Fee Collected", amount });
@@ -1851,7 +1964,6 @@ function renderStudentCards() {
     list.forEach((s, index) => {
         const sid = s.StudentID || s.studentid;
         const name = s.StudentName || s.studentname || "";
-        const isRegular = (s.BillingModel === "Regular" || s.billingmodel === "Regular");
         const color = AVATAR_COLORS[index % AVATAR_COLORS.length];
         const img = (s.PhotoBase64 && s.PhotoBase64 !== "N/A" && s.PhotoBase64.length > 50)
             ? `<img src="${s.PhotoBase64}" class="w-full h-full object-cover">`
@@ -1859,6 +1971,7 @@ function renderStudentCards() {
         const guard = s.GuardianName || s.guardianname || "N/A";
         const phone = s.Contact || s.contact || "N/A";
         const statusChip = formatPackageStatusChip(s);
+        const serviceChips = formatOptedServiceChips(s);
         grid.insertAdjacentHTML("beforeend", `
             <div class="bg-white rounded-2xl p-4 border shadow-sm">
                 <div class="flex items-start gap-3">
@@ -1866,7 +1979,7 @@ function renderStudentCards() {
                     <div class="min-w-0 flex-1">
                         <div class="flex flex-wrap items-center gap-1">
                             <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded uppercase">${s.Class === "DayCare" ? "DayCare" : s.Class}</span>
-                            ${!isRegular ? '<span class="bg-slate-100 text-slate-500 text-[9px] font-black px-2 py-0.5 rounded uppercase">Monthly</span>' : ''}
+                            ${serviceChips}
                             ${statusChip}
                         </div>
                         <h4 class="font-black text-sm mt-1 truncate">${name}</h4>
@@ -2183,76 +2296,84 @@ function closeTermPaymentsModal() { document.getElementById("termPaymentsModalOv
 
 async function commitParticularsTransaction(e) {
     e.preventDefault();
-    const sid = document.getElementById("modalTargetStudentID").value;
-    const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
-    const amount = Number(document.getElementById("txAmountPaid").value) || 0;
-    if (amount <= 0) { alert("Enter a valid amount."); return; }
-    const note = document.getElementById("txRemarks").value.trim();
-    const remark = "Term Fee" + (note ? " — " + note : "");
-    const payDate = document.getElementById("txPaymentDate").value;
-    const payMode = document.getElementById("txPaymentMode").value;
-    const payId = "PAY-" + sid + "-" + Date.now();
-    const balanceBefore = getPackageBalance(s).balance;
-    const balanceAfter = Math.max(0, balanceBefore - amount);
-    const row = [payId, sid, activeSystemMonthContext, amount, payDate, payMode, remark, "Active", ""];
-    await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row }) });
-    closePaymentModal();
-    issueFeeReceipt(payId, {
-        sid,
-        amount,
-        date: payDate,
-        mode: payMode,
-        remarks: remark,
-        note,
-        balanceAfter,
-        studentName: s?.StudentName || s?.studentname,
-        className: s?.Class || s?.class,
-        monthYear: activeSystemMonthContext
-    });
-    refreshApplicationState(false);
+    return withBusy("btnModalLogFee", async () => {
+        const sid = document.getElementById("modalTargetStudentID").value;
+        const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+        const amount = Number(document.getElementById("txAmountPaid").value) || 0;
+        if (amount <= 0) { alert("Enter a valid amount."); return; }
+        const note = document.getElementById("txRemarks").value.trim();
+        const remark = "Term Fee" + (note ? " — " + note : "");
+        const payDate = document.getElementById("txPaymentDate").value;
+        const payMode = document.getElementById("txPaymentMode").value;
+        const payId = "PAY-" + sid + "-" + Date.now();
+        const balanceBefore = getPackageBalance(s).balance;
+        const balanceAfter = Math.max(0, balanceBefore - amount);
+        const row = [payId, sid, activeSystemMonthContext, amount, payDate, payMode, remark, "Active", ""];
+        await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row });
+        closePaymentModal();
+        issueFeeReceipt(payId, {
+            sid,
+            amount,
+            date: payDate,
+            mode: payMode,
+            remarks: remark,
+            note,
+            balanceAfter,
+            studentName: s?.StudentName || s?.studentname,
+            className: s?.Class || s?.class,
+            monthYear: activeSystemMonthContext
+        });
+        refreshApplicationState(false);
+    }, "Saving…");
 }
 
 async function toggleReminderNullify(sid, serviceKey, isChecked) {
-    const period = activeSystemMonthContext;
-    const existing = getOrCreateMonthPaymentMeta(sid, period);
-    let flags = (existing?.NullifiedServices || existing?.nullifiedservices || "").toString().split(",").map(x => x.trim()).filter(Boolean);
-    if (isChecked) { if (!flags.includes(serviceKey)) flags.push(serviceKey); }
-    else flags = flags.filter(f => f !== serviceKey);
-    const payId = (existing && (existing.PaymentID || existing.paymentid)) || ("PAY-" + sid + "-" + period);
-    const row = [payId, sid, period, Number(existing?.AmountPaid || existing?.amountpaid) || 0,
-        existing?.PaymentDate || existing?.paymentdate || new Date().toISOString().substring(0, 10),
-        existing?.PaymentMode || existing?.paymentmode || "Cash",
-        existing?.Remarks || existing?.remarks || "Month Meta",
-        existing?.Status || existing?.status || "Active", flags.join(",")];
-    await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: existing ? "updateRow" : "addRow", targetSheet: "Fee_Payments", rowId: payId, rowData: row }) });
-    await refreshApplicationState(false);
+    if (isLmBusy) return;
+    return withBusy(null, async () => {
+        const period = activeSystemMonthContext;
+        const existing = getOrCreateMonthPaymentMeta(sid, period);
+        let flags = (existing?.NullifiedServices || existing?.nullifiedservices || "").toString().split(",").map(x => x.trim()).filter(Boolean);
+        if (isChecked) { if (!flags.includes(serviceKey)) flags.push(serviceKey); }
+        else flags = flags.filter(f => f !== serviceKey);
+        const payId = (existing && (existing.PaymentID || existing.paymentid)) || ("PAY-" + sid + "-" + period);
+        const row = [payId, sid, period, Number(existing?.AmountPaid || existing?.amountpaid) || 0,
+            existing?.PaymentDate || existing?.paymentdate || new Date().toISOString().substring(0, 10),
+            existing?.PaymentMode || existing?.paymentmode || "Cash",
+            existing?.Remarks || existing?.remarks || "Month Meta",
+            existing?.Status || existing?.status || "Active", flags.join(",")];
+        await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: existing ? "updateRow" : "addRow", targetSheet: "Fee_Payments", rowId: payId, rowData: row });
+        await refreshApplicationState(false);
+    });
 }
 
 async function commitReminderSettlement(sid, serviceKey, dueAmount) {
+    if (isLmBusy) return;
     const amount = Number(dueAmount) || 0;
     if (amount <= 0) { alert("Nothing to settle."); return; }
-    let modeElId = "mode-van-" + sid;
-    if (serviceKey === "DayCare") modeElId = "mode-dc-" + sid;
-    if (serviceKey === "OptMonthly") modeElId = "mode-opt-" + sid;
-    const mode = document.getElementById(modeElId)?.value || "Cash";
-    const payId = "PAY-" + sid + "-" + serviceKey + "-" + Date.now();
-    const payDate = new Date().toISOString().substring(0, 10);
-    const remark = serviceKey === "DayCare"
-        ? ("DayCare — " + activeSystemMonthContext)
-        : (serviceKey === "OptMonthly"
-            ? ("OptMonthly — " + activeSystemMonthContext)
-            : ("Van — " + activeSystemMonthContext));
-    const row = [payId, sid, activeSystemMonthContext, amount, payDate, mode, remark, "Active", ""];
-    await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row }) });
-    issueFeeReceipt(payId, {
-        sid,
-        amount,
-        date: payDate,
-        mode,
-        remarks: remark,
-        monthYear: activeSystemMonthContext
+    return withBusy(null, async () => {
+        let modeElId = "mode-van-" + sid;
+        if (serviceKey === "DayCare") modeElId = "mode-dc-" + sid;
+        if (serviceKey === "OptMonthly") modeElId = "mode-opt-" + sid;
+        const mode = document.getElementById(modeElId)?.value || "Cash";
+        const payId = "PAY-" + sid + "-" + serviceKey + "-" + Date.now();
+        const payDate = new Date().toISOString().substring(0, 10);
+        const remark = serviceKey === "DayCare"
+            ? ("DayCare — " + activeSystemMonthContext)
+            : (serviceKey === "OptMonthly"
+                ? ("OptMonthly — " + activeSystemMonthContext)
+                : ("Van — " + activeSystemMonthContext));
+        const row = [payId, sid, activeSystemMonthContext, amount, payDate, mode, remark, "Active", ""];
+        await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row });
+        issueFeeReceipt(payId, {
+            sid,
+            amount,
+            date: payDate,
+            mode,
+            remarks: remark,
+            monthYear: activeSystemMonthContext
+        });
+        refreshApplicationState(false);
     });
-    refreshApplicationState(false);
 }
 
 function openStudentDetailModal(sid) {
@@ -2299,32 +2420,39 @@ function closeStudentDetailModal() { document.getElementById("studentDetailModal
 
 async function handleStudentDetailUpdate(e) {
     e.preventDefault();
-    const sid = document.getElementById("detailStudentID").value;
-    const model = document.querySelector('input[name="EditBillingModel"]:checked')?.value || "Regular";
-    const rowData = [
-        sid, document.getElementById("editStudentName").value, document.getElementById("editDOB").value,
-        document.getElementById("editGender").value, document.getElementById("editClass").value,
-        document.getElementById("editGuardianName").value, document.getElementById("editContact").value,
-        document.getElementById("editAltContact").value, document.getElementById("editAddress").value,
-        document.getElementById("detailPhotoBase64").value || "N/A", model,
-        Number(document.getElementById("editCustomFee").value) || 0, Number(document.getElementById("editAdmissionFee").value) || 0,
-        Number(document.getElementById("editStudentKitFee").value) || 0, Number(document.getElementById("editSpareUniformFee").value) || 0,
-        Number(document.getElementById("editVanFee").value) || 0, Number(document.getElementById("editDayCareFee").value) || 0,
-        Number(document.getElementById("editOptMonthlyFee").value) || 0, document.getElementById("editBloodGroup").value,
-        document.getElementById("editDOJ").value
-    ];
-    await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData }) });
-    alert("Saved!");
-    closeStudentDetailModal();
-    await refreshApplicationState(false);
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    return withBusy(submitBtn, async () => {
+        const sid = document.getElementById("detailStudentID").value;
+        const model = document.querySelector('input[name="EditBillingModel"]:checked')?.value || "Regular";
+        const rowData = [
+            sid, document.getElementById("editStudentName").value, document.getElementById("editDOB").value,
+            document.getElementById("editGender").value, document.getElementById("editClass").value,
+            document.getElementById("editGuardianName").value, document.getElementById("editContact").value,
+            document.getElementById("editAltContact").value, document.getElementById("editAddress").value,
+            document.getElementById("detailPhotoBase64").value || "N/A", model,
+            Number(document.getElementById("editCustomFee").value) || 0, Number(document.getElementById("editAdmissionFee").value) || 0,
+            Number(document.getElementById("editStudentKitFee").value) || 0, Number(document.getElementById("editSpareUniformFee").value) || 0,
+            Number(document.getElementById("editVanFee").value) || 0, Number(document.getElementById("editDayCareFee").value) || 0,
+            Number(document.getElementById("editOptMonthlyFee").value) || 0, document.getElementById("editBloodGroup").value,
+            document.getElementById("editDOJ").value
+        ];
+        await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData });
+        alert("Saved!");
+        closeStudentDetailModal();
+        await refreshApplicationState(false);
+    }, "Saving…");
 }
 
 function triggerDeleteStudent() {
+    if (isLmBusy) return;
     const sid = document.getElementById("detailStudentID").value;
     if (!confirm("Delete this student?")) return;
-    const deletedRow = [sid, "DELETED", "", "", "", "", "", "", "", "N/A", "Regular", 0, 0, 0, 0, 0, 0, 0, "", ""];
-    fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: deletedRow }) }).then(() => {
-        alert("Deleted!"); closeStudentDetailModal(); refreshApplicationState(false);
+    withBusy(null, async () => {
+        const deletedRow = [sid, "DELETED", "", "", "", "", "", "", "", "N/A", "Regular", 0, 0, 0, 0, 0, 0, 0, "", ""];
+        await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: deletedRow });
+        alert("Deleted!");
+        closeStudentDetailModal();
+        await refreshApplicationState(false);
     });
 }
 
@@ -2354,33 +2482,79 @@ function renderFinanceLedger() {
         ? Math.round(regularFees.reduce((a, b) => a + b, 0) / regularFees.length)
         : 0;
 
-    let filtered = globalAppState.expenses.filter(x => x && (x.Date || x.date));
-    filtered = filtered.filter(e => {
-        if ((e.Date || e.date || "").toString().includes("DELETED") || (e.Category || e.category) === "DELETED") return false;
-        const raw = (e.Date || e.date || "").toString().replace(/[\/\s]/g, "-");
-        const parts = raw.split("-");
-        if (parts.length < 2) return false;
-        let yr = parseInt(parts[0], 10), mo = parseInt(parts[1], 10) - 1;
-        if (parts[0].length < 4) { yr = parseInt(parts[2], 10); mo = parseInt(parts[1], 10) - 1; }
-        return mo === selectedMonth && yr === selectedYear;
+    let vanExpected = 0, dayCareExpected = 0;
+    activeStudents.forEach(s => {
+        vanExpected += Number(s.VanFee || s.vanfee) || 0;
+        const isDC = (s.Class || s.class) === "DayCare";
+        if (isDC) dayCareExpected += Number(s.OptMonthlyFee || s.optmonthlyfee) || 0;
+        else dayCareExpected += Number(s.DayCareFee || s.daycarefee) || 0;
     });
+
+    const periodLabel = getMonthYearLabel(new Date(selectedYear, selectedMonth, 1));
+    let vanCollected = 0, dayCareCollected = 0;
+    globalAppState.payments.forEach(p => {
+        const rem = (p.Remarks || p.remarks || "").toString();
+        const amt = Number(p.AmountPaid || p.amountpaid) || 0;
+        if (!amt) return;
+        const my = normalizeMonthYear(p.MonthYear || p.monthyear);
+        let inPeriod = my === periodLabel;
+        if (!inPeriod) {
+            const iso = formatToInputDate(p.PaymentDate || p.paymentdate);
+            if (!iso) return;
+            const [y, m] = iso.split("-").map(Number);
+            inPeriod = y === selectedYear && (m - 1) === selectedMonth;
+        }
+        if (!inPeriod) return;
+        if (isServicePayment(rem, "Van")) vanCollected += amt;
+        if (isServicePayment(rem, "DayCare")) dayCareCollected += amt;
+    });
+
+    const isActiveExpense = (e) => {
+        if (!e) return false;
+        if ((e.Date || e.date || "").toString().includes("DELETED")) return false;
+        if ((e.Category || e.category) === "DELETED") return false;
+        return true;
+    };
+
+    const expenseInSelectedMonth = (e) => {
+        const iso = formatToInputDate(e.Date || e.date);
+        if (!iso) return false;
+        const [y, m] = iso.split("-").map(Number);
+        return (m - 1) === selectedMonth && y === selectedYear;
+    };
+
+    const allActiveExpenses = globalAppState.expenses.filter(isActiveExpense);
+    const filtered = allActiveExpenses.filter(expenseInSelectedMonth);
 
     filtered.forEach(e => {
         const cat = e.Category || e.category || "General";
         const a = Number(e.Amount || e.amount) || 0;
         totalExpenses += a;
         cats[cat] = (cats[cat] || 0) + a;
-        const id = e.ExpenseID || e.expenseid || "";
-        if (expenseStreamBox) {
-            expenseStreamBox.insertAdjacentHTML("beforeend", `
-                <div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border">
-                    <div><strong>${cat}</strong> <span class="text-slate-400">${(e.Date || e.date || "").toString().substring(0,10)}</span>
-                    <p class="text-[10px] text-slate-400">${e.Description || e.description || ""}</p></div>
-                    <div class="flex items-center gap-2"><span class="font-bold text-rose-600">₹${a}</span>
-                    <button type="button" onclick="loadExpenseToEditForm('${id}')" class="text-indigo-600 text-[11px] font-bold">Edit</button></div>
-                </div>`);
-        }
     });
+
+    // Recent expenses list: last 20 by date (not limited to finance month filter)
+    if (expenseStreamBox) {
+        const recent = [...allActiveExpenses].sort((a, b) =>
+            String(formatToInputDate(b.Date || b.date) || "").localeCompare(String(formatToInputDate(a.Date || a.date) || ""))
+        ).slice(0, 20);
+        if (!recent.length) {
+            expenseStreamBox.innerHTML = '<p class="text-xs text-slate-400 text-center py-3">No expenses yet.</p>';
+        } else {
+            recent.forEach(e => {
+                const cat = e.Category || e.category || "General";
+                const a = Number(e.Amount || e.amount) || 0;
+                const id = (e.ExpenseID || e.expenseid || "").toString().replace(/'/g, "");
+                expenseStreamBox.insertAdjacentHTML("beforeend", `
+                    <div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border">
+                        <div><strong>${cat}</strong> <span class="text-slate-400">${formatDisplayDate(e.Date || e.date)}</span>
+                        <p class="text-[10px] text-slate-400">${e.Description || e.description || ""}</p></div>
+                        <div class="flex items-center gap-2"><span class="font-bold text-rose-600">₹${a}</span>
+                        <button type="button" onclick="loadExpenseToEditForm('${id}')" class="text-indigo-600 text-[11px] font-bold">Edit</button></div>
+                    </div>`);
+            });
+        }
+    }
 
     const catTable = document.getElementById("financeExpenseCategoryTable");
     if (catTable) {
@@ -2396,6 +2570,10 @@ function renderFinanceLedger() {
     setK("kpiDuesPending", `₹${Math.max(0, totalReceivables - totalCollected)}`);
     setK("kpiTotalExpenses", `₹${totalExpenses}`);
     setK("kpiAvgRegularFee", `₹${avgRegular}`);
+    setK("kpiVanMonthly", `₹${vanExpected}`);
+    setK("kpiDayCareMonthly", `₹${dayCareExpected}`);
+    setK("kpiVanCollected", `Coll ₹${vanCollected}`);
+    setK("kpiDayCareCollected", `Coll ₹${dayCareCollected}`);
 
     try {
         const ctx2 = document.getElementById("expenseCategoryChart");
@@ -2426,7 +2604,7 @@ function loadExpenseToEditForm(expId) {
     document.getElementById("expenseInputDescription").value = e.description || e.Description || "";
     document.getElementById("expenseFormHeader").innerText = "Edit Expense";
     document.getElementById("expenseFormActions").innerHTML = `
-        <button type="submit" class="w-2/3 bg-indigo-600 text-white font-bold py-2.5 rounded-xl">Save</button>
+        <button type="submit" id="btnSaveExpense" class="w-2/3 bg-indigo-600 text-white font-bold py-2.5 rounded-xl disabled:opacity-60">Save</button>
         <button type="button" onclick="triggerDeleteExpense('${expId}')" class="w-1/3 bg-rose-100 text-rose-600 font-bold py-2.5 rounded-xl">Delete</button>`;
 }
 
@@ -2434,27 +2612,56 @@ function resetExpenseForm() {
     document.getElementById("expenseForm").reset();
     document.getElementById("expenseFormID").value = "";
     document.getElementById("expenseFormHeader").innerText = "Add Expense";
-    document.getElementById("expenseFormActions").innerHTML = `<button type="submit" class="w-full bg-rose-600 text-white font-bold py-3 rounded-xl">Save Expense</button>`;
+    document.getElementById("expenseFormActions").innerHTML = `<button type="submit" id="btnSaveExpense" class="w-full bg-rose-600 text-white font-bold py-3 rounded-xl disabled:opacity-60">Save Expense</button>`;
 }
 
 async function handleExpenseSubmission(e) {
     e.preventDefault();
-    const f = new FormData(e.target);
-    const expId = document.getElementById("expenseFormID").value;
-    const id = expId || "EXP-" + Date.now();
-    const row = [id, f.get("Date"), f.get("Category"), Number(f.get("Amount")), f.get("Description"), f.get("Type")];
-    await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: expId ? "updateRow" : "addRow", targetSheet: "Expenses", rowId: id, rowData: row }) });
-    alert("Expense saved!");
-    resetExpenseForm();
-    await refreshApplicationState(false);
+    const submitBtn = e.target.querySelector('button[type="submit"]') || document.getElementById("btnSaveExpense");
+    return withBusy(submitBtn, async () => {
+        const f = new FormData(e.target);
+        const expId = document.getElementById("expenseFormID").value;
+        const id = expId || "EXP-" + Date.now();
+        const dateVal = f.get("Date");
+        const category = f.get("Category");
+        const amount = Number(f.get("Amount")) || 0;
+        const description = f.get("Description") || "";
+        const type = f.get("Type");
+        const row = [id, dateVal, category, amount, description, type];
+        await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: expId ? "updateRow" : "addRow", targetSheet: "Expenses", rowId: id, rowData: row });
+
+        // Optimistic local update so UI reflects immediately
+        const local = {
+            ExpenseID: id, Date: dateVal, Category: category, Amount: amount,
+            Description: description, Type: type
+        };
+        if (expId) {
+            const idx = globalAppState.expenses.findIndex(x => (x.ExpenseID || x.expenseid) === id);
+            if (idx >= 0) globalAppState.expenses[idx] = { ...globalAppState.expenses[idx], ...local };
+            else globalAppState.expenses.push(local);
+        } else {
+            globalAppState.expenses.push(local);
+        }
+        saveLocalCache();
+        renderFinanceLedger();
+        alert("Expense saved!");
+        resetExpenseForm();
+        await refreshApplicationState(false);
+    }, "Saving…");
 }
 
 async function triggerDeleteExpense(expId) {
+    if (isLmBusy) return;
     if (!confirm("Delete this expense?")) return;
-    await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Expenses", rowId: expId, rowData: [expId, "DELETED", "Rent", 0, "", "Fixed"] }) });
-    alert("Deleted!");
-    resetExpenseForm();
-    await refreshApplicationState(false);
+    return withBusy(null, async () => {
+        await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Expenses", rowId: expId, rowData: [expId, "DELETED", "Rent", 0, "", "Fixed"] });
+        globalAppState.expenses = globalAppState.expenses.filter(x => (x.ExpenseID || x.expenseid) !== expId);
+        saveLocalCache();
+        renderFinanceLedger();
+        alert("Deleted!");
+        resetExpenseForm();
+        await refreshApplicationState(false);
+    });
 }
 
 function renderCalendarAgenda() {
@@ -2467,7 +2674,7 @@ function renderCalendarAgenda() {
         stream.insertAdjacentHTML("beforeend", `
             <div class="p-3 border-l-4 border-indigo-500 bg-indigo-50 rounded-r-xl text-xs">
                 <h5 class="font-black">${e.Title || e.title || ""}</h5>
-                <span>${(e.Date || e.date || "").toString().substring(0,10)}${(e.Time || e.time) ? " · " + (e.Time || e.time) : ""}</span>
+                <span>${formatDisplayDate(e.Date || e.date)}${(e.Time || e.time) ? " · " + (e.Time || e.time) : ""}</span>
                 ${(e.Category || e.category) ? `<p class="text-[10px] text-indigo-700 font-bold mt-1 uppercase">${e.Category || e.category}</p>` : ""}
             </div>`);
     });
@@ -2488,12 +2695,22 @@ function processEditImageUpload(input) {
 
 async function handleEventSubmission(e) {
     e.preventDefault();
-    const f = new FormData(e.target);
-    const row = ["EVT-" + Date.now(), f.get("Title"), f.get("Date"), f.get("Time"), f.get("Category")];
-    await fetch(APP_SHEET_API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Events", rowData: row }) });
-    alert("Event saved!");
-    e.target.reset();
-    await refreshApplicationState(false);
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    return withBusy(submitBtn, async () => {
+        const f = new FormData(e.target);
+        const id = "EVT-" + Date.now();
+        const row = [id, f.get("Title"), f.get("Date"), f.get("Time"), f.get("Category")];
+        await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Events", rowData: row });
+        globalAppState.events.push({
+            EventID: id, Title: f.get("Title"), Date: f.get("Date"),
+            Time: f.get("Time"), Category: f.get("Category")
+        });
+        saveLocalCache();
+        renderCalendarAgenda();
+        alert("Event saved!");
+        e.target.reset();
+        await refreshApplicationState(false);
+    }, "Saving…");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
