@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --header-h: 56px; }
+        :root { --header-h: 60px; }
         html, body { height: 100%; }
         body { overscroll-behavior: none; }
         .app-shell { min-height: 100dvh; padding-bottom: env(safe-area-inset-bottom); }
@@ -131,8 +131,8 @@
     <header id="appHeader" class="bg-indigo-950 text-white sticky top-0 z-40 px-3 hidden" style="height: var(--header-h); padding-top: env(safe-area-inset-top);">
         <div class="h-full max-w-3xl mx-auto flex justify-between items-center gap-2">
             <button type="button" onclick="goToHome()" class="flex items-center space-x-2 min-w-0">
-                <div class="bg-white w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden border border-amber-300/40 p-0.5">
-                    <img src="lm-logo.png" alt="LM" class="w-full h-full object-contain" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'text-indigo-950 text-sm font-black\'>LM</span>';">
+                <div class="bg-white w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden shadow-sm ring-2 ring-amber-300/50">
+                    <img src="lm-logo.png" alt="LM" class="w-full h-full object-cover" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'text-indigo-950 text-sm font-black\'>LM</span>';">
                 </div>
                 <div class="min-w-0 text-left">
                     <h2 class="text-sm font-black leading-none truncate">Little Millennium</h2>
@@ -140,7 +140,6 @@
                 </div>
             </button>
             <div class="flex items-center gap-1.5 flex-shrink-0">
-                <button type="button" id="headerBackBtn" onclick="goAppBack()" class="hidden bg-indigo-900 px-2.5 py-1.5 rounded-lg text-[11px] font-bold">← Back</button>
                 <button type="button" id="btnSyncHeader" onclick="refreshApplicationState(true)" class="bg-indigo-800 px-2.5 py-1.5 rounded-lg text-[11px] font-bold disabled:opacity-60">Sync</button>
                 <button type="button" onclick="toggleHeaderMenu()" class="bg-indigo-900 px-2.5 py-1.5 rounded-lg text-[11px] font-bold">⋯</button>
             </div>
@@ -571,14 +570,18 @@
     <div id="studentDetailModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-[1.5rem] max-w-lg w-full p-5 shadow-2xl space-y-4 border max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-start border-b pb-3">
-                <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-3 min-w-0">
                     <div id="detailProfilePhotoSlot" class="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden font-black bg-indigo-100"></div>
-                    <div>
-                        <h3 id="detailStudentNameHeader" class="font-black text-indigo-950 text-sm">Loading...</h3>
+                    <div class="min-w-0">
+                        <h3 id="detailStudentNameHeader" class="font-black text-indigo-950 text-sm truncate">Loading...</h3>
                         <p id="detailStudentClassHeader" class="text-[10px] font-bold text-amber-600 uppercase">Loading...</p>
                     </div>
                 </div>
-                <button type="button" onclick="closeStudentDetailModal()" class="text-2xl text-slate-400 font-bold leading-none">&times;</button>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <button type="button" id="btnStudentDetailEdit" onclick="setStudentDetailEditMode(true)" class="bg-indigo-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg">Edit</button>
+                    <button type="button" id="btnStudentDetailCancelEdit" onclick="cancelStudentDetailEdit()" class="hidden bg-slate-100 text-slate-700 text-[11px] font-bold px-3 py-1.5 rounded-lg">Cancel</button>
+                    <button type="button" onclick="closeStudentDetailModal()" class="text-2xl text-slate-400 font-bold leading-none">&times;</button>
+                </div>
             </div>
             <form id="studentDetailUpdateForm" onsubmit="handleStudentDetailUpdate(event)" class="text-xs font-semibold space-y-3">
                 <input type="hidden" id="detailStudentID"><input type="hidden" id="detailPhotoBase64">
@@ -618,12 +621,15 @@
                     <div><label class="block mb-1 text-slate-400">Address</label><input type="text" id="editAddress" class="w-full p-2 border rounded-xl bg-slate-50"></div>
                     <div><label class="block mb-1 text-slate-400">Blood Group</label><input type="text" id="editBloodGroup" class="w-full p-2 border rounded-xl bg-slate-50"></div>
                     <div><label class="block mb-1 text-slate-400">Gender</label><select id="editGender" class="w-full p-2 border rounded-xl bg-slate-50"><option value="Boy">Boy</option><option value="Girl">Girl</option></select></div>
-                    <div><label class="block mb-1 text-slate-400">Replace Photo</label><input type="file" accept="image/*" onchange="processEditImageUpload(this)" class="w-full text-xs"></div>
+                    <div id="detailPhotoUploadWrap"><label class="block mb-1 text-slate-400">Replace Photo</label><input type="file" id="editPhotoInput" accept="image/*" onchange="processEditImageUpload(this)" class="w-full text-xs"></div>
                 </div>
-                <div class="flex flex-col gap-2 pt-3 border-t">
+                <div id="studentDetailEditActions" class="hidden flex flex-col gap-2 pt-3 border-t">
                     <button type="submit" class="w-full px-4 py-2.5 bg-indigo-600 text-white font-bold rounded-xl">Save Changes</button>
-                    <button type="button" onclick="closeStudentDetailModal()" class="w-full px-4 py-2 bg-slate-100 text-slate-600 font-bold rounded-xl">Cancel</button>
+                    <button type="button" onclick="cancelStudentDetailEdit()" class="w-full px-4 py-2 bg-slate-100 text-slate-600 font-bold rounded-xl">Cancel Edit</button>
                     <button type="button" onclick="triggerDeleteStudent()" class="w-full px-4 py-2 bg-rose-100 text-rose-600 font-bold rounded-xl">Delete Student</button>
+                </div>
+                <div id="studentDetailViewActions" class="pt-3 border-t">
+                    <button type="button" onclick="closeStudentDetailModal()" class="w-full px-4 py-2 bg-slate-100 text-slate-600 font-bold rounded-xl">Close</button>
                 </div>
             </form>
         </div>
@@ -783,6 +789,33 @@ function formatDisplayDate(dateVal) {
     if (!iso) return "—";
     const [y, m, d] = iso.split("-");
     return `${d}/${m}/${y}`;
+}
+
+/** Accept only real clock times; reject Sheets Date/GMT junk (e.g. Dec 1899). */
+function formatEventTime(val) {
+    if (val == null || val === "") return "";
+    if (val instanceof Date && !isNaN(val.getTime())) {
+        // Excel/Sheets empty time often becomes ~1899-12-30
+        if (val.getFullYear() < 1950) return "";
+        const hh = String(val.getHours()).padStart(2, "0");
+        const mm = String(val.getMinutes()).padStart(2, "0");
+        if (hh === "00" && mm === "00") return "";
+        return `${hh}:${mm}`;
+    }
+    const raw = String(val).trim();
+    if (!raw || /GMT|India Standard Time|1899/i.test(raw)) return "";
+    const hm = raw.match(/^(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)?$/i);
+    if (hm) {
+        let h = parseInt(hm[1], 10);
+        const m = hm[2];
+        const ap = (hm[3] || "").toUpperCase();
+        if (ap === "PM" && h < 12) h += 12;
+        if (ap === "AM" && h === 12) h = 0;
+        return `${String(h).padStart(2, "0")}:${m}`;
+    }
+    // Try parsing as Date only if it looks time-like and not a garbage serial
+    if (/^\d{1,2}:\d{2}/.test(raw)) return raw.slice(0, 5);
+    return "";
 }
 
 /** Normalize MonthYear from Sheets (may be Date/GMT) → "July-2026" */
@@ -1049,11 +1082,6 @@ function showView(viewId, opts = {}) {
     document.querySelectorAll(".view-screen").forEach(el => el.classList.remove("active"));
     const target = document.getElementById("view-" + viewId);
     if (target) target.classList.add("active");
-    const backBtn = document.getElementById("headerBackBtn");
-    if (backBtn) {
-        if (viewId === "home") backBtn.classList.add("hidden");
-        else backBtn.classList.remove("hidden");
-    }
     window.scrollTo(0, 0);
 
     if (!fromPop && !suppressHistoryPush) {
@@ -1401,7 +1429,12 @@ async function refreshApplicationState(showUserAlert) {
                 return p;
             });
             globalAppState.expenses = result.data.expenses || [];
-            globalAppState.events = result.data.events || [];
+            globalAppState.events = (result.data.events || []).map(ev => {
+                const t = formatEventTime(ev.Time || ev.time);
+                if (t) { ev.Time = t; if (ev.time != null) ev.time = t; }
+                else { ev.Time = ""; if (ev.time != null) ev.time = ""; }
+                return ev;
+            });
             saveLocalCache();
             applyAppStateToViews();
             if (showUserAlert) {
@@ -2467,8 +2500,19 @@ async function commitReminderSettlement(sid, serviceKey, dueAmount) {
 function openStudentDetailModal(sid) {
     const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
     if (!s) return;
+    currentDetailStudentSid = sid;
+    populateStudentDetailForm(s);
+    setStudentDetailEditMode(false);
+    document.getElementById("studentDetailModalOverlay").classList.remove("hidden");
+}
+
+let currentDetailStudentSid = "";
+let studentDetailEditMode = false;
+
+function populateStudentDetailForm(s) {
+    if (!s) return;
     const maps = {
-        detailStudentID: sid,
+        detailStudentID: s.StudentID || s.studentid,
         editStudentName: s.StudentName || "",
         editDOB: formatToInputDate(s.DOB || s.dob),
         editDOJ: formatToInputDate(s.DOJ || s.doj),
@@ -2483,7 +2527,7 @@ function openStudentDetailModal(sid) {
     };
     Object.keys(maps).forEach(id => { const el = document.getElementById(id); if (el) el.value = maps[id]; });
     document.getElementById("detailStudentNameHeader").innerText = s.StudentName || "";
-    document.getElementById("detailStudentClassHeader").innerText = `${s.Class || ""} · View / Edit details`;
+    document.getElementById("detailStudentClassHeader").innerText = `${s.Class || ""} · Student details`;
     const bModel = s.BillingModel || s.billingmodel || "Regular";
     if (bModel === "Regular") { document.getElementById("editModelRegular").checked = true; handleEditFormBillingTypeChange("Regular"); }
     else { document.getElementById("editModelMonthly").checked = true; handleEditFormBillingTypeChange("Monthly"); }
@@ -2500,14 +2544,62 @@ function openStudentDetailModal(sid) {
     if ((s.Class || s.class) === "DayCare") updateEditClassFeeDefault();
     calculateEditDiscount();
     const photoSlot = document.getElementById("detailProfilePhotoSlot");
-    const imgCache = s.PhotoBase64 || "N/A";
+    const imgCache = s.PhotoBase64 || s.photobase64 || "N/A";
     photoSlot.innerHTML = (imgCache !== "N/A" && imgCache.length > 50) ? `<img src="${imgCache}" class="w-full h-full object-cover">` : (s.StudentName || "LM").charAt(0);
-    document.getElementById("studentDetailModalOverlay").classList.remove("hidden");
+    const photoInput = document.getElementById("editPhotoInput");
+    if (photoInput) photoInput.value = "";
 }
-function closeStudentDetailModal() { document.getElementById("studentDetailModalOverlay").classList.add("hidden"); }
+
+function setStudentDetailEditMode(on) {
+    studentDetailEditMode = !!on;
+    const form = document.getElementById("studentDetailUpdateForm");
+    if (!form) return;
+    form.querySelectorAll("input, select, textarea").forEach(el => {
+        if (el.type === "hidden") return;
+        if (el.type === "file") {
+            el.disabled = !on;
+            return;
+        }
+        if (el.type === "radio" || el.type === "checkbox") {
+            el.disabled = !on;
+            return;
+        }
+        el.readOnly = !on;
+        el.disabled = !on;
+        el.classList.toggle("opacity-80", !on);
+        el.classList.toggle("cursor-default", !on);
+    });
+    const photoWrap = document.getElementById("detailPhotoUploadWrap");
+    if (photoWrap) photoWrap.classList.toggle("hidden", !on);
+    const editBtn = document.getElementById("btnStudentDetailEdit");
+    const cancelBtn = document.getElementById("btnStudentDetailCancelEdit");
+    const editActions = document.getElementById("studentDetailEditActions");
+    const viewActions = document.getElementById("studentDetailViewActions");
+    if (editBtn) editBtn.classList.toggle("hidden", on);
+    if (cancelBtn) cancelBtn.classList.toggle("hidden", !on);
+    if (editActions) editActions.classList.toggle("hidden", !on);
+    if (viewActions) viewActions.classList.toggle("hidden", on);
+    const sub = document.getElementById("detailStudentClassHeader");
+    if (sub && currentDetailStudentSid) {
+        const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === currentDetailStudentSid);
+        if (s) sub.innerText = `${s.Class || ""} · ${on ? "Editing" : "Student details"}`;
+    }
+}
+
+function cancelStudentDetailEdit() {
+    const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === currentDetailStudentSid);
+    if (s) populateStudentDetailForm(s);
+    setStudentDetailEditMode(false);
+}
+
+function closeStudentDetailModal() {
+    setStudentDetailEditMode(false);
+    document.getElementById("studentDetailModalOverlay").classList.add("hidden");
+}
 
 async function handleStudentDetailUpdate(e) {
     e.preventDefault();
+    if (!studentDetailEditMode) return;
     const submitBtn = e.target.querySelector('button[type="submit"]');
     return withBusy(submitBtn, async () => {
         const sid = document.getElementById("detailStudentID").value;
@@ -2525,8 +2617,23 @@ async function handleStudentDetailUpdate(e) {
             document.getElementById("editDOJ").value
         ];
         await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData });
+        // Optimistic local update
+        const idx = globalAppState.students.findIndex(x => (x.StudentID || x.studentid) === sid);
+        if (idx >= 0) {
+            const cur = globalAppState.students[idx];
+            globalAppState.students[idx] = {
+                ...cur,
+                StudentName: rowData[1], DOB: rowData[2], Gender: rowData[3], Class: rowData[4],
+                GuardianName: rowData[5], Contact: rowData[6], AltContact: rowData[7], Address: rowData[8],
+                PhotoBase64: rowData[9], BillingModel: rowData[10],
+                CustomFee: rowData[11], AdmissionFee: rowData[12], StudentKitFee: rowData[13], SpareUniformFee: rowData[14],
+                VanFee: rowData[15], DayCareFee: rowData[16], OptMonthlyFee: rowData[17], BloodGroup: rowData[18], DOJ: rowData[19]
+            };
+            populateStudentDetailForm(globalAppState.students[idx]);
+        }
+        saveLocalCache();
+        setStudentDetailEditMode(false);
         alert("Saved!");
-        closeStudentDetailModal();
         await refreshApplicationState(false);
     }, "Saving…");
 }
@@ -2762,7 +2869,8 @@ function renderHomeEventsTicker() {
     const items = upcoming.map(e => {
         const title = e.Title || e.title || "Event";
         const date = formatDisplayDate(e.Date || e.date);
-        const time = (e.Time || e.time) ? " · " + (e.Time || e.time) : "";
+        const timeStr = formatEventTime(e.Time || e.time);
+        const time = timeStr ? " · " + timeStr : "";
         const cat = e.Category || e.category || "";
         return `<span class="ticker-item">${title} <span>${date}${time}${cat ? " · " + cat : ""}</span></span>`;
     }).join("");
@@ -2788,7 +2896,7 @@ function loadEventToEditForm(eventId) {
     document.getElementById("eventFormID").value = eventId;
     document.getElementById("eventInputTitle").value = e.Title || e.title || "";
     document.getElementById("eventInputDate").value = formatToInputDate(e.Date || e.date) || "";
-    document.getElementById("eventInputTime").value = e.Time || e.time || "";
+    document.getElementById("eventInputTime").value = formatEventTime(e.Time || e.time) || "";
     document.getElementById("eventInputCategory").value = e.Category || e.category || "Holiday";
     document.getElementById("eventFormHeader").innerText = "Edit Event";
     document.getElementById("eventFormActions").innerHTML = `
@@ -2815,7 +2923,7 @@ function renderCalendarAgenda() {
                 <div class="flex justify-between items-start gap-2">
                     <div class="min-w-0">
                         <h5 class="font-black truncate">${e.Title || e.title || ""}</h5>
-                        <span>${formatDisplayDate(e.Date || e.date)}${(e.Time || e.time) ? " · " + (e.Time || e.time) : ""}</span>
+                        <span>${formatDisplayDate(e.Date || e.date)}${formatEventTime(e.Time || e.time) ? " · " + formatEventTime(e.Time || e.time) : ""}</span>
                         ${(e.Category || e.category) ? `<p class="text-[10px] text-indigo-700 font-bold mt-1 uppercase">${e.Category || e.category}</p>` : ""}
                     </div>
                     <div class="flex flex-col gap-1 shrink-0">
@@ -2837,7 +2945,7 @@ async function handleEventSubmission(e) {
         const id = existingId || ("EVT-" + Date.now());
         const title = f.get("Title");
         const dateVal = f.get("Date");
-        const timeVal = f.get("Time") || "";
+        const timeVal = formatEventTime(f.get("Time")) || "";
         const category = f.get("Category");
         const row = [id, title, dateVal, timeVal, category];
         await postSheetRow({
