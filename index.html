@@ -177,7 +177,7 @@
                     <span id="tileBadgeFees" class="tile-badge">0</span>
                 </button>
                 <button type="button" class="home-tile border-violet-100" data-view="edit">
-                    <span class="tile-icon">✏️</span><span class="tile-label text-violet-950">Student Actions</span>
+                    <span class="tile-icon">✏️</span><span class="tile-label text-violet-950">Actions</span>
                 </button>
                 <button type="button" class="home-tile border-orange-100" data-view="expenses">
                     <span class="tile-icon">🧾</span><span class="tile-label text-orange-950">Expenses Entry</span>
@@ -485,16 +485,54 @@
             </div>
         </section>
 
-        <!-- EDIT -->
+        <!-- ACTIONS HUB -->
         <section id="view-edit" class="view-screen px-3 pb-6 pt-2">
             <div class="view-back-bar">
                 <button type="button" onclick="goAppBack()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Back</button>
-                <h3 class="font-black text-sm text-indigo-950">Student Actions</h3>
+                <h3 class="font-black text-sm text-indigo-950">Actions</h3>
             </div>
             <div class="view-scroll space-y-3">
-                <input type="text" id="editStudentSearch" oninput="renderEditStudentCards()" placeholder="Search by student name..." class="w-full px-3 py-3 rounded-xl text-sm border bg-white shadow-sm">
-                <p class="text-[11px] text-slate-500 font-semibold">Tap a student to edit profile or fees.</p>
-                <div id="editStudentCardsGrid" class="grid grid-cols-1 gap-3"></div>
+                <p class="text-[11px] text-slate-500 font-semibold">Year-end &amp; mid-year operations. Day-to-day viewing stays under Student Details.</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button type="button" onclick="showActionPanel('transfer')" class="bg-white border border-violet-100 rounded-2xl p-3 text-left shadow-sm">
+                        <p class="text-lg leading-none">🔀</p>
+                        <p class="text-[11px] font-black text-violet-950 mt-1">Class transfer</p>
+                        <p class="text-[9px] text-slate-500 font-semibold">Promote / move / graduate</p>
+                    </button>
+                    <button type="button" onclick="showActionPanel('discontinue')" class="bg-white border border-rose-100 rounded-2xl p-3 text-left shadow-sm">
+                        <p class="text-lg leading-none">🚪</p>
+                        <p class="text-[11px] font-black text-rose-900 mt-1">Discontinue</p>
+                        <p class="text-[9px] text-slate-500 font-semibold">Exit &amp; keep record</p>
+                    </button>
+                    <button type="button" onclick="showActionPanel('services')" class="bg-white border border-sky-100 rounded-2xl p-3 text-left shadow-sm">
+                        <p class="text-lg leading-none">🚐</p>
+                        <p class="text-[11px] font-black text-sky-950 mt-1">Monthly services</p>
+                        <p class="text-[9px] text-slate-500 font-semibold">Add or stop Van / DC</p>
+                    </button>
+                    <button type="button" onclick="showActionPanel('billing')" class="bg-white border border-amber-100 rounded-2xl p-3 text-left shadow-sm">
+                        <p class="text-lg leading-none">💳</p>
+                        <p class="text-[11px] font-black text-amber-950 mt-1">Billing model</p>
+                        <p class="text-[9px] text-slate-500 font-semibold">Regular ↔ Monthly</p>
+                    </button>
+                    <button type="button" onclick="showActionPanel('fees')" class="bg-white border border-indigo-100 rounded-2xl p-3 text-left shadow-sm">
+                        <p class="text-lg leading-none">🧾</p>
+                        <p class="text-[11px] font-black text-indigo-950 mt-1">Update fees</p>
+                        <p class="text-[9px] text-slate-500 font-semibold">After transfer / revise</p>
+                    </button>
+                    <button type="button" onclick="showActionPanel('former')" class="bg-white border border-slate-200 rounded-2xl p-3 text-left shadow-sm">
+                        <p class="text-lg leading-none">📁</p>
+                        <p class="text-[11px] font-black text-slate-800 mt-1">Former students</p>
+                        <p class="text-[9px] text-slate-500 font-semibold">Discontinued / graduated</p>
+                    </button>
+                </div>
+
+                <div id="actionPanel" class="hidden bg-white rounded-2xl border shadow-sm p-4 space-y-3">
+                    <div class="flex justify-between items-center gap-2">
+                        <h4 id="actionPanelTitle" class="font-black text-sm text-indigo-950">Action</h4>
+                        <button type="button" onclick="hideActionPanel()" class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-lg">Close</button>
+                    </div>
+                    <div id="actionPanelBody" class="space-y-3 text-xs font-semibold"></div>
+                </div>
             </div>
         </section>
 
@@ -585,10 +623,15 @@
             </div>
             <form id="studentDetailUpdateForm" onsubmit="handleStudentDetailUpdate(event)" class="text-xs font-semibold space-y-3">
                 <input type="hidden" id="detailStudentID"><input type="hidden" id="detailPhotoBase64">
+                <div id="detailPackageStrip" class="bg-slate-50 border rounded-xl p-2.5 text-[10px] font-bold flex justify-between items-center">
+                    <span class="text-slate-500">Package</span>
+                    <span id="detailPackageStatusLabel" class="text-rose-600">—</span>
+                </div>
+                <div id="detailServicesSummary" class="flex flex-wrap gap-1"></div>
                 <div id="editModelWrapper" class="bg-indigo-50 p-3 rounded-xl border flex flex-col gap-2">
                     <span class="font-black text-indigo-950">Billing Model</span>
-                    <label class="flex items-center gap-2"><input type="radio" id="editModelRegular" name="EditBillingModel" value="Regular" onchange="handleEditFormBillingTypeChange('Regular')"><span>Regular</span></label>
-                    <label class="flex items-center gap-2"><input type="radio" id="editModelMonthly" name="EditBillingModel" value="Monthly" onchange="handleEditFormBillingTypeChange('Monthly')"><span>Monthly</span></label>
+                    <label class="flex items-center gap-2"><input type="radio" id="editModelRegular" name="EditBillingModel" value="Regular" onchange="handleEditFormBillingTypeChange('Regular')"><span>Regular Base</span></label>
+                    <label class="flex items-center gap-2"><input type="radio" id="editModelMonthly" name="EditBillingModel" value="Monthly" onchange="handleEditFormBillingTypeChange('Monthly')"><span>Custom Monthly</span></label>
                 </div>
                 <div class="grid grid-cols-1 gap-3">
                     <div><label class="block mb-1 text-slate-400">Name</label><input type="text" id="editStudentName" required class="w-full p-2 border rounded-xl bg-slate-50"></div>
@@ -602,31 +645,40 @@
                     </div>
                 </div>
                 <div id="sectionEditFees" class="border-t pt-3 space-y-2">
-                    <div class="flex justify-between"><h5 class="font-black text-slate-600">Fees</h5><span id="editDiscountBadge" class="bg-indigo-50 text-indigo-700 font-extrabold px-2 py-0.5 rounded text-[11px]">₹0 Discount</span></div>
-                    <div id="editRowAnnualTuition"><label class="block mb-1 text-slate-400">Annual Tuition</label><input type="number" id="editCustomFee" oninput="calculateEditDiscount()" class="w-full p-2 border rounded-xl bg-slate-50"></div>
-                    <div id="editRowAdmissionFee" class="hidden"><label class="block mb-1 text-slate-400">Admission</label><input type="number" id="editAdmissionFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
-                    <div id="editRowKitFee" class="hidden"><label class="block mb-1 text-slate-400">Kit</label><input type="number" id="editStudentKitFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
-                    <div id="editRowUniformFee"><label class="block mb-1 text-slate-400">Uniform</label><input type="number" id="editSpareUniformFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div class="flex justify-between"><h5 class="font-black text-slate-600">Fee amounts</h5><span id="editDiscountBadge" class="bg-indigo-50 text-indigo-700 font-extrabold px-2 py-0.5 rounded text-[11px]">₹0 Discount</span></div>
+                    <div id="editRowAnnualTuition"><label class="block mb-1 text-slate-400">Fee agreed (₹)</label><input type="number" id="editCustomFee" oninput="calculateEditDiscount()" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div id="editRowAdmissionFee" class="hidden"><label class="block mb-1 text-slate-400">Admission Fee (₹)</label><input type="number" id="editAdmissionFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div id="editRowKitFee" class="hidden"><label class="block mb-1 text-slate-400">Education / Steam Kit (₹)</label><input type="number" id="editStudentKitFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div id="editRowUniformFee"><label class="block mb-1 text-slate-400">Uniform (one-time ₹)</label><input type="number" id="editSpareUniformFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div id="editBoxOptMonthly" class="hidden"><label class="block mb-1 text-slate-400">Custom Monthly (₹)</label><input type="number" id="editOptMonthlyFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
                 </div>
                 <div id="sectionEditServices" class="border-t pt-3 space-y-2">
-                    <h5 class="font-black text-slate-600">Monthly Services</h5>
-                    <div id="editBoxVan"><label class="block mb-1 text-slate-400">Van Fee</label><input type="number" id="editVanFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
-                    <div id="editBoxDayCare"><label class="block mb-1 text-slate-400">Day Care Fee</label><input type="number" id="editDayCareFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
-                    <div id="editBoxOptMonthly" class="hidden"><label class="block mb-1 text-slate-400">Opt Monthly</label><input type="number" id="editOptMonthlyFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <h5 class="font-black text-slate-600">Monthly services</h5>
+                    <div id="editBoxVan"><label class="block mb-1 text-slate-400">Van monthly (₹)</label><input type="number" id="editVanFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div id="editBoxDayCare"><label class="block mb-1 text-slate-400">Day Care monthly (₹)</label><input type="number" id="editDayCareFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
                 </div>
                 <div class="grid grid-cols-1 gap-3 border-t pt-3">
                     <div><label class="block mb-1 text-slate-400">Guardian</label><input type="text" id="editGuardianName" required class="w-full p-2 border rounded-xl bg-slate-50"></div>
-                    <div><label class="block mb-1 text-slate-400">Contact</label><input type="tel" id="editContact" required class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div><label class="block mb-1 text-slate-400">Mobile</label><input type="tel" id="editContact" required class="w-full p-2 border rounded-xl bg-slate-50"></div>
                     <div><label class="block mb-1 text-slate-400">Alt Contact</label><input type="tel" id="editAltContact" class="w-full p-2 border rounded-xl bg-slate-50"></div>
                     <div><label class="block mb-1 text-slate-400">Address</label><input type="text" id="editAddress" class="w-full p-2 border rounded-xl bg-slate-50"></div>
-                    <div><label class="block mb-1 text-slate-400">Blood Group</label><input type="text" id="editBloodGroup" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div>
+                        <label class="block mb-1 text-slate-400">Blood Group</label>
+                        <select id="editBloodGroup" class="w-full p-2 border rounded-xl bg-slate-50">
+                            <option value="">Select</option>
+                            <option value="A+">A+</option><option value="A-">A-</option>
+                            <option value="B+">B+</option><option value="B-">B-</option>
+                            <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                            <option value="O+">O+</option><option value="O-">O-</option>
+                            <option value="Unknown">Unknown</option>
+                        </select>
+                    </div>
                     <div><label class="block mb-1 text-slate-400">Gender</label><select id="editGender" class="w-full p-2 border rounded-xl bg-slate-50"><option value="Boy">Boy</option><option value="Girl">Girl</option></select></div>
                     <div id="detailPhotoUploadWrap"><label class="block mb-1 text-slate-400">Replace Photo</label><input type="file" id="editPhotoInput" accept="image/*" onchange="processEditImageUpload(this)" class="w-full text-xs"></div>
                 </div>
                 <div id="studentDetailEditActions" class="hidden flex flex-col gap-2 pt-3 border-t">
                     <button type="submit" class="w-full px-4 py-2.5 bg-indigo-600 text-white font-bold rounded-xl">Save Changes</button>
                     <button type="button" onclick="cancelStudentDetailEdit()" class="w-full px-4 py-2 bg-slate-100 text-slate-600 font-bold rounded-xl">Cancel Edit</button>
-                    <button type="button" onclick="triggerDeleteStudent()" class="w-full px-4 py-2 bg-rose-100 text-rose-600 font-bold rounded-xl">Delete Student</button>
                 </div>
                 <div id="studentDetailViewActions" class="pt-3 border-t">
                     <button type="button" onclick="closeStudentDetailModal()" class="w-full px-4 py-2 bg-slate-100 text-slate-600 font-bold rounded-xl">Close</button>
@@ -1093,7 +1145,7 @@ function showView(viewId, opts = {}) {
     currentViewId = viewId;
 
     if (viewId === "search") renderStudentCards();
-    if (viewId === "edit") renderEditStudentCards();
+    if (viewId === "edit") { hideActionPanel(); }
     if (viewId === "fees") renderFrontPageReminders();
     if (viewId === "rosters") renderCohortHeadcounts();
     if (viewId === "finances" || viewId === "expenses") renderFinanceLedger();
@@ -1496,7 +1548,10 @@ async function handleStudentSubmission(event) {
             fees.dayCareFee,
             fees.optMonthly,
             document.getElementById("intakeBloodGroup").value,
-            document.getElementById("intakeDOJ").value
+            document.getElementById("intakeDOJ").value,
+            "Active",
+            "",
+            ""
         ];
 
         const posts = [
@@ -1544,7 +1599,7 @@ async function handleStudentSubmission(event) {
 }
 
 function renderCohortHeadcounts() {
-    const list = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED");
+    const list = globalAppState.students.filter(isActiveStudent);
     const set = (id, t) => { const el = document.getElementById(id); if (el) el.innerText = t; };
     const nDR = list.filter(s => s.Class === "DR").length;
     const nEW = list.filter(s => s.Class === "EW").length;
@@ -1570,6 +1625,68 @@ function getPackageBalance(s) {
     const total = getOneTimeTuitionBilled(s);
     const paid = getTermFeesPaid(sid);
     return { total, paid, balance: Math.max(0, total - paid) };
+}
+
+function getStudentStatus(s) {
+    if (!s) return "Active";
+    const name = (s.StudentName || s.studentname || "").toString().trim();
+    if (name === "DELETED") return "Discontinued";
+    const st = (s.Status || s.status || "").toString().trim();
+    if (!st) return "Active";
+    return st;
+}
+
+function isActiveStudent(s) {
+    if (!s) return false;
+    const name = (s.StudentName || s.studentname || "").toString().trim();
+    if (!name || name === "DELETED") return false;
+    return getStudentStatus(s) === "Active";
+}
+
+function isFormerStudent(s) {
+    if (!s) return false;
+    const name = (s.StudentName || s.studentname || "").toString().trim();
+    if (!name || name === "DELETED") return false;
+    const st = getStudentStatus(s);
+    return st === "Discontinued" || st === "Graduated";
+}
+
+function buildStudentSheetRow(s) {
+    return [
+        s.StudentID || s.studentid || "",
+        s.StudentName || s.studentname || "",
+        formatToInputDate(s.DOB || s.dob) || (s.DOB || s.dob || ""),
+        s.Gender || s.gender || "Boy",
+        s.Class || s.class || "DR",
+        s.GuardianName || s.guardianname || "",
+        s.Contact || s.contact || "",
+        s.AltContact || s.altcontact || "N/A",
+        s.Address || s.address || "N/A",
+        s.PhotoBase64 || s.photobase64 || "N/A",
+        s.BillingModel || s.billingmodel || "Regular",
+        Number(s.CustomFee || s.customfee) || 0,
+        Number(s.AdmissionFee || s.admissionfee) || 0,
+        Number(s.StudentKitFee || s.studentkitfee) || 0,
+        Number(s.SpareUniformFee || s.spareuniformfee) || 0,
+        Number(s.VanFee || s.vanfee) || 0,
+        Number(s.DayCareFee || s.daycarefee) || 0,
+        Number(s.OptMonthlyFee || s.optmonthlyfee) || 0,
+        s.BloodGroup || s.bloodgroup || "",
+        formatToInputDate(s.DOJ || s.doj) || (s.DOJ || s.doj || ""),
+        getStudentStatus(s) || "Active",
+        s.ExitDate || s.exitdate || "",
+        s.ExitReason || s.exitreason || ""
+    ];
+}
+
+async function persistStudentRecord(s) {
+    const sid = s.StudentID || s.studentid;
+    const row = buildStudentSheetRow(s);
+    await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: row });
+    const idx = globalAppState.students.findIndex(x => (x.StudentID || x.studentid) === sid);
+    if (idx >= 0) globalAppState.students[idx] = { ...globalAppState.students[idx], ...s };
+    else globalAppState.students.push(s);
+    saveLocalCache();
 }
 
 function formatPackageStatusChip(s) {
@@ -2023,7 +2140,7 @@ function renderStudentCards() {
     const grid = document.getElementById("studentCardsGrid");
     if (!grid) return;
     grid.innerHTML = "";
-    let list = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED");
+    let list = globalAppState.students.filter(isActiveStudent);
     if (currentActiveCohortFilter !== "ALL") list = list.filter(s => s.Class === currentActiveCohortFilter);
     const search = (document.getElementById("rosterSearch")?.value || "").toLowerCase();
     if (search) list = list.filter(s => (s.StudentName || "").toLowerCase().includes(search));
@@ -2063,34 +2180,415 @@ function renderStudentCards() {
 }
 
 function renderEditStudentCards() {
-    const grid = document.getElementById("editStudentCardsGrid");
-    if (!grid) return;
-    grid.innerHTML = "";
-    let list = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED");
-    const search = (document.getElementById("editStudentSearch")?.value || "").toLowerCase().trim();
-    if (search) list = list.filter(s => (s.StudentName || "").toLowerCase().includes(search));
-    else list = list.slice(0, 40);
-    if (!list.length) { grid.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">No matching students.</p>'; return; }
+    // Actions hub no longer lists students here; panels render on demand.
+    if (currentActionPanel) showActionPanel(currentActionPanel);
+}
 
-    list.forEach((s, index) => {
+let currentActionPanel = "";
+
+function hideActionPanel() {
+    currentActionPanel = "";
+    const panel = document.getElementById("actionPanel");
+    if (panel) panel.classList.add("hidden");
+}
+
+function showActionPanel(kind) {
+    currentActionPanel = kind;
+    const panel = document.getElementById("actionPanel");
+    const title = document.getElementById("actionPanelTitle");
+    const body = document.getElementById("actionPanelBody");
+    if (!panel || !body) return;
+    panel.classList.remove("hidden");
+    const titles = {
+        transfer: "Class transfer / promote",
+        discontinue: "Discontinue student",
+        services: "Monthly services",
+        billing: "Change billing model",
+        fees: "Update fees after transfer",
+        former: "Former students"
+    };
+    if (title) title.innerText = titles[kind] || "Action";
+    if (kind === "transfer") { body.innerHTML = buildTransferActionHtml(); renderTransferStudentChecks(); }
+    else if (kind === "discontinue") body.innerHTML = buildDiscontinueActionHtml();
+    else if (kind === "services") body.innerHTML = buildServicesActionHtml();
+    else if (kind === "billing") body.innerHTML = buildBillingActionHtml();
+    else if (kind === "fees") body.innerHTML = buildFeesActionHtml();
+    else if (kind === "former") body.innerHTML = buildFormerStudentsHtml();
+    else body.innerHTML = "";
+}
+
+function activeStudentsSorted() {
+    return globalAppState.students.filter(isActiveStudent)
+        .sort((a, b) => String(a.StudentName || "").localeCompare(String(b.StudentName || "")));
+}
+
+function studentOptionListHtml(includeClass) {
+    return activeStudentsSorted().map(s => {
         const sid = s.StudentID || s.studentid;
-        const name = s.StudentName || "";
-        const color = AVATAR_COLORS[index % AVATAR_COLORS.length];
-        const img = (s.PhotoBase64 && s.PhotoBase64 !== "N/A" && s.PhotoBase64.length > 50)
-            ? `<img src="${s.PhotoBase64}" class="w-full h-full object-cover">`
-            : `<div class="w-full h-full ${color} text-white font-black flex items-center justify-center uppercase">${name.charAt(0)}</div>`;
-        grid.insertAdjacentHTML("beforeend", `
-            <button type="button" onclick="openStudentDetailModal('${sid}')" class="w-full text-left bg-white rounded-2xl p-4 border border-violet-100 shadow-sm">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-xl overflow-hidden border flex-shrink-0">${img}</div>
-                    <div class="min-w-0 flex-1">
-                        <h4 class="font-black text-sm truncate">${name}</h4>
-                        <p class="text-[10px] font-bold text-violet-700 uppercase">${s.Class || ""}</p>
-                        <p class="text-[11px] text-slate-600 font-semibold mt-1">${s.GuardianName || s.guardianname || "N/A"} · ${s.Contact || s.contact || "N/A"}</p>
-                    </div>
-                    <span class="text-violet-600 text-xs font-black">Edit →</span>
-                </div>
-            </button>`);
+        const cls = s.Class || "";
+        return `<option value="${sid}">${s.StudentName || ""}${includeClass ? " · " + cls : ""}</option>`;
+    }).join("");
+}
+
+function buildTransferActionHtml() {
+    return `
+        <p class="text-[10px] text-slate-500">Select class filter, tick students, choose destination. RTF2 → Graduate exits the school.</p>
+        <div class="grid grid-cols-2 gap-2">
+            <div>
+                <label class="block mb-1 text-slate-500">From class</label>
+                <select id="actTransferFrom" onchange="renderTransferStudentChecks()" class="w-full p-2 border rounded-xl bg-slate-50">
+                    <option value="ALL">All classes</option>
+                    <option value="DR">DR</option><option value="EW">EW</option><option value="RTF1">RTF1</option><option value="RTF2">RTF2</option><option value="DayCare">Day Care</option>
+                </select>
+            </div>
+            <div>
+                <label class="block mb-1 text-slate-500">To class</label>
+                <select id="actTransferTo" class="w-full p-2 border rounded-xl bg-slate-50">
+                    <option value="DR">DR</option><option value="EW">EW</option><option value="RTF1">RTF1</option><option value="RTF2">RTF2</option>
+                    <option value="DayCare">Day Care</option>
+                    <option value="GRADUATE">Graduate / leave school</option>
+                </select>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <button type="button" onclick="setAllTransferChecks(true)" class="flex-1 bg-slate-100 font-bold py-1.5 rounded-lg text-[10px]">Select all</button>
+            <button type="button" onclick="setAllTransferChecks(false)" class="flex-1 bg-slate-100 font-bold py-1.5 rounded-lg text-[10px]">Clear</button>
+        </div>
+        <div id="actTransferList" class="max-h-48 overflow-y-auto space-y-1 border rounded-xl p-2 bg-slate-50"></div>
+        <button type="button" onclick="commitClassTransfer()" class="w-full bg-violet-600 text-white font-bold py-2.5 rounded-xl disabled:opacity-60">Transfer selected</button>
+        <p class="text-[10px] text-amber-700 font-semibold">After transfer, use <strong>Update fees</strong> to revise Fee agreed for the new class.</p>`;
+}
+
+function renderTransferStudentChecks() {
+    const from = document.getElementById("actTransferFrom")?.value || "ALL";
+    const box = document.getElementById("actTransferList");
+    if (!box) return;
+    let list = activeStudentsSorted();
+    if (from !== "ALL") list = list.filter(s => (s.Class || s.class) === from);
+    if (!list.length) { box.innerHTML = '<p class="text-slate-400 text-[11px]">No students.</p>'; return; }
+    box.innerHTML = list.map(s => {
+        const sid = s.StudentID || s.studentid;
+        return `<label class="flex items-center gap-2 bg-white border rounded-lg px-2 py-1.5">
+            <input type="checkbox" class="act-transfer-check" value="${sid}">
+            <span class="font-bold text-slate-800 truncate">${s.StudentName || ""}</span>
+            <span class="ml-auto text-[9px] font-black text-violet-700 uppercase">${s.Class || ""}</span>
+        </label>`;
+    }).join("");
+}
+
+function setAllTransferChecks(on) {
+    document.querySelectorAll(".act-transfer-check").forEach(c => { c.checked = !!on; });
+}
+
+async function commitClassTransfer() {
+    if (isLmBusy) return;
+    const to = document.getElementById("actTransferTo")?.value;
+    const ids = [...document.querySelectorAll(".act-transfer-check:checked")].map(c => c.value);
+    if (!ids.length) { alert("Select at least one student."); return; }
+    if (!to) { alert("Choose destination class."); return; }
+    const graduate = to === "GRADUATE";
+    if (!confirm(graduate
+        ? `Mark ${ids.length} student(s) as Graduated / left school?`
+        : `Transfer ${ids.length} student(s) to ${to}?`)) return;
+    return withBusy(null, async () => {
+        for (const sid of ids) {
+            const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+            if (!s) continue;
+            const fromClass = s.Class || s.class || "";
+            if (graduate) {
+                s.Status = "Graduated";
+                s.ExitDate = todayIsoDate();
+                s.ExitReason = "Graduated / left after " + fromClass;
+            } else {
+                s.Class = to;
+                s.class = to;
+                s.Status = "Active";
+            }
+            await persistStudentRecord(s);
+        }
+        alert(graduate ? "Marked as graduated." : "Transfer complete. Update fees if needed.");
+        applyAppStateToViews();
+        showActionPanel(graduate ? "former" : "fees");
+        if (!graduate) {
+            const first = ids[0];
+            const sel = document.getElementById("actFeesStudent");
+            if (sel) sel.value = first;
+            loadFeesActionStudent();
+        }
+    });
+}
+
+function buildDiscontinueActionHtml() {
+    return `
+        <p class="text-[10px] text-slate-500">Student leaves mid-stream. Record is kept under Former students (not wiped).</p>
+        <div>
+            <label class="block mb-1 text-slate-500">Student</label>
+            <select id="actDiscStudent" class="w-full p-2 border rounded-xl bg-slate-50">
+                <option value="">Select…</option>${studentOptionListHtml(true)}
+            </select>
+        </div>
+        <div>
+            <label class="block mb-1 text-slate-500">Reason (optional)</label>
+            <input type="text" id="actDiscReason" placeholder="Relocated / discontinued / etc." class="w-full p-2 border rounded-xl bg-slate-50">
+        </div>
+        <button type="button" onclick="commitDiscontinue()" class="w-full bg-rose-600 text-white font-bold py-2.5 rounded-xl">Discontinue &amp; archive</button>`;
+}
+
+async function commitDiscontinue() {
+    if (isLmBusy) return;
+    const sid = document.getElementById("actDiscStudent")?.value;
+    if (!sid) { alert("Select a student."); return; }
+    const reason = (document.getElementById("actDiscReason")?.value || "").trim() || "Discontinued";
+    if (!confirm("Archive this student? They will leave active lists but remain under Former students.")) return;
+    return withBusy(null, async () => {
+        const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+        if (!s) return;
+        s.Status = "Discontinued";
+        s.ExitDate = todayIsoDate();
+        s.ExitReason = reason;
+        await persistStudentRecord(s);
+        alert("Student archived.");
+        applyAppStateToViews();
+        showActionPanel("former");
+    });
+}
+
+function buildServicesActionHtml() {
+    return `
+        <p class="text-[10px] text-slate-500">Add or stop Van / Day Care / Custom Monthly for a student.</p>
+        <div>
+            <label class="block mb-1 text-slate-500">Student</label>
+            <select id="actSvcStudent" onchange="loadServicesActionStudent()" class="w-full p-2 border rounded-xl bg-slate-50">
+                <option value="">Select…</option>${studentOptionListHtml(true)}
+            </select>
+        </div>
+        <div id="actSvcFields" class="space-y-2 hidden">
+            <div><label class="block mb-1 text-slate-500">Van monthly (₹) — 0 to stop</label><input type="number" id="actSvcVan" min="0" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+            <div><label class="block mb-1 text-slate-500">Day Care monthly (₹) — 0 to stop</label><input type="number" id="actSvcDC" min="0" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+            <div id="actSvcOptWrap"><label class="block mb-1 text-slate-500">Custom Monthly (₹) — 0 to stop</label><input type="number" id="actSvcOpt" min="0" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+            <button type="button" onclick="commitServicesUpdate()" class="w-full bg-sky-600 text-white font-bold py-2.5 rounded-xl">Save services</button>
+        </div>`;
+}
+
+function loadServicesActionStudent() {
+    const sid = document.getElementById("actSvcStudent")?.value;
+    const wrap = document.getElementById("actSvcFields");
+    if (!sid || !wrap) { if (wrap) wrap.classList.add("hidden"); return; }
+    const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+    if (!s) return;
+    wrap.classList.remove("hidden");
+    document.getElementById("actSvcVan").value = Number(s.VanFee || s.vanfee) || 0;
+    document.getElementById("actSvcDC").value = Number(s.DayCareFee || s.daycarefee) || 0;
+    document.getElementById("actSvcOpt").value = Number(s.OptMonthlyFee || s.optmonthlyfee) || 0;
+    const isDC = (s.Class || s.class) === "DayCare";
+    const optWrap = document.getElementById("actSvcOptWrap");
+    if (optWrap) optWrap.style.display = isDC ? "none" : "block";
+}
+
+async function commitServicesUpdate() {
+    if (isLmBusy) return;
+    const sid = document.getElementById("actSvcStudent")?.value;
+    if (!sid) return;
+    return withBusy(null, async () => {
+        const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+        if (!s) return;
+        s.VanFee = Number(document.getElementById("actSvcVan")?.value) || 0;
+        s.vanfee = s.VanFee;
+        s.DayCareFee = Number(document.getElementById("actSvcDC")?.value) || 0;
+        s.daycarefee = s.DayCareFee;
+        if ((s.Class || s.class) !== "DayCare") {
+            s.OptMonthlyFee = Number(document.getElementById("actSvcOpt")?.value) || 0;
+            s.optmonthlyfee = s.OptMonthlyFee;
+        }
+        await persistStudentRecord(s);
+        alert("Services updated.");
+        applyAppStateToViews();
+    });
+}
+
+function buildBillingActionHtml() {
+    return `
+        <p class="text-[10px] text-slate-500">Switch Regular Base ↔ Custom Monthly. Adjust fee fields after switching.</p>
+        <div>
+            <label class="block mb-1 text-slate-500">Student</label>
+            <select id="actBillStudent" onchange="loadBillingActionStudent()" class="w-full p-2 border rounded-xl bg-slate-50">
+                <option value="">Select…</option>${studentOptionListHtml(true)}
+            </select>
+        </div>
+        <div id="actBillFields" class="space-y-2 hidden">
+            <p id="actBillCurrent" class="text-[10px] font-bold text-slate-600"></p>
+            <div>
+                <label class="block mb-1 text-slate-500">New billing model</label>
+                <select id="actBillModel" class="w-full p-2 border rounded-xl bg-slate-50">
+                    <option value="Regular">Regular Base</option>
+                    <option value="Monthly">Custom Monthly</option>
+                </select>
+            </div>
+            <div id="actBillRegularWrap"><label class="block mb-1 text-slate-500">Fee agreed (₹)</label><input type="number" id="actBillFeeAgreed" min="0" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+            <div id="actBillMonthlyWrap" class="hidden space-y-2">
+                <div><label class="block mb-1 text-slate-500">Custom Monthly (₹)</label><input type="number" id="actBillOpt" min="0" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                <div><label class="block mb-1 text-slate-500">Admission Fee (₹)</label><input type="number" id="actBillAdm" min="0" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+            </div>
+            <button type="button" onclick="document.getElementById('actBillModel').dispatchEvent(new Event('change'))" class="hidden"></button>
+            <button type="button" onclick="commitBillingModelChange()" class="w-full bg-amber-600 text-white font-bold py-2.5 rounded-xl">Save billing model</button>
+        </div>`;
+}
+
+function loadBillingActionStudent() {
+    const sid = document.getElementById("actBillStudent")?.value;
+    const wrap = document.getElementById("actBillFields");
+    if (!sid || !wrap) { if (wrap) wrap.classList.add("hidden"); return; }
+    const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+    if (!s) return;
+    wrap.classList.remove("hidden");
+    const model = s.BillingModel || s.billingmodel || "Regular";
+    document.getElementById("actBillCurrent").innerText = "Current: " + (model === "Monthly" ? "Custom Monthly" : "Regular Base");
+    document.getElementById("actBillModel").value = model;
+    document.getElementById("actBillFeeAgreed").value = Number(s.CustomFee || s.customfee) || 0;
+    document.getElementById("actBillOpt").value = Number(s.OptMonthlyFee || s.optmonthlyfee) || 0;
+    document.getElementById("actBillAdm").value = Number(s.AdmissionFee || s.admissionfee) || 0;
+    const modelEl = document.getElementById("actBillModel");
+    modelEl.onchange = () => {
+        const m = modelEl.value;
+        document.getElementById("actBillRegularWrap").style.display = m === "Regular" ? "block" : "none";
+        document.getElementById("actBillMonthlyWrap").style.display = m === "Monthly" ? "block" : "none";
+    };
+    modelEl.dispatchEvent(new Event("change"));
+}
+
+async function commitBillingModelChange() {
+    if (isLmBusy) return;
+    const sid = document.getElementById("actBillStudent")?.value;
+    if (!sid) return;
+    const model = document.getElementById("actBillModel")?.value || "Regular";
+    if (!confirm("Change billing model to " + (model === "Monthly" ? "Custom Monthly" : "Regular Base") + "?")) return;
+    return withBusy(null, async () => {
+        const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+        if (!s) return;
+        s.BillingModel = model;
+        s.billingmodel = model;
+        if (model === "Regular") {
+            s.CustomFee = Number(document.getElementById("actBillFeeAgreed")?.value) || 0;
+            s.customfee = s.CustomFee;
+            s.OptMonthlyFee = 0;
+            s.optmonthlyfee = 0;
+        } else {
+            s.CustomFee = 0;
+            s.customfee = 0;
+            s.OptMonthlyFee = Number(document.getElementById("actBillOpt")?.value) || 0;
+            s.optmonthlyfee = s.OptMonthlyFee;
+            s.AdmissionFee = Number(document.getElementById("actBillAdm")?.value) || 0;
+            s.admissionfee = s.AdmissionFee;
+        }
+        await persistStudentRecord(s);
+        alert("Billing model updated.");
+        applyAppStateToViews();
+    });
+}
+
+function buildFeesActionHtml() {
+    return `
+        <p class="text-[10px] text-slate-500">Revise Fee agreed / package amounts after a class transfer.</p>
+        <div>
+            <label class="block mb-1 text-slate-500">Student</label>
+            <select id="actFeesStudent" onchange="loadFeesActionStudent()" class="w-full p-2 border rounded-xl bg-slate-50">
+                <option value="">Select…</option>${studentOptionListHtml(true)}
+            </select>
+        </div>
+        <div id="actFeesFields" class="space-y-2 hidden">
+            <p id="actFeesMeta" class="text-[10px] font-bold text-slate-600"></p>
+            <div id="actFeesRegularWrap"><label class="block mb-1 text-slate-500">Fee agreed (₹)</label><input type="number" id="actFeesAgreed" min="0" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+            <div id="actFeesMonthlyWrap" class="hidden space-y-2">
+                <div><label class="block mb-1 text-slate-500">Custom Monthly (₹)</label><input type="number" id="actFeesOpt" min="0" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                <div><label class="block mb-1 text-slate-500">Admission Fee (₹)</label><input type="number" id="actFeesAdm" min="0" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                <div><label class="block mb-1 text-slate-500">Kit (₹)</label><input type="number" id="actFeesKit" min="0" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+            </div>
+            <div><label class="block mb-1 text-slate-500">Uniform one-time (₹)</label><input type="number" id="actFeesUni" min="0" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+            <button type="button" onclick="commitFeesUpdate()" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-xl">Save fee amounts</button>
+        </div>`;
+}
+
+function loadFeesActionStudent() {
+    const sid = document.getElementById("actFeesStudent")?.value;
+    const wrap = document.getElementById("actFeesFields");
+    if (!sid || !wrap) { if (wrap) wrap.classList.add("hidden"); return; }
+    const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+    if (!s) return;
+    wrap.classList.remove("hidden");
+    const model = s.BillingModel || s.billingmodel || "Regular";
+    const { total, paid, balance } = getPackageBalance(s);
+    document.getElementById("actFeesMeta").innerText = `${s.Class || ""} · ${model === "Monthly" ? "Custom Monthly" : "Regular"} · Package ₹${total} · Paid ₹${paid} · Bal ₹${balance}`;
+    document.getElementById("actFeesAgreed").value = Number(s.CustomFee || s.customfee) || 0;
+    document.getElementById("actFeesOpt").value = Number(s.OptMonthlyFee || s.optmonthlyfee) || 0;
+    document.getElementById("actFeesAdm").value = Number(s.AdmissionFee || s.admissionfee) || 0;
+    document.getElementById("actFeesKit").value = Number(s.StudentKitFee || s.studentkitfee) || 0;
+    document.getElementById("actFeesUni").value = Number(s.SpareUniformFee || s.spareuniformfee) || 0;
+    document.getElementById("actFeesRegularWrap").style.display = model === "Regular" ? "block" : "none";
+    document.getElementById("actFeesMonthlyWrap").style.display = model === "Monthly" ? "block" : "none";
+}
+
+async function commitFeesUpdate() {
+    if (isLmBusy) return;
+    const sid = document.getElementById("actFeesStudent")?.value;
+    if (!sid) return;
+    return withBusy(null, async () => {
+        const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+        if (!s) return;
+        const model = s.BillingModel || s.billingmodel || "Regular";
+        if (model === "Regular") {
+            s.CustomFee = Number(document.getElementById("actFeesAgreed")?.value) || 0;
+            s.customfee = s.CustomFee;
+        } else {
+            s.OptMonthlyFee = Number(document.getElementById("actFeesOpt")?.value) || 0;
+            s.optmonthlyfee = s.OptMonthlyFee;
+            s.AdmissionFee = Number(document.getElementById("actFeesAdm")?.value) || 0;
+            s.admissionfee = s.AdmissionFee;
+            s.StudentKitFee = Number(document.getElementById("actFeesKit")?.value) || 0;
+            s.studentkitfee = s.StudentKitFee;
+        }
+        s.SpareUniformFee = Number(document.getElementById("actFeesUni")?.value) || 0;
+        s.spareuniformfee = s.SpareUniformFee;
+        await persistStudentRecord(s);
+        alert("Fees updated.");
+        loadFeesActionStudent();
+        applyAppStateToViews();
+    });
+}
+
+function buildFormerStudentsHtml() {
+    const list = globalAppState.students.filter(isFormerStudent)
+        .sort((a, b) => String(b.ExitDate || "").localeCompare(String(a.ExitDate || "")));
+    if (!list.length) return '<p class="text-slate-400 text-[11px]">No former students yet.</p>';
+    return `<div class="space-y-2 max-h-72 overflow-y-auto">${list.map(s => {
+        const sid = s.StudentID || s.studentid;
+        const st = getStudentStatus(s);
+        return `<div class="bg-slate-50 border rounded-xl p-2.5 flex justify-between items-center gap-2">
+            <div class="min-w-0">
+                <p class="font-black text-slate-800 truncate">${s.StudentName || ""}</p>
+                <p class="text-[10px] text-slate-500 font-semibold">${st} · ${s.Class || ""} · ${formatDisplayDate(s.ExitDate || s.exitdate) || "—"}</p>
+                <p class="text-[10px] text-slate-400 truncate">${s.ExitReason || s.exitreason || ""}</p>
+            </div>
+            <div class="flex flex-col gap-1 shrink-0">
+                <button type="button" onclick="openStudentDetailModal('${sid}')" class="text-indigo-700 font-bold text-[10px]">View</button>
+                <button type="button" onclick="reactivateStudent('${sid}')" class="text-emerald-700 font-bold text-[10px]">Reactivate</button>
+            </div>
+        </div>`;
+    }).join("")}</div>`;
+}
+
+async function reactivateStudent(sid) {
+    if (isLmBusy) return;
+    if (!confirm("Reactivate this student as Active?")) return;
+    return withBusy(null, async () => {
+        const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+        if (!s) return;
+        s.Status = "Active";
+        s.ExitDate = "";
+        s.ExitReason = "";
+        await persistStudentRecord(s);
+        alert("Student reactivated.");
+        applyAppStateToViews();
+        showActionPanel("former");
     });
 }
 
@@ -2119,7 +2617,7 @@ function renderFrontPageReminders() {
 
     const emptyMsg = '<p class="text-slate-400 text-[11px]">No outstanding dues.</p>';
 
-    globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED").forEach(s => {
+    globalAppState.students.filter(isActiveStudent).forEach(s => {
         const sid = s.StudentID || s.studentid;
         const logs = getStudentPayments(sid);
         const monthRow = getOrCreateMonthPaymentMeta(sid, period) || {};
@@ -2548,6 +3046,33 @@ function populateStudentDetailForm(s) {
     photoSlot.innerHTML = (imgCache !== "N/A" && imgCache.length > 50) ? `<img src="${imgCache}" class="w-full h-full object-cover">` : (s.StudentName || "LM").charAt(0);
     const photoInput = document.getElementById("editPhotoInput");
     if (photoInput) photoInput.value = "";
+
+    const { total, balance } = getPackageBalance(s);
+    const pkgLabel = document.getElementById("detailPackageStatusLabel");
+    if (pkgLabel) {
+        if (total <= 0) { pkgLabel.innerText = "No package"; pkgLabel.className = "text-slate-500"; }
+        else if (balance <= 0) { pkgLabel.innerText = "Settled"; pkgLabel.className = "text-emerald-700"; }
+        else { pkgLabel.innerText = `Pending ₹${balance} / ₹${total}`; pkgLabel.className = "text-rose-600"; }
+    }
+    const svcBox = document.getElementById("detailServicesSummary");
+    if (svcBox) {
+        const chips = [];
+        const model = s.BillingModel || s.billingmodel || "Regular";
+        chips.push(`<span class="bg-indigo-50 text-indigo-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">${model === "Monthly" ? "Custom Monthly" : "Regular"}</span>`);
+        if (Number(s.VanFee || s.vanfee) > 0) chips.push(`<span class="bg-sky-100 text-sky-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">Van ₹${Number(s.VanFee || s.vanfee)}</span>`);
+        if (Number(s.DayCareFee || s.daycarefee) > 0 || (s.Class || s.class) === "DayCare") {
+            const rate = (s.Class || s.class) === "DayCare" ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : Number(s.DayCareFee || s.daycarefee);
+            chips.push(`<span class="bg-violet-100 text-violet-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">DC ₹${rate}</span>`);
+        }
+        if (model === "Monthly" && Number(s.OptMonthlyFee || s.optmonthlyfee) > 0 && (s.Class || s.class) !== "DayCare") {
+            chips.push(`<span class="bg-slate-200 text-slate-700 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">MO ₹${Number(s.OptMonthlyFee || s.optmonthlyfee)}</span>`);
+        }
+        if (Number(s.StudentKitFee || s.studentkitfee) > 0) chips.push(`<span class="bg-amber-100 text-amber-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">Kit ₹${Number(s.StudentKitFee || s.studentkitfee)}</span>`);
+        if (Number(s.SpareUniformFee || s.spareuniformfee) > 0) chips.push(`<span class="bg-orange-100 text-orange-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">Uni ₹${Number(s.SpareUniformFee || s.spareuniformfee)}</span>`);
+        const st = getStudentStatus(s);
+        if (st !== "Active") chips.push(`<span class="bg-rose-100 text-rose-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">${st}</span>`);
+        svcBox.innerHTML = chips.join("");
+    }
 }
 
 function setStudentDetailEditMode(on) {
@@ -2603,35 +3128,31 @@ async function handleStudentDetailUpdate(e) {
     const submitBtn = e.target.querySelector('button[type="submit"]');
     return withBusy(submitBtn, async () => {
         const sid = document.getElementById("detailStudentID").value;
+        const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+        if (!s) return;
         const model = document.querySelector('input[name="EditBillingModel"]:checked')?.value || "Regular";
-        const rowData = [
-            sid, document.getElementById("editStudentName").value, document.getElementById("editDOB").value,
-            document.getElementById("editGender").value, document.getElementById("editClass").value,
-            document.getElementById("editGuardianName").value, document.getElementById("editContact").value,
-            document.getElementById("editAltContact").value, document.getElementById("editAddress").value,
-            document.getElementById("detailPhotoBase64").value || "N/A", model,
-            Number(document.getElementById("editCustomFee").value) || 0, Number(document.getElementById("editAdmissionFee").value) || 0,
-            Number(document.getElementById("editStudentKitFee").value) || 0, Number(document.getElementById("editSpareUniformFee").value) || 0,
-            Number(document.getElementById("editVanFee").value) || 0, Number(document.getElementById("editDayCareFee").value) || 0,
-            Number(document.getElementById("editOptMonthlyFee").value) || 0, document.getElementById("editBloodGroup").value,
-            document.getElementById("editDOJ").value
-        ];
-        await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData });
-        // Optimistic local update
-        const idx = globalAppState.students.findIndex(x => (x.StudentID || x.studentid) === sid);
-        if (idx >= 0) {
-            const cur = globalAppState.students[idx];
-            globalAppState.students[idx] = {
-                ...cur,
-                StudentName: rowData[1], DOB: rowData[2], Gender: rowData[3], Class: rowData[4],
-                GuardianName: rowData[5], Contact: rowData[6], AltContact: rowData[7], Address: rowData[8],
-                PhotoBase64: rowData[9], BillingModel: rowData[10],
-                CustomFee: rowData[11], AdmissionFee: rowData[12], StudentKitFee: rowData[13], SpareUniformFee: rowData[14],
-                VanFee: rowData[15], DayCareFee: rowData[16], OptMonthlyFee: rowData[17], BloodGroup: rowData[18], DOJ: rowData[19]
-            };
-            populateStudentDetailForm(globalAppState.students[idx]);
-        }
-        saveLocalCache();
+        s.StudentName = document.getElementById("editStudentName").value;
+        s.DOB = document.getElementById("editDOB").value;
+        s.Gender = document.getElementById("editGender").value;
+        s.Class = document.getElementById("editClass").value;
+        s.GuardianName = document.getElementById("editGuardianName").value;
+        s.Contact = document.getElementById("editContact").value;
+        s.AltContact = document.getElementById("editAltContact").value;
+        s.Address = document.getElementById("editAddress").value;
+        s.PhotoBase64 = document.getElementById("detailPhotoBase64").value || "N/A";
+        s.BillingModel = model;
+        s.CustomFee = Number(document.getElementById("editCustomFee").value) || 0;
+        s.AdmissionFee = Number(document.getElementById("editAdmissionFee").value) || 0;
+        s.StudentKitFee = Number(document.getElementById("editStudentKitFee").value) || 0;
+        s.SpareUniformFee = Number(document.getElementById("editSpareUniformFee").value) || 0;
+        s.VanFee = Number(document.getElementById("editVanFee").value) || 0;
+        s.DayCareFee = Number(document.getElementById("editDayCareFee").value) || 0;
+        s.OptMonthlyFee = Number(document.getElementById("editOptMonthlyFee").value) || 0;
+        s.BloodGroup = document.getElementById("editBloodGroup").value;
+        s.DOJ = document.getElementById("editDOJ").value;
+        if (!s.Status) s.Status = "Active";
+        await persistStudentRecord(s);
+        populateStudentDetailForm(s);
         setStudentDetailEditMode(false);
         alert("Saved!");
         await refreshApplicationState(false);
@@ -2639,16 +3160,7 @@ async function handleStudentDetailUpdate(e) {
 }
 
 function triggerDeleteStudent() {
-    if (isLmBusy) return;
-    const sid = document.getElementById("detailStudentID").value;
-    if (!confirm("Delete this student?")) return;
-    withBusy(null, async () => {
-        const deletedRow = [sid, "DELETED", "", "", "", "", "", "", "", "N/A", "Regular", 0, 0, 0, 0, 0, 0, 0, "", ""];
-        await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: deletedRow });
-        alert("Deleted!");
-        closeStudentDetailModal();
-        await refreshApplicationState(false);
-    });
+    alert("To remove a student from active rolls, use Actions → Discontinue (record is kept under Former students).");
 }
 
 function setExpenseGraphTimeframe(frame) {
@@ -2663,7 +3175,7 @@ function renderFinanceLedger() {
     const selectedMonth = parseInt(document.getElementById("expensePeriodMonth")?.value ?? now.getMonth(), 10);
     const selectedYear = parseInt(document.getElementById("expensePeriodYear")?.value ?? now.getFullYear(), 10);
 
-    const activeStudents = globalAppState.students.filter(s => s.StudentName && s.StudentName.toString().trim() !== "DELETED");
+    const activeStudents = globalAppState.students.filter(isActiveStudent);
     globalAppState.payments.forEach(p => { totalCollected += Number(p.amountpaid || p.AmountPaid) || 0; });
     activeStudents.forEach(s => { totalReceivables += getStudentReceivables(s); });
 
