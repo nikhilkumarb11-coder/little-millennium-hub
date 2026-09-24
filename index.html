@@ -55,6 +55,27 @@
         .home-count-chip.chip-dc { background: #ede9fe; border-color: #c4b5fd; }
         .home-count-chip.chip-dc .chip-label { color: #6d28d9; }
         .home-count-chip.chip-dc .chip-value { color: #4c1d95; }
+        .home-events-ticker {
+            flex-shrink: 0; width: 100%; height: 2.1rem;
+            background: #fff7ed; border: 1px solid #fed7aa; border-radius: 0.55rem;
+            overflow: hidden; position: relative; display: none;
+            box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+        }
+        .home-events-ticker.show { display: flex; align-items: center; }
+        .home-events-ticker .ticker-track {
+            display: flex; white-space: nowrap; gap: 2.5rem;
+            animation: homeTickerScroll 28s linear infinite;
+            will-change: transform;
+        }
+        .home-events-ticker .ticker-item {
+            font-size: 0.68rem; font-weight: 800; color: #9a3412;
+            letter-spacing: 0.01em;
+        }
+        .home-events-ticker .ticker-item span { color: #c2410c; font-weight: 700; }
+        @keyframes homeTickerScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
         .home-tiles-grid {
             flex: 1; min-height: 0;
             display: grid;
@@ -110,7 +131,9 @@
     <header id="appHeader" class="bg-indigo-950 text-white sticky top-0 z-40 px-3 hidden" style="height: var(--header-h); padding-top: env(safe-area-inset-top);">
         <div class="h-full max-w-3xl mx-auto flex justify-between items-center gap-2">
             <button type="button" onclick="goToHome()" class="flex items-center space-x-2 min-w-0">
-                <div class="bg-amber-400 w-9 h-9 rounded-xl text-indigo-950 text-sm font-black flex items-center justify-center flex-shrink-0">LM</div>
+                <div class="bg-white w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden border border-amber-300/40 p-0.5">
+                    <img src="lm-logo.png" alt="LM" class="w-full h-full object-contain" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\'text-indigo-950 text-sm font-black\'>LM</span>';">
+                </div>
                 <div class="min-w-0 text-left">
                     <h2 class="text-sm font-black leading-none truncate">Little Millennium</h2>
                     <span class="text-[9px] text-amber-300 font-bold uppercase tracking-wider">Sullurpeta</span>
@@ -139,6 +162,9 @@
                 <div class="home-count-chip chip-rtf1"><span class="chip-label">RTF1</span><span class="chip-value" id="homeCountRTF1">0</span></div>
                 <div class="home-count-chip chip-rtf2"><span class="chip-label">RTF2</span><span class="chip-value" id="homeCountRTF2">0</span></div>
                 <div class="home-count-chip chip-dc"><span class="chip-label">DC</span><span class="chip-value" id="homeCountDC">0</span></div>
+            </div>
+            <div id="homeEventsTicker" class="home-events-ticker" aria-label="Upcoming events">
+                <div class="ticker-track" id="homeEventsTickerTrack"></div>
             </div>
             <div class="home-tiles-grid">
                 <button type="button" class="home-tile border-indigo-100" data-view="intake">
@@ -411,6 +437,7 @@
                             <select id="expenseInputCategory" name="Category" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
                                 <option value="Salaries">Salaries</option><option value="Rent">Rent</option><option value="Utilities">Utilities</option>
                                 <option value="Marketing">Marketing</option><option value="Events">Events</option><option value="Maintenance">Maintenance</option>
+                                <option value="Van">Van</option><option value="Renovations">Renovations</option>
                             </select>
                         </div>
                         <div><label class="block mb-1 text-slate-500">Amount (₹) *</label><input type="number" id="expenseInputAmount" name="Amount" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
@@ -424,10 +451,6 @@
                         <div id="expenseFormActions"><button type="submit" id="btnSaveExpense" class="w-full bg-rose-600 text-white font-bold py-3 rounded-xl disabled:opacity-60">Save Expense</button></div>
                     </form>
                 </div>
-                <div class="bg-white p-4 rounded-2xl border shadow-sm">
-                    <h4 class="font-black text-sm text-slate-700 mb-3">Recent Expenses</h4>
-                    <div id="containerRunningExpensesList" class="space-y-2 text-xs"></div>
-                </div>
             </div>
         </section>
 
@@ -439,22 +462,26 @@
             </div>
             <div class="view-scroll space-y-4">
                 <form id="eventForm" onsubmit="handleEventSubmission(event)" class="bg-white p-4 rounded-2xl border shadow-sm space-y-3 text-xs font-semibold">
-                    <div><label class="block mb-1 text-slate-500">Title *</label><input type="text" name="Title" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                    <input type="hidden" id="eventFormID" value="">
+                    <h4 class="font-black text-sm text-slate-700" id="eventFormHeader">Add Event</h4>
+                    <div><label class="block mb-1 text-slate-500">Title *</label><input type="text" id="eventInputTitle" name="Title" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
                     <div class="grid grid-cols-2 gap-3">
-                        <div><label class="block mb-1 text-slate-500">Date *</label><input type="date" name="Date" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
-                        <div><label class="block mb-1 text-slate-500">Time</label><input type="time" name="Time" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div><label class="block mb-1 text-slate-500">Date *</label><input type="date" id="eventInputDate" name="Date" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div><label class="block mb-1 text-slate-500">Time</label><input type="time" id="eventInputTime" name="Time" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
                     </div>
                     <div>
                         <label class="block mb-1 text-slate-500">Category *</label>
-                        <select name="Category" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
+                        <select id="eventInputCategory" name="Category" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
                             <option value="Holiday">Holiday</option><option value="Meeting">Meeting</option><option value="Celebration">Celebration</option>
                         </select>
                     </div>
-                    <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl">Save Event</button>
+                    <div id="eventFormActions" class="flex gap-2">
+                        <button type="submit" id="btnSaveEvent" class="flex-1 bg-indigo-600 text-white font-bold py-3 rounded-xl disabled:opacity-60">Save Event</button>
+                    </div>
                 </form>
                 <div class="bg-white p-4 rounded-2xl border shadow-sm">
-                    <h4 class="font-black text-sm text-slate-700 mb-3">Agenda</h4>
-                    <div id="calendarAgendaStream" class="space-y-3"><p class="text-xs text-slate-400">No events yet.</p></div>
+                    <h4 class="font-black text-sm text-slate-700 mb-3">Upcoming events</h4>
+                    <div id="calendarAgendaStream" class="space-y-3"><p class="text-xs text-slate-400">No upcoming events.</p></div>
                 </div>
             </div>
         </section>
@@ -662,7 +689,11 @@
             </div>
             <div id="termPayMonthlyPanel" class="space-y-3 hidden">
                 <div id="termPayMonthlyStatus" class="space-y-2"></div>
-                <h4 class="font-black text-[10px] uppercase tracking-wider text-slate-400">Month-wise payment history</h4>
+                <div id="termPayMonthlySubTabs" class="flex gap-1 bg-slate-50 p-1 rounded-xl text-[10px] font-bold hidden">
+                    <button type="button" id="btnPaySubVan" onclick="setPaymentsMonthlySubTab('van')" class="flex-1 py-1.5 rounded-lg bg-white text-sky-900 shadow-sm">Van</button>
+                    <button type="button" id="btnPaySubDayCare" onclick="setPaymentsMonthlySubTab('daycare')" class="flex-1 py-1.5 rounded-lg text-slate-600">Day Care</button>
+                    <button type="button" id="btnPaySubOpt" onclick="setPaymentsMonthlySubTab('opt')" class="flex-1 py-1.5 rounded-lg text-slate-600 hidden">Monthly</button>
+                </div>
                 <div id="termPayMonthlyList" class="space-y-2"></div>
             </div>
             <button type="button" onclick="closeTermPaymentsModal()" class="w-full bg-slate-100 font-bold py-2.5 rounded-xl text-xs">Close</button>
@@ -1318,6 +1349,7 @@ function hydrateFromLocalCache() {
 function applyAppStateToViews() {
     try { renderCohortHeadcounts(); } catch (e) { console.error(e); }
     try { renderFrontPageReminders(); } catch (e) { console.error(e); }
+    try { renderHomeEventsTicker(); } catch (e) { console.error(e); }
     const active = document.querySelector(".view-screen.active")?.id || "";
     if (active === "view-search" || active === "view-home") { try { renderStudentCards(); } catch (e) {} }
     if (active === "view-edit") { try { renderEditStudentCards(); } catch (e) {} }
@@ -1328,6 +1360,7 @@ function applyAppStateToViews() {
         try { renderEditStudentCards(); } catch (e) {}
         try { renderCalendarAgenda(); } catch (e) {}
         try { renderFinanceLedger(); } catch (e) {}
+        try { renderHomeEventsTicker(); } catch (e) {}
     };
     if (window.requestIdleCallback) requestIdleCallback(warm, { timeout: 1500 });
     else setTimeout(warm, 0);
@@ -1553,21 +1586,23 @@ function paymentHistoryRowHtml(p) {
     const amt = Number(p.AmountPaid || p.amountpaid) || 0;
     const date = formatDisplayDate(p.PaymentDate || p.paymentdate);
     const month = normalizeMonthYear(p.MonthYear || p.monthyear) || "—";
+    const monthShort = month !== "—" ? monthYearShortLabel(month) : "—";
     const mode = (p.PaymentMode || p.paymentmode || "—").toString();
     const rem = (p.Remarks || p.remarks || "").toString();
-    const label = friendlyPaymentLabel(rem, month);
+    const label = friendlyPaymentLabel(rem, monthShort);
     const canReceipt = payId && (isTermPayment(rem) || isMonthlyServicePayment(rem));
     const receiptBtn = canReceipt
         ? `<button type="button" onclick="viewPaymentReceipt('${payId}')" class="shrink-0 bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded text-[9px]">Receipt</button>`
         : "";
+    const isMonthly = isMonthlyServicePayment(rem);
     return `<div class="bg-slate-50 border rounded-lg px-2.5 py-1.5 text-[10px]">
         <div class="flex items-center justify-between gap-2">
             <span class="font-black text-slate-900">₹${amt.toLocaleString("en-IN")}</span>
-            <span class="text-slate-500 font-bold">${date}</span>
+            ${isMonthly ? `<span class="bg-amber-100 text-amber-800 font-black px-1.5 py-0.5 rounded uppercase">${monthShort}</span>` : `<span class="text-slate-500 font-bold">${date}</span>`}
             <span class="text-slate-600 font-semibold">${mode}</span>
             ${receiptBtn}
         </div>
-        <p class="mt-0.5 text-slate-500 font-medium truncate">${label}</p>
+        <p class="mt-0.5 text-slate-500 font-medium truncate">${label}${isMonthly ? " · " + date : ""}</p>
     </div>`;
 }
 
@@ -1971,7 +2006,6 @@ function renderStudentCards() {
         const guard = s.GuardianName || s.guardianname || "N/A";
         const phone = s.Contact || s.contact || "N/A";
         const statusChip = formatPackageStatusChip(s);
-        const serviceChips = formatOptedServiceChips(s);
         grid.insertAdjacentHTML("beforeend", `
             <div class="bg-white rounded-2xl p-4 border shadow-sm">
                 <div class="flex items-start gap-3">
@@ -1979,7 +2013,6 @@ function renderStudentCards() {
                     <div class="min-w-0 flex-1">
                         <div class="flex flex-wrap items-center gap-1">
                             <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded uppercase">${s.Class === "DayCare" ? "DayCare" : s.Class}</span>
-                            ${serviceChips}
                             ${statusChip}
                         </div>
                         <h4 class="font-black text-sm mt-1 truncate">${name}</h4>
@@ -1987,9 +2020,10 @@ function renderStudentCards() {
                         <p class="text-[11px] text-indigo-700 font-mono font-bold">${phone}</p>
                     </div>
                 </div>
-                <div class="mt-3 pt-2 border-t flex gap-2">
-                    <button type="button" onclick="openPaymentModal('${sid}')" class="flex-1 bg-indigo-50 text-indigo-700 font-bold px-2 py-1.5 rounded-xl text-[11px]">Update Fee</button>
-                    <button type="button" onclick="openTermPaymentsModal('${sid}')" class="flex-1 bg-slate-100 text-slate-700 font-bold px-2 py-1.5 rounded-xl text-[11px]">Payments</button>
+                <div class="mt-3 pt-2 border-t flex gap-1.5">
+                    <button type="button" onclick="openStudentDetailModal('${sid}')" class="flex-1 bg-violet-50 text-violet-800 font-bold px-1.5 py-1.5 rounded-xl text-[10px]">View Details</button>
+                    <button type="button" onclick="openPaymentModal('${sid}')" class="flex-1 bg-indigo-50 text-indigo-700 font-bold px-1.5 py-1.5 rounded-xl text-[10px]">Update Fee</button>
+                    <button type="button" onclick="openTermPaymentsModal('${sid}')" class="flex-1 bg-slate-100 text-slate-700 font-bold px-1.5 py-1.5 rounded-xl text-[10px]">Payments</button>
                 </div>
             </div>`);
     });
@@ -2173,6 +2207,8 @@ function closePaymentModal() { document.getElementById("paymentModalOverlay").cl
 
 let currentPaymentsModalSid = "";
 let currentPaymentsModalTab = "package";
+let currentPaymentsMonthlySub = "van";
+let cachedMonthlyPaysByService = { van: [], daycare: [], opt: [] };
 
 function setPaymentsModalTab(tab) {
     currentPaymentsModalTab = tab === "monthly" ? "monthly" : "package";
@@ -2195,6 +2231,107 @@ function setPaymentsModalTab(tab) {
         btnM.classList.toggle("text-slate-600", currentPaymentsModalTab !== "monthly");
     }
 }
+
+function setPaymentsMonthlySubTab(sub) {
+    currentPaymentsMonthlySub = sub === "daycare" ? "daycare" : (sub === "opt" ? "opt" : "van");
+    const btnV = document.getElementById("btnPaySubVan");
+    const btnD = document.getElementById("btnPaySubDayCare");
+    const btnO = document.getElementById("btnPaySubOpt");
+    const styleBtn = (btn, on) => {
+        if (!btn || btn.classList.contains("hidden")) return;
+        btn.classList.toggle("bg-white", on);
+        btn.classList.toggle("shadow-sm", on);
+        btn.classList.toggle("text-slate-600", !on);
+        if (btn === btnV) btn.classList.toggle("text-sky-900", on);
+        if (btn === btnD) btn.classList.toggle("text-violet-900", on);
+        if (btn === btnO) btn.classList.toggle("text-indigo-900", on);
+    };
+    styleBtn(btnV, currentPaymentsMonthlySub === "van");
+    styleBtn(btnD, currentPaymentsMonthlySub === "daycare");
+    styleBtn(btnO, currentPaymentsMonthlySub === "opt");
+    renderPaymentsMonthlySubList();
+}
+
+function renderPaymentsMonthlySubList() {
+    const list = document.getElementById("termPayMonthlyList");
+    if (!list) return;
+    const pays = cachedMonthlyPaysByService[currentPaymentsMonthlySub] || [];
+    const emptyMsg = currentPaymentsMonthlySub === "van"
+        ? "No Van settlements yet."
+        : (currentPaymentsMonthlySub === "daycare" ? "No Day Care settlements yet." : "No Custom Monthly settlements yet.");
+    list.innerHTML = pays.length ? pays.map(paymentHistoryRowHtml).join("") : `<p class="text-[11px] text-slate-400">${emptyMsg}</p>`;
+}
+
+function openTermPaymentsModal(sid) {
+    const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+    if (!s) return;
+    currentPaymentsModalSid = sid;
+    const isMonthly = (s.BillingModel === "Monthly" || s.billingmodel === "Monthly");
+    const { total, balance } = getPackageBalance(s);
+    const logs = getStudentPayments(sid).filter(isMeaningfulPayment);
+
+    document.getElementById("termPayTitleName").innerText = s.StudentName || "Payments";
+    document.getElementById("termPaySubtitle").innerText = `${s.Class || ""} · ${isMonthly ? "Custom Monthly" : "Regular Base"}`;
+    const statusEl = document.getElementById("termPayPackageStatus");
+    if (total <= 0) {
+        statusEl.innerText = "No package";
+        statusEl.className = "text-slate-500";
+    } else if (balance <= 0) {
+        statusEl.innerText = "Settled";
+        statusEl.className = "text-emerald-700";
+    } else {
+        statusEl.innerText = `Pending ₹${balance}`;
+        statusEl.className = "text-rose-600";
+    }
+
+    const packagePays = logs.filter(p => isTermPayment(p.Remarks || p.remarks))
+        .sort((a, b) => {
+            const da = formatToInputDate(a.PaymentDate || a.paymentdate) || "";
+            const db = formatToInputDate(b.PaymentDate || b.paymentdate) || "";
+            if (db !== da) return db.localeCompare(da);
+            return String(b.PaymentID || b.paymentid || "").localeCompare(String(a.PaymentID || a.paymentid || ""));
+        });
+    const pkgList = document.getElementById("termPayPackageList");
+    pkgList.innerHTML = packagePays.length
+        ? packagePays.map(paymentHistoryRowHtml).join("")
+        : '<p class="text-[11px] text-slate-400">No package / regular payments yet.</p>';
+
+    const statusBox = document.getElementById("termPayMonthlyStatus");
+    if (statusBox) statusBox.innerHTML = buildStudentMonthlyStatusHtml(s);
+
+    const sortMonthly = (arr) => arr.sort((a, b) => {
+        const ma = normalizeMonthYear(a.MonthYear || a.monthyear) || "";
+        const mb = normalizeMonthYear(b.MonthYear || b.monthyear) || "";
+        if (ma !== mb) return mb.localeCompare(ma);
+        return String(formatToInputDate(b.PaymentDate || b.paymentdate) || "").localeCompare(String(formatToInputDate(a.PaymentDate || a.paymentdate) || ""));
+    });
+
+    const vanPays = sortMonthly(logs.filter(p => isServicePayment(p.Remarks || p.remarks, "Van")));
+    const dcPays = sortMonthly(logs.filter(p => isServicePayment(p.Remarks || p.remarks, "DayCare")));
+    const optPays = sortMonthly(logs.filter(p => isServicePayment(p.Remarks || p.remarks, "OptMonthly")));
+    cachedMonthlyPaysByService = { van: vanPays, daycare: dcPays, opt: optPays };
+
+    const hasVan = Number(s.VanFee || s.vanfee) > 0;
+    const isDC = (s.Class || s.class) === "DayCare";
+    const hasDC = Number(s.DayCareFee || s.daycarefee) > 0 || isDC;
+    const hasOpt = isMonthly && Number(s.OptMonthlyFee || s.optmonthlyfee) > 0 && !isDC;
+
+    const subTabs = document.getElementById("termPayMonthlySubTabs");
+    const btnV = document.getElementById("btnPaySubVan");
+    const btnD = document.getElementById("btnPaySubDayCare");
+    const btnO = document.getElementById("btnPaySubOpt");
+    if (btnV) btnV.classList.toggle("hidden", !hasVan);
+    if (btnD) btnD.classList.toggle("hidden", !hasDC);
+    if (btnO) btnO.classList.toggle("hidden", !hasOpt);
+    const tabCount = (hasVan ? 1 : 0) + (hasDC ? 1 : 0) + (hasOpt ? 1 : 0);
+    if (subTabs) subTabs.classList.toggle("hidden", tabCount < 1);
+
+    let defaultSub = hasVan ? "van" : (hasDC ? "daycare" : "opt");
+    setPaymentsMonthlySubTab(defaultSub);
+    setPaymentsModalTab("package");
+    document.getElementById("termPaymentsModalOverlay").classList.remove("hidden");
+}
+function closeTermPaymentsModal() { document.getElementById("termPaymentsModalOverlay").classList.add("hidden"); }
 
 function buildStudentMonthlyStatusHtml(s) {
     const sid = s.StudentID || s.studentid;
@@ -2242,57 +2379,8 @@ function buildStudentMonthlyStatusHtml(s) {
     }
 
     if (!rows.length) return '<p class="text-[11px] text-slate-400">No monthly opted services for this student.</p>';
-    return `<p class="text-[10px] font-bold text-slate-500">Status for ${period}</p>` + rows.join("");
+    return `<p class="text-[10px] font-bold text-slate-500">Status for ${monthYearShortLabel(period)} · ${period}</p>` + rows.join("");
 }
-
-function openTermPaymentsModal(sid) {
-    const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
-    if (!s) return;
-    currentPaymentsModalSid = sid;
-    const isMonthly = (s.BillingModel === "Monthly" || s.billingmodel === "Monthly");
-    const { total, balance } = getPackageBalance(s);
-    const logs = getStudentPayments(sid).filter(isMeaningfulPayment);
-
-    document.getElementById("termPayTitleName").innerText = s.StudentName || "Payments";
-    document.getElementById("termPaySubtitle").innerText = `${s.Class || ""} · ${isMonthly ? "Custom Monthly" : "Regular Base"}`;
-    const statusEl = document.getElementById("termPayPackageStatus");
-    if (total <= 0) {
-        statusEl.innerText = "No package";
-        statusEl.className = "text-slate-500";
-    } else if (balance <= 0) {
-        statusEl.innerText = "Settled";
-        statusEl.className = "text-emerald-700";
-    } else {
-        statusEl.innerText = `Pending ₹${balance}`;
-        statusEl.className = "text-rose-600";
-    }
-
-    const packagePays = logs.filter(p => isTermPayment(p.Remarks || p.remarks))
-        .sort((a, b) => String(formatToInputDate(b.PaymentDate || b.paymentdate) || "").localeCompare(String(formatToInputDate(a.PaymentDate || a.paymentdate) || "")));
-    const pkgList = document.getElementById("termPayPackageList");
-    pkgList.innerHTML = packagePays.length
-        ? packagePays.map(paymentHistoryRowHtml).join("")
-        : '<p class="text-[11px] text-slate-400">No package / regular payments yet.</p>';
-
-    const statusBox = document.getElementById("termPayMonthlyStatus");
-    if (statusBox) statusBox.innerHTML = buildStudentMonthlyStatusHtml(s);
-
-    const monthlyPays = logs.filter(p => isMonthlyServicePayment(p.Remarks || p.remarks))
-        .sort((a, b) => {
-            const ma = String(a.MonthYear || a.monthyear || "");
-            const mb = String(b.MonthYear || b.monthyear || "");
-            if (ma !== mb) return mb.localeCompare(ma);
-            return String(formatToInputDate(b.PaymentDate || b.paymentdate) || "").localeCompare(String(formatToInputDate(a.PaymentDate || a.paymentdate) || ""));
-        });
-    const monthlyList = document.getElementById("termPayMonthlyList");
-    monthlyList.innerHTML = monthlyPays.length
-        ? monthlyPays.map(paymentHistoryRowHtml).join("")
-        : '<p class="text-[11px] text-slate-400">No monthly fee check settlements yet.</p>';
-
-    setPaymentsModalTab("package");
-    document.getElementById("termPaymentsModalOverlay").classList.remove("hidden");
-}
-function closeTermPaymentsModal() { document.getElementById("termPaymentsModalOverlay").classList.add("hidden"); }
 
 async function commitParticularsTransaction(e) {
     e.preventDefault();
@@ -2395,7 +2483,7 @@ function openStudentDetailModal(sid) {
     };
     Object.keys(maps).forEach(id => { const el = document.getElementById(id); if (el) el.value = maps[id]; });
     document.getElementById("detailStudentNameHeader").innerText = s.StudentName || "";
-    document.getElementById("detailStudentClassHeader").innerText = `${s.Class || ""} Campus`;
+    document.getElementById("detailStudentClassHeader").innerText = `${s.Class || ""} · View / Edit details`;
     const bModel = s.BillingModel || s.billingmodel || "Regular";
     if (bModel === "Regular") { document.getElementById("editModelRegular").checked = true; handleEditFormBillingTypeChange("Regular"); }
     else { document.getElementById("editModelMonthly").checked = true; handleEditFormBillingTypeChange("Monthly"); }
@@ -2464,8 +2552,6 @@ function setExpenseGraphTimeframe(frame) {
 function renderFinanceLedger() {
     let totalReceivables = 0, totalCollected = 0, totalExpenses = 0;
     const cats = {};
-    const expenseStreamBox = document.getElementById("containerRunningExpensesList");
-    if (expenseStreamBox) expenseStreamBox.innerHTML = "";
     const now = new Date();
     const selectedMonth = parseInt(document.getElementById("expensePeriodMonth")?.value ?? now.getMonth(), 10);
     const selectedYear = parseInt(document.getElementById("expensePeriodYear")?.value ?? now.getFullYear(), 10);
@@ -2523,38 +2609,13 @@ function renderFinanceLedger() {
         return (m - 1) === selectedMonth && y === selectedYear;
     };
 
-    const allActiveExpenses = globalAppState.expenses.filter(isActiveExpense);
-    const filtered = allActiveExpenses.filter(expenseInSelectedMonth);
-
+    const filtered = globalAppState.expenses.filter(isActiveExpense).filter(expenseInSelectedMonth);
     filtered.forEach(e => {
         const cat = e.Category || e.category || "General";
         const a = Number(e.Amount || e.amount) || 0;
         totalExpenses += a;
         cats[cat] = (cats[cat] || 0) + a;
     });
-
-    // Recent expenses list: last 20 by date (not limited to finance month filter)
-    if (expenseStreamBox) {
-        const recent = [...allActiveExpenses].sort((a, b) =>
-            String(formatToInputDate(b.Date || b.date) || "").localeCompare(String(formatToInputDate(a.Date || a.date) || ""))
-        ).slice(0, 20);
-        if (!recent.length) {
-            expenseStreamBox.innerHTML = '<p class="text-xs text-slate-400 text-center py-3">No expenses yet.</p>';
-        } else {
-            recent.forEach(e => {
-                const cat = e.Category || e.category || "General";
-                const a = Number(e.Amount || e.amount) || 0;
-                const id = (e.ExpenseID || e.expenseid || "").toString().replace(/'/g, "");
-                expenseStreamBox.insertAdjacentHTML("beforeend", `
-                    <div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border">
-                        <div><strong>${cat}</strong> <span class="text-slate-400">${formatDisplayDate(e.Date || e.date)}</span>
-                        <p class="text-[10px] text-slate-400">${e.Description || e.description || ""}</p></div>
-                        <div class="flex items-center gap-2"><span class="font-bold text-rose-600">₹${a}</span>
-                        <button type="button" onclick="loadExpenseToEditForm('${id}')" class="text-indigo-600 text-[11px] font-bold">Edit</button></div>
-                    </div>`);
-            });
-        }
-    }
 
     const catTable = document.getElementById("financeExpenseCategoryTable");
     if (catTable) {
@@ -2664,19 +2725,161 @@ async function triggerDeleteExpense(expId) {
     });
 }
 
+function todayIsoDate() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function isActiveEvent(e) {
+    if (!e) return false;
+    const title = (e.Title || e.title || "").toString();
+    if (!title || title === "DELETED") return false;
+    if ((e.Category || e.category) === "DELETED") return false;
+    return true;
+}
+
+function getUpcomingEvents() {
+    const today = todayIsoDate();
+    return globalAppState.events
+        .filter(isActiveEvent)
+        .filter(e => {
+            const iso = formatToInputDate(e.Date || e.date);
+            return iso && iso >= today;
+        })
+        .sort((a, b) => (formatToInputDate(a.Date || a.date) || "").localeCompare(formatToInputDate(b.Date || b.date) || ""));
+}
+
+function renderHomeEventsTicker() {
+    const wrap = document.getElementById("homeEventsTicker");
+    const track = document.getElementById("homeEventsTickerTrack");
+    if (!wrap || !track) return;
+    const upcoming = getUpcomingEvents();
+    if (!upcoming.length) {
+        wrap.classList.remove("show");
+        track.innerHTML = "";
+        return;
+    }
+    const items = upcoming.map(e => {
+        const title = e.Title || e.title || "Event";
+        const date = formatDisplayDate(e.Date || e.date);
+        const time = (e.Time || e.time) ? " · " + (e.Time || e.time) : "";
+        const cat = e.Category || e.category || "";
+        return `<span class="ticker-item">${title} <span>${date}${time}${cat ? " · " + cat : ""}</span></span>`;
+    }).join("");
+    // Duplicate for seamless loop
+    track.innerHTML = items + items;
+    wrap.classList.add("show");
+}
+
+function resetEventForm() {
+    const form = document.getElementById("eventForm");
+    if (form) form.reset();
+    const idEl = document.getElementById("eventFormID");
+    if (idEl) idEl.value = "";
+    const header = document.getElementById("eventFormHeader");
+    if (header) header.innerText = "Add Event";
+    const actions = document.getElementById("eventFormActions");
+    if (actions) actions.innerHTML = `<button type="submit" id="btnSaveEvent" class="flex-1 bg-indigo-600 text-white font-bold py-3 rounded-xl disabled:opacity-60">Save Event</button>`;
+}
+
+function loadEventToEditForm(eventId) {
+    const e = globalAppState.events.find(x => (x.EventID || x.eventid) === eventId);
+    if (!e) return;
+    document.getElementById("eventFormID").value = eventId;
+    document.getElementById("eventInputTitle").value = e.Title || e.title || "";
+    document.getElementById("eventInputDate").value = formatToInputDate(e.Date || e.date) || "";
+    document.getElementById("eventInputTime").value = e.Time || e.time || "";
+    document.getElementById("eventInputCategory").value = e.Category || e.category || "Holiday";
+    document.getElementById("eventFormHeader").innerText = "Edit Event";
+    document.getElementById("eventFormActions").innerHTML = `
+        <button type="submit" id="btnSaveEvent" class="w-2/3 bg-indigo-600 text-white font-bold py-2.5 rounded-xl disabled:opacity-60">Save</button>
+        <button type="button" onclick="resetEventForm()" class="w-1/3 bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl">Cancel</button>`;
+    showView("events");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 function renderCalendarAgenda() {
     const stream = document.getElementById("calendarAgendaStream");
     if (!stream) return;
     stream.innerHTML = "";
-    if (!globalAppState.events.length) { stream.innerHTML = '<p class="text-xs text-slate-400">No events yet.</p>'; return; }
-    const sorted = [...globalAppState.events].sort((a, b) => (formatToInputDate(a.Date || a.date) || "").localeCompare(formatToInputDate(b.Date || b.date) || ""));
-    sorted.forEach(e => {
+    const upcoming = getUpcomingEvents();
+    if (!upcoming.length) {
+        stream.innerHTML = '<p class="text-xs text-slate-400">No upcoming events.</p>';
+        renderHomeEventsTicker();
+        return;
+    }
+    upcoming.forEach(e => {
+        const id = (e.EventID || e.eventid || "").toString().replace(/'/g, "");
         stream.insertAdjacentHTML("beforeend", `
             <div class="p-3 border-l-4 border-indigo-500 bg-indigo-50 rounded-r-xl text-xs">
-                <h5 class="font-black">${e.Title || e.title || ""}</h5>
-                <span>${formatDisplayDate(e.Date || e.date)}${(e.Time || e.time) ? " · " + (e.Time || e.time) : ""}</span>
-                ${(e.Category || e.category) ? `<p class="text-[10px] text-indigo-700 font-bold mt-1 uppercase">${e.Category || e.category}</p>` : ""}
+                <div class="flex justify-between items-start gap-2">
+                    <div class="min-w-0">
+                        <h5 class="font-black truncate">${e.Title || e.title || ""}</h5>
+                        <span>${formatDisplayDate(e.Date || e.date)}${(e.Time || e.time) ? " · " + (e.Time || e.time) : ""}</span>
+                        ${(e.Category || e.category) ? `<p class="text-[10px] text-indigo-700 font-bold mt-1 uppercase">${e.Category || e.category}</p>` : ""}
+                    </div>
+                    <div class="flex flex-col gap-1 shrink-0">
+                        <button type="button" onclick="loadEventToEditForm('${id}')" class="text-indigo-700 font-bold text-[10px]">Edit</button>
+                        <button type="button" onclick="triggerDeleteEvent('${id}')" class="text-rose-600 font-bold text-[10px]">Delete</button>
+                    </div>
+                </div>
             </div>`);
+    });
+    renderHomeEventsTicker();
+}
+
+async function handleEventSubmission(e) {
+    e.preventDefault();
+    const submitBtn = e.target.querySelector('button[type="submit"]') || document.getElementById("btnSaveEvent");
+    return withBusy(submitBtn, async () => {
+        const f = new FormData(e.target);
+        const existingId = document.getElementById("eventFormID")?.value || "";
+        const id = existingId || ("EVT-" + Date.now());
+        const title = f.get("Title");
+        const dateVal = f.get("Date");
+        const timeVal = f.get("Time") || "";
+        const category = f.get("Category");
+        const row = [id, title, dateVal, timeVal, category];
+        await postSheetRow({
+            password: CURRENT_GATE_PASSPHRASE,
+            action: existingId ? "updateRow" : "addRow",
+            targetSheet: "Events",
+            rowId: id,
+            rowData: row
+        });
+        const local = { EventID: id, Title: title, Date: dateVal, Time: timeVal, Category: category };
+        if (existingId) {
+            const idx = globalAppState.events.findIndex(x => (x.EventID || x.eventid) === id);
+            if (idx >= 0) globalAppState.events[idx] = { ...globalAppState.events[idx], ...local };
+            else globalAppState.events.push(local);
+        } else {
+            globalAppState.events.push(local);
+        }
+        saveLocalCache();
+        resetEventForm();
+        renderCalendarAgenda();
+        alert(existingId ? "Event updated!" : "Event saved!");
+        await refreshApplicationState(false);
+    }, "Saving…");
+}
+
+async function triggerDeleteEvent(eventId) {
+    if (isLmBusy) return;
+    if (!confirm("Delete this event?")) return;
+    return withBusy(null, async () => {
+        await postSheetRow({
+            password: CURRENT_GATE_PASSPHRASE,
+            action: "updateRow",
+            targetSheet: "Events",
+            rowId: eventId,
+            rowData: [eventId, "DELETED", "", "", "DELETED"]
+        });
+        globalAppState.events = globalAppState.events.filter(x => (x.EventID || x.eventid) !== eventId);
+        saveLocalCache();
+        if (document.getElementById("eventFormID")?.value === eventId) resetEventForm();
+        renderCalendarAgenda();
+        alert("Deleted!");
+        await refreshApplicationState(false);
     });
 }
 
@@ -2691,26 +2894,6 @@ function processEditImageUpload(input) {
     const r = new FileReader();
     r.onloadend = () => { const c = document.getElementById("detailPhotoBase64"); if (c) c.value = r.result; };
     r.readAsDataURL(file);
-}
-
-async function handleEventSubmission(e) {
-    e.preventDefault();
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    return withBusy(submitBtn, async () => {
-        const f = new FormData(e.target);
-        const id = "EVT-" + Date.now();
-        const row = [id, f.get("Title"), f.get("Date"), f.get("Time"), f.get("Category")];
-        await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Events", rowData: row });
-        globalAppState.events.push({
-            EventID: id, Title: f.get("Title"), Date: f.get("Date"),
-            Time: f.get("Time"), Category: f.get("Category")
-        });
-        saveLocalCache();
-        renderCalendarAgenda();
-        alert("Event saved!");
-        e.target.reset();
-        await refreshApplicationState(false);
-    }, "Saving…");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
