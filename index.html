@@ -236,11 +236,6 @@
                             <label class="block mb-1 text-slate-500">Gender *</label>
                             <select id="intakeGender" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"><option value="Boy">Boy</option><option value="Girl">Girl</option></select>
                         </div>
-                        <div>
-                            <label class="block mb-1 text-slate-500">Photo (optional)</label>
-                            <input type="file" accept="image/*" onchange="processImageUpload(this)" class="w-full text-xs">
-                            <input type="hidden" id="base64PayloadCache" value="N/A">
-                        </div>
                     </div>
 
                     <!-- Services checklist -->
@@ -715,7 +710,7 @@
                 </div>
             </div>
             <form id="studentDetailUpdateForm" onsubmit="handleStudentDetailUpdate(event)" class="text-xs font-semibold space-y-3">
-                <input type="hidden" id="detailStudentID"><input type="hidden" id="detailPhotoBase64">
+                <input type="hidden" id="detailStudentID">
                 <div id="detailPackageStrip" class="bg-slate-50 border rounded-xl p-2.5 text-[10px] font-bold flex justify-between items-center">
                     <span class="text-slate-500">Package</span>
                     <span id="detailPackageStatusLabel" class="text-rose-600">—</span>
@@ -767,7 +762,6 @@
                         </select>
                     </div>
                     <div><label class="block mb-1 text-slate-400">Gender</label><select id="editGender" class="w-full p-2 border rounded-xl bg-slate-50"><option value="Boy">Boy</option><option value="Girl">Girl</option></select></div>
-                    <div id="detailPhotoUploadWrap"><label class="block mb-1 text-slate-400">Replace Photo</label><input type="file" id="editPhotoInput" accept="image/*" onchange="processEditImageUpload(this)" class="w-full text-xs"></div>
                 </div>
                 <div id="studentDetailEditActions" class="hidden flex flex-col gap-2 pt-3 border-t">
                     <button type="submit" class="w-full px-4 py-2.5 bg-indigo-600 text-white font-bold rounded-xl">Save Changes</button>
@@ -1486,6 +1480,26 @@ function postSheetRow(payload) {
     }).catch(err => console.error("POST failed:", err));
 }
 
+/** Debounced background sync — keeps Save buttons snappy after optimistic local updates */
+let syncDebounceTimer = null;
+function queueBackgroundSync(delayMs) {
+    const ms = delayMs == null ? 1200 : delayMs;
+    if (syncDebounceTimer) clearTimeout(syncDebounceTimer);
+    syncDebounceTimer = setTimeout(() => {
+        syncDebounceTimer = null;
+        refreshApplicationState(false);
+    }, ms);
+}
+
+function stripStudentPhotos(list) {
+    (list || []).forEach(s => {
+        if (!s) return;
+        s.PhotoBase64 = "N/A";
+        if (s.photobase64 != null) s.photobase64 = "N/A";
+    });
+    return list || [];
+}
+
 function saveLocalCache() {
     try {
         const payload = {
@@ -1507,7 +1521,7 @@ function hydrateFromLocalCache() {
         const raw = localStorage.getItem(CACHE_KEY);
         if (!raw) return false;
         const cached = JSON.parse(raw);
-        globalAppState.students = cached.students || [];
+        globalAppState.students = stripStudentPhotos(cached.students || []);
         globalAppState.payments = cached.payments || [];
         globalAppState.expenses = cached.expenses || [];
         globalAppState.events = cached.events || [];
@@ -1567,7 +1581,7 @@ async function refreshApplicationState(showUserAlert) {
         clearTimeout(timer);
         const result = await response.json();
         if (result.success) {
-            globalAppState.students = result.data.students || [];
+            globalAppState.students = stripStudentPhotos(result.data.students || []);
             globalAppState.payments = (result.data.payments || []).map(p => {
                 const my = normalizeMonthYear(p.MonthYear || p.monthyear);
                 if (my) { p.MonthYear = my; if (p.monthyear != null) p.monthyear = my; }
@@ -1616,66 +1630,81 @@ async function handleStudentSubmission(event) {
 
     try {
         const bModel = getIntakeBillingModel();
-        const photo = document.getElementById("base64PayloadCache")?.value || "N/A";
         const sid = "STU-" + Date.now();
         const fees = buildIntakeFeePayload();
         const alt = (document.getElementById("intakeAltContact").value || "").trim() || "N/A";
+        const name = document.getElementById("intakeStudentName").value;
+        const dob = document.getElementById("intakeDOB").value;
+        const gender = document.getElementById("intakeGender").value;
+        const cls = document.getElementById("intakeClassSelect").value;
+        const guardian = document.getElementById("intakeGuardianName").value;
+        const contact = document.getElementById("intakeContact").value;
+        const address = document.getElementById("intakeAddress").value;
+        const blood = document.getElementById("intakeBloodGroup").value;
+        const doj = document.getElementById("intakeDOJ").value;
 
         const studentRow = [
-            sid,
-            document.getElementById("intakeStudentName").value,
-            document.getElementById("intakeDOB").value,
-            document.getElementById("intakeGender").value,
-            document.getElementById("intakeClassSelect").value,
-            document.getElementById("intakeGuardianName").value,
-            document.getElementById("intakeContact").value,
-            alt,
-            document.getElementById("intakeAddress").value,
-            photo,
-            bModel,
-            fees.customFee,
-            fees.admissionFee,
-            fees.kitFee,
-            fees.uniformFee,
-            fees.vanFee,
-            fees.dayCareFee,
-            fees.optMonthly,
-            document.getElementById("intakeBloodGroup").value,
-            document.getElementById("intakeDOJ").value,
-            "Active",
-            "",
-            ""
+            sid, name, dob, gender, cls, guardian, contact, alt, address, "N/A",
+            bModel, fees.customFee, fees.admissionFee, fees.kitFee, fees.uniformFee,
+            fees.vanFee, fees.dayCareFee, fees.optMonthly, blood, doj, "Active", "", ""
         ];
 
+        const initPayId = "PAY-" + sid + "-" + activeSystemMonthContext;
         const posts = [
             postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Students", rowData: studentRow }),
             postSheetRow({
                 password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments",
-                rowData: ["PAY-" + sid + "-" + activeSystemMonthContext, sid, activeSystemMonthContext, 0, "", "Cash", "Admission Record Initialized", "Active", ""]
+                rowData: [initPayId, sid, activeSystemMonthContext, 0, "", "Cash", "Admission Record Initialized", "Active", ""]
             })
         ];
 
         const paidNow = Number(document.getElementById("intakePaidNowAmount")?.value) || 0;
+        let paidPayId = null;
+        let paidRemark = "";
+        let paidMode = "Cash";
         if (paidNow > 0) {
-            const mode = document.getElementById("intakePaidNowMode")?.value || "Cash";
+            paidMode = document.getElementById("intakePaidNowMode")?.value || "Cash";
             const note = (document.getElementById("intakePaidNowRemarks")?.value || "").trim();
-            const remark = "1st Term Fee" + (note ? " — " + note : "");
+            paidRemark = "1st Term Fee" + (note ? " — " + note : "");
+            paidPayId = "PAY-" + sid + "-ADM-" + Date.now();
             posts.push(postSheetRow({
                 password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments",
-                rowData: ["PAY-" + sid + "-ADM-" + Date.now(), sid, activeSystemMonthContext, paidNow,
-                    new Date().toISOString().substring(0, 10), mode, remark, "Active", ""]
+                rowData: [paidPayId, sid, activeSystemMonthContext, paidNow,
+                    new Date().toISOString().substring(0, 10), paidMode, paidRemark, "Active", ""]
             }));
         }
 
-        // Optimistic UI: leave intake immediately; network continues in background
+        // Optimistic local state so home counts update immediately
+        globalAppState.students.push({
+            StudentID: sid, StudentName: name, DOB: dob, Gender: gender, Class: cls,
+            GuardianName: guardian, Contact: contact, AltContact: alt, Address: address,
+            PhotoBase64: "N/A", BillingModel: bModel, CustomFee: fees.customFee,
+            AdmissionFee: fees.admissionFee, StudentKitFee: fees.kitFee, SpareUniformFee: fees.uniformFee,
+            VanFee: fees.vanFee, DayCareFee: fees.dayCareFee, OptMonthlyFee: fees.optMonthly,
+            BloodGroup: blood, DOJ: doj, Status: "Active", ExitDate: "", ExitReason: ""
+        });
+        globalAppState.payments.push({
+            PaymentID: initPayId, StudentID: sid, MonthYear: activeSystemMonthContext,
+            AmountPaid: 0, PaymentDate: "", PaymentMode: "Cash",
+            Remarks: "Admission Record Initialized", Status: "Active", NullifiedServices: ""
+        });
+        if (paidPayId) {
+            globalAppState.payments.push({
+                PaymentID: paidPayId, StudentID: sid, MonthYear: activeSystemMonthContext,
+                AmountPaid: paidNow, PaymentDate: new Date().toISOString().substring(0, 10),
+                PaymentMode: paidMode, Remarks: paidRemark, Status: "Active", NullifiedServices: ""
+            });
+        }
+        saveLocalCache();
+        applyAppStateToViews();
+
         event.target.reset();
-        document.getElementById("base64PayloadCache").value = "N/A";
         const reg = document.querySelector('input[name="BillingModel"][value="Regular"]');
         if (reg) reg.checked = true;
         handleFormBillingTypeChange("Regular");
         showView("home");
 
-        Promise.all(posts).then(() => refreshApplicationState(false)).catch(() => refreshApplicationState(false));
+        Promise.all(posts).then(() => queueBackgroundSync(500)).catch(() => queueBackgroundSync(500));
     } catch (e) {
         console.error(e);
         alert("Save failed. Try again.");
@@ -1688,7 +1717,7 @@ async function handleStudentSubmission(event) {
     setTimeout(() => {
         isAdmissionSaving = false;
         if (saveBtn) { saveBtn.disabled = false; saveBtn.innerText = "Save Admission"; }
-    }, 2000);
+    }, 800);
 }
 
 function renderCohortHeadcounts() {
@@ -1755,7 +1784,7 @@ function buildStudentSheetRow(s) {
         s.Contact || s.contact || "",
         s.AltContact || s.altcontact || "N/A",
         s.Address || s.address || "N/A",
-        s.PhotoBase64 || s.photobase64 || "N/A",
+        "N/A",
         s.BillingModel || s.billingmodel || "Regular",
         Number(s.CustomFee || s.customfee) || 0,
         Number(s.AdmissionFee || s.admissionfee) || 0,
@@ -1772,14 +1801,18 @@ function buildStudentSheetRow(s) {
     ];
 }
 
-async function persistStudentRecord(s) {
+/** Local-first save: UI updates immediately; Sheet write + sync run in background */
+function persistStudentRecord(s) {
     const sid = s.StudentID || s.studentid;
+    s.PhotoBase64 = "N/A";
+    if (s.photobase64 != null) s.photobase64 = "N/A";
     const row = buildStudentSheetRow(s);
-    await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: row });
     const idx = globalAppState.students.findIndex(x => (x.StudentID || x.studentid) === sid);
     if (idx >= 0) globalAppState.students[idx] = { ...globalAppState.students[idx], ...s };
     else globalAppState.students.push(s);
     saveLocalCache();
+    postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Students", rowId: sid, rowData: row });
+    queueBackgroundSync();
 }
 
 function formatPackageStatusChip(s) {
@@ -2243,9 +2276,7 @@ function renderStudentCards() {
         const sid = s.StudentID || s.studentid;
         const name = s.StudentName || s.studentname || "";
         const color = AVATAR_COLORS[index % AVATAR_COLORS.length];
-        const img = (s.PhotoBase64 && s.PhotoBase64 !== "N/A" && s.PhotoBase64.length > 50)
-            ? `<img src="${s.PhotoBase64}" class="w-full h-full object-cover">`
-            : `<div class="w-full h-full ${color} text-white font-black flex items-center justify-center text-xl uppercase">${name.charAt(0)}</div>`;
+        const img = `<div class="w-full h-full ${color} text-white font-black flex items-center justify-center text-xl uppercase">${name.charAt(0)}</div>`;
         const guard = s.GuardianName || s.guardianname || "N/A";
         const phone = s.Contact || s.contact || "N/A";
         const statusChip = formatPackageStatusChip(s);
@@ -3021,7 +3052,13 @@ async function commitParticularsTransaction(e) {
         const balanceBefore = getPackageBalance(s).balance;
         const balanceAfter = Math.max(0, balanceBefore - amount);
         const row = [payId, sid, activeSystemMonthContext, amount, payDate, payMode, remark, "Active", ""];
-        await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row });
+        globalAppState.payments.push({
+            PaymentID: payId, StudentID: sid, MonthYear: activeSystemMonthContext,
+            AmountPaid: amount, PaymentDate: payDate, PaymentMode: payMode,
+            Remarks: remark, Status: "Active", NullifiedServices: ""
+        });
+        saveLocalCache();
+        postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row });
         closePaymentModal();
         issueFeeReceipt(payId, {
             sid,
@@ -3035,7 +3072,8 @@ async function commitParticularsTransaction(e) {
             className: s?.Class || s?.class,
             monthYear: activeSystemMonthContext
         });
-        refreshApplicationState(false);
+        applyAppStateToViews();
+        queueBackgroundSync();
     }, "Saving…");
 }
 
@@ -3053,8 +3091,19 @@ async function toggleReminderNullify(sid, serviceKey, isChecked) {
             existing?.PaymentMode || existing?.paymentmode || "Cash",
             existing?.Remarks || existing?.remarks || "Month Meta",
             existing?.Status || existing?.status || "Active", flags.join(",")];
-        await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: existing ? "updateRow" : "addRow", targetSheet: "Fee_Payments", rowId: payId, rowData: row });
-        await refreshApplicationState(false);
+        const local = {
+            PaymentID: payId, StudentID: sid, MonthYear: period,
+            AmountPaid: Number(existing?.AmountPaid || existing?.amountpaid) || 0,
+            PaymentDate: row[4], PaymentMode: row[5], Remarks: row[6],
+            Status: row[7], NullifiedServices: flags.join(",")
+        };
+        const idx = globalAppState.payments.findIndex(x => (x.PaymentID || x.paymentid) === payId);
+        if (idx >= 0) globalAppState.payments[idx] = { ...globalAppState.payments[idx], ...local };
+        else globalAppState.payments.push(local);
+        saveLocalCache();
+        postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: existing ? "updateRow" : "addRow", targetSheet: "Fee_Payments", rowId: payId, rowData: row });
+        applyAppStateToViews();
+        queueBackgroundSync();
     });
 }
 
@@ -3075,7 +3124,13 @@ async function commitReminderSettlement(sid, serviceKey, dueAmount) {
                 ? ("OptMonthly — " + activeSystemMonthContext)
                 : ("Van — " + activeSystemMonthContext));
         const row = [payId, sid, activeSystemMonthContext, amount, payDate, mode, remark, "Active", ""];
-        await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row });
+        globalAppState.payments.push({
+            PaymentID: payId, StudentID: sid, MonthYear: activeSystemMonthContext,
+            AmountPaid: amount, PaymentDate: payDate, PaymentMode: mode,
+            Remarks: remark, Status: "Active", NullifiedServices: ""
+        });
+        saveLocalCache();
+        postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row });
         issueFeeReceipt(payId, {
             sid,
             amount,
@@ -3084,7 +3139,8 @@ async function commitReminderSettlement(sid, serviceKey, dueAmount) {
             remarks: remark,
             monthYear: activeSystemMonthContext
         });
-        refreshApplicationState(false);
+        applyAppStateToViews();
+        queueBackgroundSync();
     });
 }
 
@@ -3113,8 +3169,7 @@ function populateStudentDetailForm(s) {
         editContact: s.Contact || s.contact || "",
         editAltContact: s.AltContact || s.altcontact || "N/A",
         editAddress: s.Address || s.address || "N/A",
-        editBloodGroup: s.BloodGroup || s.bloodgroup || "",
-        detailPhotoBase64: s.PhotoBase64 || s.photobase64 || "N/A"
+        editBloodGroup: s.BloodGroup || s.bloodgroup || ""
     };
     Object.keys(maps).forEach(id => { const el = document.getElementById(id); if (el) el.value = maps[id]; });
     document.getElementById("detailStudentNameHeader").innerText = s.StudentName || "";
@@ -3135,10 +3190,7 @@ function populateStudentDetailForm(s) {
     if ((s.Class || s.class) === "DayCare") updateEditClassFeeDefault();
     calculateEditDiscount();
     const photoSlot = document.getElementById("detailProfilePhotoSlot");
-    const imgCache = s.PhotoBase64 || s.photobase64 || "N/A";
-    photoSlot.innerHTML = (imgCache !== "N/A" && imgCache.length > 50) ? `<img src="${imgCache}" class="w-full h-full object-cover">` : (s.StudentName || "LM").charAt(0);
-    const photoInput = document.getElementById("editPhotoInput");
-    if (photoInput) photoInput.value = "";
+    if (photoSlot) photoSlot.innerHTML = (s.StudentName || "LM").charAt(0);
 
     const { total, balance } = getPackageBalance(s);
     const pkgLabel = document.getElementById("detailPackageStatusLabel");
@@ -3174,10 +3226,6 @@ function setStudentDetailEditMode(on) {
     if (!form) return;
     form.querySelectorAll("input, select, textarea").forEach(el => {
         if (el.type === "hidden") return;
-        if (el.type === "file") {
-            el.disabled = !on;
-            return;
-        }
         if (el.type === "radio" || el.type === "checkbox") {
             el.disabled = !on;
             return;
@@ -3187,8 +3235,6 @@ function setStudentDetailEditMode(on) {
         el.classList.toggle("opacity-80", !on);
         el.classList.toggle("cursor-default", !on);
     });
-    const photoWrap = document.getElementById("detailPhotoUploadWrap");
-    if (photoWrap) photoWrap.classList.toggle("hidden", !on);
     const editBtn = document.getElementById("btnStudentDetailEdit");
     const cancelBtn = document.getElementById("btnStudentDetailCancelEdit");
     const editActions = document.getElementById("studentDetailEditActions");
@@ -3232,7 +3278,7 @@ async function handleStudentDetailUpdate(e) {
         s.Contact = document.getElementById("editContact").value;
         s.AltContact = document.getElementById("editAltContact").value;
         s.Address = document.getElementById("editAddress").value;
-        s.PhotoBase64 = document.getElementById("detailPhotoBase64").value || "N/A";
+        s.PhotoBase64 = "N/A";
         s.BillingModel = model;
         s.CustomFee = Number(document.getElementById("editCustomFee").value) || 0;
         s.AdmissionFee = Number(document.getElementById("editAdmissionFee").value) || 0;
@@ -3244,11 +3290,11 @@ async function handleStudentDetailUpdate(e) {
         s.BloodGroup = document.getElementById("editBloodGroup").value;
         s.DOJ = document.getElementById("editDOJ").value;
         if (!s.Status) s.Status = "Active";
-        await persistStudentRecord(s);
+        persistStudentRecord(s);
         populateStudentDetailForm(s);
         setStudentDetailEditMode(false);
+        applyAppStateToViews();
         alert("Saved!");
-        await refreshApplicationState(false);
     }, "Saving…");
 }
 
@@ -3566,8 +3612,6 @@ async function handleExpenseSubmission(e) {
         const description = f.get("Description") || "";
         const type = f.get("Type");
         const row = [id, dateVal, category, amount, description, type];
-        await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: expId ? "updateRow" : "addRow", targetSheet: "Expenses", rowId: id, rowData: row });
-
         // Optimistic local update so UI reflects immediately
         const local = {
             ExpenseID: id, Date: dateVal, Category: category, Amount: amount,
@@ -3581,10 +3625,11 @@ async function handleExpenseSubmission(e) {
             globalAppState.expenses.push(local);
         }
         saveLocalCache();
+        postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: expId ? "updateRow" : "addRow", targetSheet: "Expenses", rowId: id, rowData: row });
         renderFinanceLedger();
         alert("Expense saved!");
         resetExpenseForm();
-        await refreshApplicationState(false);
+        queueBackgroundSync();
     }, "Saving…");
 }
 
@@ -3592,13 +3637,13 @@ async function triggerDeleteExpense(expId) {
     if (isLmBusy) return;
     if (!confirm("Delete this expense?")) return;
     return withBusy(null, async () => {
-        await postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Expenses", rowId: expId, rowData: [expId, "DELETED", "Rent", 0, "", "Fixed"] });
         globalAppState.expenses = globalAppState.expenses.filter(x => (x.ExpenseID || x.expenseid) !== expId);
         saveLocalCache();
+        postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "updateRow", targetSheet: "Expenses", rowId: expId, rowData: [expId, "DELETED", "Rent", 0, "", "Fixed"] });
         renderFinanceLedger();
         alert("Deleted!");
         resetExpenseForm();
-        await refreshApplicationState(false);
+        queueBackgroundSync();
     });
 }
 
@@ -3718,13 +3763,6 @@ async function handleEventSubmission(e) {
         const timeVal = formatEventTime(f.get("Time")) || "";
         const category = f.get("Category");
         const row = [id, title, dateVal, timeVal, category];
-        await postSheetRow({
-            password: CURRENT_GATE_PASSPHRASE,
-            action: existingId ? "updateRow" : "addRow",
-            targetSheet: "Events",
-            rowId: id,
-            rowData: row
-        });
         const local = { EventID: id, Title: title, Date: dateVal, Time: timeVal, Category: category };
         if (existingId) {
             const idx = globalAppState.events.findIndex(x => (x.EventID || x.eventid) === id);
@@ -3734,10 +3772,17 @@ async function handleEventSubmission(e) {
             globalAppState.events.push(local);
         }
         saveLocalCache();
+        postSheetRow({
+            password: CURRENT_GATE_PASSPHRASE,
+            action: existingId ? "updateRow" : "addRow",
+            targetSheet: "Events",
+            rowId: id,
+            rowData: row
+        });
         resetEventForm();
         renderCalendarAgenda();
         alert(existingId ? "Event updated!" : "Event saved!");
-        await refreshApplicationState(false);
+        queueBackgroundSync();
     }, "Saving…");
 }
 
@@ -3745,33 +3790,20 @@ async function triggerDeleteEvent(eventId) {
     if (isLmBusy) return;
     if (!confirm("Delete this event?")) return;
     return withBusy(null, async () => {
-        await postSheetRow({
+        globalAppState.events = globalAppState.events.filter(x => (x.EventID || x.eventid) !== eventId);
+        saveLocalCache();
+        postSheetRow({
             password: CURRENT_GATE_PASSPHRASE,
             action: "updateRow",
             targetSheet: "Events",
             rowId: eventId,
             rowData: [eventId, "DELETED", "", "", "DELETED"]
         });
-        globalAppState.events = globalAppState.events.filter(x => (x.EventID || x.eventid) !== eventId);
-        saveLocalCache();
         if (document.getElementById("eventFormID")?.value === eventId) resetEventForm();
         renderCalendarAgenda();
         alert("Deleted!");
-        await refreshApplicationState(false);
+        queueBackgroundSync();
     });
-}
-
-function processImageUpload(input) {
-    const file = input.files[0]; if (!file) return;
-    const r = new FileReader();
-    r.onloadend = () => { const c = document.getElementById("base64PayloadCache"); if (c) c.value = r.result; };
-    r.readAsDataURL(file);
-}
-function processEditImageUpload(input) {
-    const file = input.files[0]; if (!file) return;
-    const r = new FileReader();
-    r.onloadend = () => { const c = document.getElementById("detailPhotoBase64"); if (c) c.value = r.result; };
-    r.readAsDataURL(file);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
