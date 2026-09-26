@@ -1624,6 +1624,10 @@ async function refreshApplicationState(showUserAlert) {
     if (syncBtn) { syncBtn.disabled = true; syncBtn.innerText = "…"; }
 
     try {
+        if (!APP_SHEET_API_URL) {
+            if (showUserAlert) alert("Sync failed: No API URL configured for campus \"" + CAMPUS_ID + "\". Update apiUrl in campuses.js.");
+            return;
+        }
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), 90000);
         const response = await fetch(
@@ -1631,7 +1635,21 @@ async function refreshApplicationState(showUserAlert) {
             { signal: controller.signal, cache: "no-store" }
         );
         clearTimeout(timer);
-        const result = await response.json();
+        const rawText = await response.text();
+        let result;
+        try {
+            result = JSON.parse(rawText);
+        } catch (parseErr) {
+            console.error("Sync non-JSON response:", response.status, rawText.slice(0, 200));
+            if (showUserAlert) {
+                if (response.status === 401 || response.status === 403 || /need access|sign in|forbidden/i.test(rawText)) {
+                    alert("Sync failed: Apps Script Web App is not public.\n\nFix on the campus Google Sheet:\n1. Extensions → Apps Script\n2. Deploy → Manage deployments → Edit (pencil)\n3. Who has access: Anyone\n4. Version: New version → Deploy\n\nAlso confirm SCRIPT_PASSWORD matches campuses.js passcode (\"" + CURRENT_GATE_PASSPHRASE + "\").");
+                } else {
+                    alert("Sync failed: Apps Script did not return data (HTTP " + response.status + "). Redeploy the Web App (New version, access: Anyone) and try again.");
+                }
+            }
+            return;
+        }
         if (result.success) {
             globalAppState.students = stripStudentPhotos(result.data.students || []);
             globalAppState.payments = (result.data.payments || []).map(p => {
@@ -1655,7 +1673,7 @@ async function refreshApplicationState(showUserAlert) {
         } else if (showUserAlert) {
             const apiErr = (result && (result.error || result.message)) ? String(result.error || result.message) : "";
             if (/unauthor/i.test(apiErr)) {
-                alert("Sync failed: Google Apps Script still rejects password \"" + CURRENT_GATE_PASSPHRASE + "\".\n\nFix: Sheet → Extensions → Apps Script → set SCRIPT_PASSWORD = \"" + CURRENT_GATE_PASSPHRASE + "\" (see Code.gs in project folder) → Deploy → Manage deployments → Edit → New version → Deploy.\n\nChanging only the webpage Security passcode is not enough.");
+                alert("Sync failed: Google Apps Script still rejects password \"" + CURRENT_GATE_PASSPHRASE + "\".\n\nFix: Sheet → Extensions → Apps Script → set SCRIPT_PASSWORD = \"" + CURRENT_GATE_PASSPHRASE + "\" (see Code.gs / campuses.js) → Deploy → Manage deployments → Edit → New version → Deploy.\n\nChanging only the webpage Security passcode is not enough.");
             } else {
                 alert("Sync failed" + (apiErr ? ": " + apiErr : " (no data)."));
             }
