@@ -495,56 +495,48 @@
                 <h3 class="font-black text-sm text-indigo-950">Actions</h3>
             </div>
             <div class="view-scroll space-y-3">
-                <p class="text-[11px] text-slate-500 font-semibold">Year-end &amp; mid-year operations. Day-to-day viewing stays under Student Details.</p>
-                <div class="grid grid-cols-2 gap-2">
-                    <button type="button" onclick="showActionPanel('transfer')" class="bg-white border border-violet-100 rounded-2xl p-3 text-left shadow-sm">
-                        <p class="text-lg leading-none">🔀</p>
-                        <p class="text-[11px] font-black text-violet-950 mt-1">Class transfer</p>
-                        <p class="text-[9px] text-slate-500 font-semibold">Promote / move / graduate</p>
+                <p class="text-[11px] text-slate-500 font-semibold">Year-end &amp; mid-year operations. Tap a tile to open it in a separate window.</p>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <button type="button" onclick="showActionPanel('transfer')" class="action-tile bg-white border border-violet-100 rounded-2xl p-3.5 text-left shadow-sm min-h-[5.5rem] flex flex-col justify-center active:scale-[0.98] transition">
+                        <p class="text-xl leading-none">🔀</p>
+                        <p class="text-[12px] font-black text-violet-950 mt-1.5">Class transfer</p>
+                        <p class="text-[9px] text-slate-500 font-semibold mt-0.5 leading-snug">Promote / move / graduate</p>
                     </button>
-                    <button type="button" onclick="showActionPanel('discontinue')" class="bg-white border border-rose-100 rounded-2xl p-3 text-left shadow-sm">
-                        <p class="text-lg leading-none">🚪</p>
-                        <p class="text-[11px] font-black text-rose-900 mt-1">Discontinue</p>
-                        <p class="text-[9px] text-slate-500 font-semibold">Exit &amp; keep record</p>
+                    <button type="button" onclick="showActionPanel('discontinue')" class="action-tile bg-white border border-rose-100 rounded-2xl p-3.5 text-left shadow-sm min-h-[5.5rem] flex flex-col justify-center active:scale-[0.98] transition">
+                        <p class="text-xl leading-none">🚪</p>
+                        <p class="text-[12px] font-black text-rose-900 mt-1.5">Discontinue</p>
+                        <p class="text-[9px] text-slate-500 font-semibold mt-0.5 leading-snug">Exit &amp; keep record</p>
                     </button>
-                    <button type="button" onclick="showActionPanel('services')" class="bg-white border border-sky-100 rounded-2xl p-3 text-left shadow-sm">
-                        <p class="text-lg leading-none">🚐</p>
-                        <p class="text-[11px] font-black text-sky-950 mt-1">Monthly services</p>
-                        <p class="text-[9px] text-slate-500 font-semibold">Add or stop Van / DC</p>
+                    <button type="button" onclick="showActionPanel('services')" class="action-tile bg-white border border-sky-100 rounded-2xl p-3.5 text-left shadow-sm min-h-[5.5rem] flex flex-col justify-center active:scale-[0.98] transition">
+                        <p class="text-xl leading-none">🚐</p>
+                        <p class="text-[12px] font-black text-sky-950 mt-1.5">Monthly services</p>
+                        <p class="text-[9px] text-slate-500 font-semibold mt-0.5 leading-snug">Add or stop Van / DC</p>
                     </button>
-                    <button type="button" onclick="showActionPanel('billing')" class="bg-white border border-amber-100 rounded-2xl p-3 text-left shadow-sm">
-                        <p class="text-lg leading-none">💳</p>
-                        <p class="text-[11px] font-black text-amber-950 mt-1">Billing model</p>
-                        <p class="text-[9px] text-slate-500 font-semibold">Regular ↔ Monthly</p>
+                    <button type="button" onclick="showActionPanel('billing')" class="action-tile bg-white border border-amber-100 rounded-2xl p-3.5 text-left shadow-sm min-h-[5.5rem] flex flex-col justify-center active:scale-[0.98] transition">
+                        <p class="text-xl leading-none">💳</p>
+                        <p class="text-[12px] font-black text-amber-950 mt-1.5">Billing model</p>
+                        <p class="text-[9px] text-slate-500 font-semibold mt-0.5 leading-snug">Regular · Monthly · Day Care</p>
                     </button>
-                    <button type="button" onclick="showActionPanel('fees')" class="bg-white border border-indigo-100 rounded-2xl p-3 text-left shadow-sm">
-                        <p class="text-lg leading-none">🧾</p>
-                        <p class="text-[11px] font-black text-indigo-950 mt-1">Update fees</p>
-                        <p class="text-[9px] text-slate-500 font-semibold">After transfer / revise</p>
+                    <button type="button" onclick="showActionPanel('fees')" class="action-tile bg-white border border-indigo-100 rounded-2xl p-3.5 text-left shadow-sm min-h-[5.5rem] flex flex-col justify-center active:scale-[0.98] transition">
+                        <p class="text-xl leading-none">🧾</p>
+                        <p class="text-[12px] font-black text-indigo-950 mt-1.5">Update fees</p>
+                        <p class="text-[9px] text-slate-500 font-semibold mt-0.5 leading-snug">After transfer / revise</p>
                     </button>
-                    <button type="button" onclick="showActionPanel('receipt')" class="bg-white border border-emerald-100 rounded-2xl p-3 text-left shadow-sm">
-                        <p class="text-lg leading-none">📄</p>
-                        <p class="text-[11px] font-black text-emerald-900 mt-1">Custom receipt</p>
-                        <p class="text-[9px] text-slate-500 font-semibold">Multi-fee PDF receipt</p>
+                    <button type="button" onclick="showActionPanel('receipt')" class="action-tile bg-white border border-emerald-100 rounded-2xl p-3.5 text-left shadow-sm min-h-[5.5rem] flex flex-col justify-center active:scale-[0.98] transition">
+                        <p class="text-xl leading-none">📄</p>
+                        <p class="text-[12px] font-black text-emerald-900 mt-1.5">Custom receipt</p>
+                        <p class="text-[9px] text-slate-500 font-semibold mt-0.5 leading-snug">Multi-fee PDF receipt</p>
                     </button>
-                    <button type="button" onclick="showActionPanel('former')" class="bg-white border border-slate-200 rounded-2xl p-3 text-left shadow-sm">
-                        <p class="text-lg leading-none">📁</p>
-                        <p class="text-[11px] font-black text-slate-800 mt-1">Former students</p>
-                        <p class="text-[9px] text-slate-500 font-semibold">Discontinued / graduated</p>
+                    <button type="button" onclick="showActionPanel('former')" class="action-tile bg-white border border-slate-200 rounded-2xl p-3.5 text-left shadow-sm min-h-[5.5rem] flex flex-col justify-center active:scale-[0.98] transition">
+                        <p class="text-xl leading-none">📁</p>
+                        <p class="text-[12px] font-black text-slate-800 mt-1.5">Former students</p>
+                        <p class="text-[9px] text-slate-500 font-semibold mt-0.5 leading-snug">Discontinued / graduated</p>
                     </button>
-                    <button type="button" onclick="showActionPanel('delete')" class="bg-white border border-rose-200 rounded-2xl p-3 text-left shadow-sm col-span-2">
-                        <p class="text-lg leading-none">🗑️</p>
-                        <p class="text-[11px] font-black text-rose-900 mt-1">Delete student</p>
-                        <p class="text-[9px] text-slate-500 font-semibold">Permanently remove from active &amp; former lists</p>
+                    <button type="button" onclick="showActionPanel('delete')" class="action-tile bg-white border border-rose-200 rounded-2xl p-3.5 text-left shadow-sm min-h-[5.5rem] flex flex-col justify-center active:scale-[0.98] transition">
+                        <p class="text-xl leading-none">🗑️</p>
+                        <p class="text-[12px] font-black text-rose-900 mt-1.5">Delete student</p>
+                        <p class="text-[9px] text-rose-600/80 font-semibold mt-0.5 leading-snug">Remove permanently</p>
                     </button>
-                </div>
-
-                <div id="actionPanel" class="hidden bg-white rounded-2xl border shadow-sm p-4 space-y-3">
-                    <div class="flex justify-between items-center gap-2">
-                        <h4 id="actionPanelTitle" class="font-black text-sm text-indigo-950">Action</h4>
-                        <button type="button" onclick="hideActionPanel()" class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-lg">Close</button>
-                    </div>
-                    <div id="actionPanelBody" class="space-y-3 text-xs font-semibold"></div>
                 </div>
             </div>
         </section>
@@ -891,6 +883,20 @@
             <div class="flex gap-2">
                 <button type="button" onclick="closeChangePasswordModal()" class="w-1/3 bg-slate-100 py-2 rounded-xl text-xs font-bold">Cancel</button>
                 <button type="button" onclick="commitNewPasscodeKey()" class="w-2/3 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions work modal (opens from Actions tiles) -->
+    <div id="actionModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden" onclick="if(event.target===this)hideActionPanel()">
+        <div class="bg-white rounded-t-[1.5rem] sm:rounded-[1.5rem] max-w-lg w-full shadow-2xl border max-h-[92dvh] flex flex-col overflow-hidden">
+            <div class="flex justify-between items-center gap-2 px-4 pt-4 pb-3 border-b flex-shrink-0">
+                <h3 id="actionPanelTitle" class="font-black text-indigo-950 text-sm truncate">Action</h3>
+                <button type="button" onclick="hideActionPanel()" class="text-2xl text-slate-400 font-bold leading-none px-1">&times;</button>
+            </div>
+            <div id="actionPanelBody" class="p-4 space-y-3 text-xs font-semibold overflow-y-auto flex-1 overscroll-contain"></div>
+            <div class="px-4 pb-4 pt-2 border-t flex-shrink-0 safe-pb">
+                <button type="button" onclick="hideActionPanel()" class="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl text-xs">Close</button>
             </div>
         </div>
     </div>
@@ -1271,11 +1277,13 @@ function parseViewFromHash() {
 
 function goAppBack() {
     // Close open overlays first
+    const action = document.getElementById("actionModalOverlay");
     const receipt = document.getElementById("receiptModalOverlay");
     const pay = document.getElementById("paymentModalOverlay");
     const term = document.getElementById("termPaymentsModalOverlay");
     const detail = document.getElementById("studentDetailModalOverlay");
     const pwd = document.getElementById("changePasswordModalOverlay");
+    if (action && !action.classList.contains("hidden")) { hideActionPanel(); return; }
     if (receipt && !receipt.classList.contains("hidden")) { closeReceiptModal(); return; }
     if (pay && !pay.classList.contains("hidden")) { closePaymentModal(); return; }
     if (term && !term.classList.contains("hidden")) { closeTermPaymentsModal(); return; }
@@ -2578,17 +2586,17 @@ let currentActionPanel = "";
 
 function hideActionPanel() {
     currentActionPanel = "";
-    const panel = document.getElementById("actionPanel");
-    if (panel) panel.classList.add("hidden");
+    const overlay = document.getElementById("actionModalOverlay");
+    if (overlay) overlay.classList.add("hidden");
+    document.body.style.overflow = "";
 }
 
 function showActionPanel(kind) {
     currentActionPanel = kind;
-    const panel = document.getElementById("actionPanel");
+    const overlay = document.getElementById("actionModalOverlay");
     const title = document.getElementById("actionPanelTitle");
     const body = document.getElementById("actionPanelBody");
-    if (!panel || !body) return;
-    panel.classList.remove("hidden");
+    if (!overlay || !body) return;
     const titles = {
         transfer: "Class transfer / promote",
         discontinue: "Discontinue student",
@@ -2609,6 +2617,9 @@ function showActionPanel(kind) {
     else if (kind === "former") body.innerHTML = buildFormerStudentsHtml();
     else if (kind === "delete") body.innerHTML = buildDeleteStudentActionHtml();
     else body.innerHTML = "";
+    overlay.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+    body.scrollTop = 0;
 }
 
 function activeStudentsSorted() {
