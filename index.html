@@ -205,6 +205,7 @@
                         <span class="font-black text-indigo-950">Billing Model</span>
                         <label class="flex items-center gap-2"><input type="radio" name="BillingModel" value="Regular" checked onchange="handleFormBillingTypeChange('Regular')"><span class="font-bold">Regular Base</span></label>
                         <label class="flex items-center gap-2"><input type="radio" name="BillingModel" value="Monthly" onchange="handleFormBillingTypeChange('Monthly')"><span class="font-bold">Custom Monthly</span></label>
+                        <label class="flex items-center gap-2"><input type="radio" name="BillingModel" value="DayCare" onchange="handleFormBillingTypeChange('DayCare')"><span class="font-bold">Day Care</span></label>
                     </div>
 
                     <!-- Profile -->
@@ -247,7 +248,7 @@
                         <div class="bg-slate-50 p-3 rounded-xl border space-y-2">
                             <p class="text-[10px] font-black uppercase text-slate-400">Monthly services</p>
                             <label class="flex items-center gap-2 font-bold"><input type="checkbox" id="chkFormVanOpted" onchange="refreshIntakeAmountPanel()"><span>Van</span></label>
-                            <label class="flex items-center gap-2 font-bold"><input type="checkbox" id="chkFormDayCareOpted" onchange="refreshIntakeAmountPanel()"><span>Day Care</span></label>
+                            <label id="wrapIntakeDayCareAddOn" class="flex items-center gap-2 font-bold"><input type="checkbox" id="chkFormDayCareOpted" onchange="refreshIntakeAmountPanel()"><span>Day Care (add-on)</span></label>
                         </div>
 
                         <div class="bg-slate-50 p-3 rounded-xl border space-y-3">
@@ -288,9 +289,14 @@
                             <input type="number" id="FormOptMonthlyFee" min="0" placeholder="Collect every month separately" oninput="updateIntakeTotalsSummary()" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
                             <p class="text-[10px] text-slate-400 mt-1">Monthly fee is collected separately — not part of term package total.</p>
                         </div>
+                        <div id="rowDayCarePrimary" class="hidden">
+                            <label class="block mb-1 text-slate-500">Day Care monthly (₹) *</label>
+                            <input type="number" id="FormDayCarePrimaryFee" min="0" placeholder="Monthly Day Care fee" oninput="updateIntakeTotalsSummary()" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
+                            <p class="text-[10px] text-slate-400 mt-1">Pure Day Care enrolment — counted under DC on the home page.</p>
+                        </div>
 
                         <div id="blockMonthlyOneTimeFees" class="hidden space-y-3">
-                            <p class="text-[10px] font-black uppercase text-slate-400">Custom Monthly — one-time fees</p>
+                            <p class="text-[10px] font-black uppercase text-slate-400">One-time fees (optional)</p>
                             <div id="rowAdmissionFee"><label class="block mb-1 text-slate-500">Admission Fee (₹)</label><input type="number" id="intakeAdmissionFee" min="0" value="0" oninput="updateIntakeTotalsSummary()" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
                         </div>
 
@@ -306,6 +312,7 @@
                             <div class="flex justify-between"><span class="text-slate-600">1st term (paid now)</span><span id="lblIntakePaidNow" class="text-emerald-600">₹0</span></div>
                             <div id="rowIntakeBalance" class="flex justify-between border-t border-indigo-100 pt-1.5"><span class="text-slate-600">Balance</span><span id="lblIntakeBalance" class="text-rose-600 font-black">₹0</span></div>
                             <p id="lblIntakeMonthlyNote" class="hidden text-[10px] text-slate-500 font-semibold pt-1">Custom Monthly ₹<span id="lblIntakeMonthlyRate">0</span> / month — collect separately</p>
+                            <p id="lblIntakeDayCareNote" class="hidden text-[10px] text-violet-700 font-semibold pt-1">Day Care ₹<span id="lblIntakeDayCareRate">0</span> / month — collect via Monthly Fee Check</p>
                         </div>
                     </div>
 
@@ -514,6 +521,11 @@
                         <p class="text-lg leading-none">🧾</p>
                         <p class="text-[11px] font-black text-indigo-950 mt-1">Update fees</p>
                         <p class="text-[9px] text-slate-500 font-semibold">After transfer / revise</p>
+                    </button>
+                    <button type="button" onclick="showActionPanel('receipt')" class="bg-white border border-emerald-100 rounded-2xl p-3 text-left shadow-sm">
+                        <p class="text-lg leading-none">📄</p>
+                        <p class="text-[11px] font-black text-emerald-900 mt-1">Custom receipt</p>
+                        <p class="text-[9px] text-slate-500 font-semibold">Multi-fee PDF receipt</p>
                     </button>
                     <button type="button" onclick="showActionPanel('former')" class="bg-white border border-slate-200 rounded-2xl p-3 text-left shadow-sm">
                         <p class="text-lg leading-none">📁</p>
@@ -726,6 +738,7 @@
                     <span class="font-black text-indigo-950">Billing Model</span>
                     <label class="flex items-center gap-2"><input type="radio" id="editModelRegular" name="EditBillingModel" value="Regular" onchange="handleEditFormBillingTypeChange('Regular')"><span>Regular Base</span></label>
                     <label class="flex items-center gap-2"><input type="radio" id="editModelMonthly" name="EditBillingModel" value="Monthly" onchange="handleEditFormBillingTypeChange('Monthly')"><span>Custom Monthly</span></label>
+                    <label class="flex items-center gap-2"><input type="radio" id="editModelDayCare" name="EditBillingModel" value="DayCare" onchange="handleEditFormBillingTypeChange('DayCare')"><span>Day Care</span></label>
                 </div>
                 <div class="grid grid-cols-1 gap-3">
                     <div><label class="block mb-1 text-slate-400">Name</label><input type="text" id="editStudentName" required class="w-full p-2 border rounded-xl bg-slate-50"></div>
@@ -1123,11 +1136,13 @@ function getTermFeesPaid(sid) {
     return total;
 }
 function computeIntakeServiceTotals() {
-    const isMonthly = getIntakeBillingModel() === "Monthly";
+    const model = getIntakeBillingModel();
+    const isMonthly = model === "Monthly";
+    const isDayCare = model === "DayCare";
     const sportsOn = document.getElementById("chkSportsUniform")?.checked;
     const regUniOn = document.getElementById("chkRegularUniform")?.checked;
     const steamOn = document.getElementById("chkSteamKit")?.checked;
-    const eduOn = isMonthly && document.getElementById("chkEducationKit")?.checked;
+    const eduOn = (isMonthly || isDayCare) && document.getElementById("chkEducationKit")?.checked;
     const sportsQty = Math.max(1, Number(document.getElementById("intakeSportsUniformQty")?.value) || 1);
     const regQty = Math.max(1, Number(document.getElementById("intakeRegularUniformQty")?.value) || 1);
     return {
@@ -1136,18 +1151,22 @@ function computeIntakeServiceTotals() {
         steamFee: steamOn ? (Number(document.getElementById("intakeSteamKitFee")?.value) || 0) : 0,
         eduFee: eduOn ? (Number(document.getElementById("intakeEducationKitFee")?.value) || 0) : 0,
         vanFee: document.getElementById("chkFormVanOpted")?.checked ? (Number(document.getElementById("FormVanFee")?.value) || 0) : 0,
-        dayCareFee: document.getElementById("chkFormDayCareOpted")?.checked ? (Number(document.getElementById("FormDayCareFee")?.value) || 0) : 0
+        dayCareFee: (!isDayCare && document.getElementById("chkFormDayCareOpted")?.checked) ? (Number(document.getElementById("FormDayCareFee")?.value) || 0) : 0
     };
 }
 function getIntakePackageTotal() {
-    const isMonthly = getIntakeBillingModel() === "Monthly";
+    const model = getIntakeBillingModel();
     const svc = computeIntakeServiceTotals();
     const optedOneTime = svc.sportsTotal + svc.regUniTotal + svc.steamFee + svc.eduFee;
-    if (isMonthly) return (Number(document.getElementById("intakeAdmissionFee")?.value) || 0) + optedOneTime;
+    if (model === "Monthly" || model === "DayCare") {
+        return (Number(document.getElementById("intakeAdmissionFee")?.value) || 0) + optedOneTime;
+    }
     return (Number(document.getElementById("intakeAnnualTuition")?.value) || 0) + optedOneTime;
 }
 function updateIntakeTotalsSummary() {
-    const isMonthly = getIntakeBillingModel() === "Monthly";
+    const model = getIntakeBillingModel();
+    const isMonthly = model === "Monthly";
+    const isDayCare = model === "DayCare";
     const total = getIntakePackageTotal();
     const paid = Number(document.getElementById("intakePaidNowAmount")?.value) || 0;
     const balance = Math.max(0, total - paid);
@@ -1164,12 +1183,19 @@ function updateIntakeTotalsSummary() {
         const rateEl = document.getElementById("lblIntakeMonthlyRate");
         if (rateEl) rateEl.innerText = String(monthlyRate);
     }
+    const dcNote = document.getElementById("lblIntakeDayCareNote");
+    const dcRate = Number(document.getElementById("FormDayCarePrimaryFee")?.value) || 0;
+    if (dcNote) {
+        dcNote.classList.toggle("hidden", !isDayCare);
+        const rateEl = document.getElementById("lblIntakeDayCareRate");
+        if (rateEl) rateEl.innerText = String(dcRate);
+    }
 }
 function getStudentReceivables(s) {
     const elapsed = getElapsedMonthsToBill(s);
     const oneTime = getOneTimeTuitionBilled(s);
     const van = Number(s.VanFee || s.vanfee) || 0;
-    const isDC = (s.Class || s.class) === "DayCare";
+    const isDC = isPureDayCareStudent(s) || (s.Class || s.class) === "DayCare";
     const dayCareMonthly = isDC ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : (Number(s.DayCareFee || s.daycarefee) || 0);
     const optMonthly = (!isDC && (s.BillingModel === "Monthly" || s.billingmodel === "Monthly")) ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : 0;
     return oneTime + ((van + dayCareMonthly + optMonthly) * elapsed);
@@ -1385,32 +1411,46 @@ function getIntakeBillingModel() {
 }
 
 function refreshIntakeAmountPanel() {
-    const isMonthly = getIntakeBillingModel() === "Monthly";
+    const model = getIntakeBillingModel();
+    const isMonthly = model === "Monthly";
+    const isDayCare = model === "DayCare";
+    const isRegular = model === "Regular";
     const show = (id, on) => { const el = document.getElementById(id); if (el) el.classList.toggle("hidden", !on); };
 
-    show("rowAnnualTuition", !isMonthly);
+    show("rowAnnualTuition", isRegular);
     show("rowCustomMonthly", isMonthly);
-    show("blockMonthlyOneTimeFees", isMonthly);
+    show("rowDayCarePrimary", isDayCare);
+    show("blockMonthlyOneTimeFees", isMonthly || isDayCare);
+
+    const dcAddOn = document.getElementById("wrapIntakeDayCareAddOn");
+    if (dcAddOn) dcAddOn.classList.toggle("hidden", isDayCare);
 
     const eduWrap = document.getElementById("wrapEducationKitCheck");
     if (eduWrap) {
-        eduWrap.classList.toggle("hidden", !isMonthly);
-        eduWrap.classList.toggle("flex", isMonthly);
+        const showEdu = isMonthly || isDayCare;
+        eduWrap.classList.toggle("hidden", !showEdu);
+        eduWrap.classList.toggle("flex", showEdu);
     }
 
-    if (!isMonthly) {
+    if (isRegular) {
         const eduChk = document.getElementById("chkEducationKit");
         if (eduChk) eduChk.checked = false;
         const eduFee = document.getElementById("intakeEducationKitFee");
         if (eduFee) eduFee.value = "";
     }
+    if (isDayCare) {
+        const dcChk = document.getElementById("chkFormDayCareOpted");
+        if (dcChk) dcChk.checked = false;
+        const dcFee = document.getElementById("FormDayCareFee");
+        if (dcFee) dcFee.value = "";
+    }
 
     const vanOn = document.getElementById("chkFormVanOpted")?.checked;
-    const dcOn = document.getElementById("chkFormDayCareOpted")?.checked;
+    const dcOn = !isDayCare && document.getElementById("chkFormDayCareOpted")?.checked;
     const sportsOn = document.getElementById("chkSportsUniform")?.checked;
     const regUniOn = document.getElementById("chkRegularUniform")?.checked;
     const steamOn = document.getElementById("chkSteamKit")?.checked;
-    const eduOn = isMonthly && document.getElementById("chkEducationKit")?.checked;
+    const eduOn = (isMonthly || isDayCare) && document.getElementById("chkEducationKit")?.checked;
 
     show("amtVanRow", !!vanOn);
     show("amtDayCareRow", !!dcOn);
@@ -1432,30 +1472,49 @@ function refreshIntakeAmountPanel() {
 }
 
 function handleFormBillingTypeChange(type) {
-    if (type === "Regular") {
+    const cls = document.getElementById("intakeClassSelect");
+    if (type === "DayCare") {
+        if (cls) cls.value = "DayCare";
         const t = document.getElementById("intakeAnnualTuition");
         if (t) t.value = "";
         const opt = document.getElementById("FormOptMonthlyFee");
         if (opt) opt.value = "";
-    } else {
+        const adm = document.getElementById("intakeAdmissionFee");
+        if (adm && adm.value === "") adm.value = "0";
+    } else if (type === "Regular") {
+        if (cls && cls.value === "DayCare") cls.value = "DR";
         const t = document.getElementById("intakeAnnualTuition");
         if (t) t.value = "";
+        const opt = document.getElementById("FormOptMonthlyFee");
+        if (opt) opt.value = "";
+        const dcPri = document.getElementById("FormDayCarePrimaryFee");
+        if (dcPri) dcPri.value = "";
+    } else {
+        if (cls && cls.value === "DayCare") cls.value = "DR";
+        const t = document.getElementById("intakeAnnualTuition");
+        if (t) t.value = "";
+        const dcPri = document.getElementById("FormDayCarePrimaryFee");
+        if (dcPri) dcPri.value = "";
         const adm = document.getElementById("intakeAdmissionFee");
         if (adm && adm.value === "") adm.value = "0";
     }
-    onIntakeClassChange();
     refreshIntakeAmountPanel();
 }
 
 function onIntakeClassChange() {
     const cls = document.getElementById("intakeClassSelect")?.value;
-    const wrap = document.getElementById("formModelWrapper");
     if (cls === "DayCare") {
-        const rad = document.querySelector('input[name="BillingModel"][value="Monthly"]');
+        const rad = document.querySelector('input[name="BillingModel"][value="DayCare"]');
         if (rad) rad.checked = true;
-        if (wrap) wrap.style.display = "none";
-    } else {
-        if (wrap) wrap.style.display = "flex";
+        handleFormBillingTypeChange("DayCare");
+        return;
+    }
+    const model = getIntakeBillingModel();
+    if (model === "DayCare") {
+        const rad = document.querySelector('input[name="BillingModel"][value="Regular"]');
+        if (rad) rad.checked = true;
+        handleFormBillingTypeChange("Regular");
+        return;
     }
     refreshIntakeAmountPanel();
 }
@@ -1467,52 +1526,76 @@ function handleEditFormBillingTypeChange(type) {
     if (type === "Regular") {
         show("editRowAnnualTuition", true); show("editRowAdmissionFee", false); show("editRowKitFee", false); show("editBoxOptMonthly", false);
         const badge = document.getElementById("editDiscountBadge"); if (badge) badge.style.display = "inline-block";
+        const cls = document.getElementById("editClass");
+        if (cls && cls.value === "DayCare") cls.value = "DR";
         calculateEditDiscount();
+    } else if (type === "DayCare") {
+        show("editRowAnnualTuition", false); show("editRowAdmissionFee", true); show("editRowKitFee", true); show("editRowUniformFee", true); show("editBoxOptMonthly", true);
+        const badge = document.getElementById("editDiscountBadge"); if (badge) badge.style.display = "none";
+        const optLabel = document.querySelector('#editBoxOptMonthly label');
+        if (optLabel) optLabel.innerHTML = "Day Care monthly (₹)";
+        const cls = document.getElementById("editClass");
+        if (cls) cls.value = "DayCare";
     } else {
         show("editRowAnnualTuition", false); show("editRowAdmissionFee", true); show("editRowKitFee", true); show("editRowUniformFee", true); show("editBoxOptMonthly", true);
         const badge = document.getElementById("editDiscountBadge"); if (badge) badge.style.display = "none";
+        const optLabel = document.querySelector('#editBoxOptMonthly label');
+        if (optLabel) optLabel.innerHTML = "Custom Monthly (₹)";
+        const cls = document.getElementById("editClass");
+        if (cls && cls.value === "DayCare") cls.value = "DR";
     }
 }
 
 function updateEditClassFeeDefault() {
     const cls = document.getElementById("editClass").value;
-    const wrap = document.getElementById("editModelWrapper");
     if (cls === "DayCare") {
-        document.getElementById("editModelMonthly").checked = true;
-        handleEditFormBillingTypeChange("Monthly");
-        if (wrap) wrap.style.display = "none";
+        document.getElementById("editModelDayCare").checked = true;
+        handleEditFormBillingTypeChange("DayCare");
     } else {
-        if (wrap) wrap.style.display = "flex";
-        const isRegular = document.querySelector('input[name="EditBillingModel"]:checked')?.value === "Regular";
-        handleEditFormBillingTypeChange(isRegular ? "Regular" : "Monthly");
+        const model = document.querySelector('input[name="EditBillingModel"]:checked')?.value || "Regular";
+        if (model === "DayCare") {
+            document.getElementById("editModelRegular").checked = true;
+            handleEditFormBillingTypeChange("Regular");
+        } else {
+            handleEditFormBillingTypeChange(model === "Monthly" ? "Monthly" : "Regular");
+        }
     }
-    // No autofill from standardFees
     calculateEditDiscount();
 }
 
 function buildIntakeFeePayload() {
-    const isMonthly = getIntakeBillingModel() === "Monthly";
+    const model = getIntakeBillingModel();
+    const isMonthly = model === "Monthly";
+    const isDayCare = model === "DayCare";
     const svc = computeIntakeServiceTotals();
-    let customFee = 0, admissionFee = 0, kitFee = 0, uniformFee = 0, optMonthly = 0;
+    let customFee = 0, admissionFee = 0, kitFee = 0, uniformFee = 0, optMonthly = 0, dayCareFee = 0;
 
-    if (isMonthly) {
+    if (isDayCare) {
+        optMonthly = Number(document.getElementById("FormDayCarePrimaryFee")?.value) || 0;
+        admissionFee = Number(document.getElementById("intakeAdmissionFee")?.value) || 0;
+        kitFee = svc.steamFee + svc.eduFee;
+        uniformFee = svc.regUniTotal;
+        customFee = svc.sportsTotal;
+        dayCareFee = 0;
+    } else if (isMonthly) {
         optMonthly = Number(document.getElementById("FormOptMonthlyFee")?.value) || 0;
         admissionFee = Number(document.getElementById("intakeAdmissionFee")?.value) || 0;
         kitFee = svc.steamFee + svc.eduFee;
         uniformFee = svc.regUniTotal;
         customFee = svc.sportsTotal;
+        dayCareFee = svc.dayCareFee;
     } else {
-        // Fee agreed + one-time services (Education Kit is Custom Monthly only)
         customFee = Number(document.getElementById("intakeAnnualTuition")?.value) || 0;
         admissionFee = svc.sportsTotal;
         kitFee = svc.steamFee;
         uniformFee = svc.regUniTotal;
         optMonthly = 0;
+        dayCareFee = svc.dayCareFee;
     }
 
     return {
-        isMonthly, customFee, admissionFee, kitFee, uniformFee,
-        vanFee: svc.vanFee, dayCareFee: svc.dayCareFee, optMonthly,
+        isMonthly, isDayCare, customFee, admissionFee, kitFee, uniformFee,
+        vanFee: svc.vanFee, dayCareFee, optMonthly,
         packageTotal: getIntakePackageTotal()
     };
 }
@@ -1809,7 +1892,8 @@ function renderCohortHeadcounts() {
     const nEW = list.filter(s => s.Class === "EW").length;
     const n1 = list.filter(s => s.Class === "RTF1").length;
     const n2 = list.filter(s => s.Class === "RTF2").length;
-    const nDC = list.filter(s => s.Class === "DayCare").length;
+    // Pure Day Care only (BillingModel DayCare) — not Regular kids with DC add-on
+    const nDC = list.filter(isPureDayCareStudent).length;
     set("countCohortDR", `${nDR} Kids`);
     set("countCohortEW", `${nEW} Kids`);
     set("countCohortRTF1", `${n1} Kids`);
@@ -1852,6 +1936,12 @@ function isActiveStudent(s) {
     const name = (s.StudentName || s.studentname || "").toString().trim();
     if (!name) return false;
     return getStudentStatus(s) === "Active";
+}
+
+/** Pure Day Care enrolment (Billing Model = Day Care) — used for home DC count */
+function isPureDayCareStudent(s) {
+    if (!s) return false;
+    return (s.BillingModel || s.billingmodel || "") === "DayCare";
 }
 
 function isFormerStudent(s) {
@@ -1940,9 +2030,12 @@ function formatPackageStatusChip(s) {
 function formatOptedServiceChips(s) {
     const chips = [];
     if (Number(s.VanFee || s.vanfee) > 0) chips.push('<span class="bg-sky-100 text-sky-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">Van</span>');
-    const isDC = (s.Class || s.class) === "DayCare";
-    if (Number(s.DayCareFee || s.daycarefee) > 0 || isDC) chips.push('<span class="bg-violet-100 text-violet-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">DC</span>');
-    if ((s.BillingModel === "Monthly" || s.billingmodel === "Monthly") && !isDC) chips.push('<span class="bg-slate-200 text-slate-700 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">MO</span>');
+    if (isPureDayCareStudent(s) || Number(s.DayCareFee || s.daycarefee) > 0 || (s.Class || s.class) === "DayCare") {
+        chips.push('<span class="bg-violet-100 text-violet-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">DC</span>');
+    }
+    if ((s.BillingModel === "Monthly" || s.billingmodel === "Monthly") && !isPureDayCareStudent(s) && (s.Class || s.class) !== "DayCare") {
+        chips.push('<span class="bg-slate-200 text-slate-700 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">MO</span>');
+    }
     if (Number(s.StudentKitFee || s.studentkitfee) > 0) chips.push('<span class="bg-amber-100 text-amber-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">Kit</span>');
     if (Number(s.SpareUniformFee || s.spareuniformfee) > 0) chips.push('<span class="bg-orange-100 text-orange-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">Uni</span>');
     if (Number(s.AdmissionFee || s.admissionfee) > 0) chips.push('<span class="bg-indigo-100 text-indigo-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">Adm</span>');
@@ -2437,7 +2530,10 @@ function renderStudentCards() {
     if (!grid) return;
     grid.innerHTML = "";
     let list = globalAppState.students.filter(isActiveStudent);
-    if (currentActiveCohortFilter !== "ALL") list = list.filter(s => s.Class === currentActiveCohortFilter);
+    if (currentActiveCohortFilter !== "ALL") {
+        if (currentActiveCohortFilter === "DayCare") list = list.filter(isPureDayCareStudent);
+        else list = list.filter(s => s.Class === currentActiveCohortFilter);
+    }
     const search = (document.getElementById("rosterSearch")?.value || "").toLowerCase();
     if (search) list = list.filter(s => (s.StudentName || "").toLowerCase().includes(search));
     if (!list.length) { grid.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">No students found.</p>'; return; }
@@ -2499,6 +2595,7 @@ function showActionPanel(kind) {
         services: "Monthly services",
         billing: "Change billing model",
         fees: "Update fees after transfer",
+        receipt: "Custom receipt",
         former: "Former students",
         delete: "Delete student record"
     };
@@ -2508,6 +2605,7 @@ function showActionPanel(kind) {
     else if (kind === "services") body.innerHTML = buildServicesActionHtml();
     else if (kind === "billing") body.innerHTML = buildBillingActionHtml();
     else if (kind === "fees") body.innerHTML = buildFeesActionHtml();
+    else if (kind === "receipt") body.innerHTML = buildCustomReceiptActionHtml();
     else if (kind === "former") body.innerHTML = buildFormerStudentsHtml();
     else if (kind === "delete") body.innerHTML = buildDeleteStudentActionHtml();
     else body.innerHTML = "";
@@ -2676,7 +2774,7 @@ function loadServicesActionStudent() {
     document.getElementById("actSvcVan").value = Number(s.VanFee || s.vanfee) || 0;
     document.getElementById("actSvcDC").value = Number(s.DayCareFee || s.daycarefee) || 0;
     document.getElementById("actSvcOpt").value = Number(s.OptMonthlyFee || s.optmonthlyfee) || 0;
-    const isDC = (s.Class || s.class) === "DayCare";
+    const isDC = isPureDayCareStudent(s) || (s.Class || s.class) === "DayCare";
     const optWrap = document.getElementById("actSvcOptWrap");
     if (optWrap) optWrap.style.display = isDC ? "none" : "block";
 }
@@ -2704,7 +2802,7 @@ async function commitServicesUpdate() {
 
 function buildBillingActionHtml() {
     return `
-        <p class="text-[10px] text-slate-500">Switch Regular Base ↔ Custom Monthly. Adjust fee fields after switching.</p>
+        <p class="text-[10px] text-slate-500">Switch Regular / Custom Monthly / Day Care. Adjust fee fields after switching.</p>
         <div>
             <label class="block mb-1 text-slate-500">Student</label>
             <select id="actBillStudent" onchange="loadBillingActionStudent()" class="w-full p-2 border rounded-xl bg-slate-50">
@@ -2718,14 +2816,14 @@ function buildBillingActionHtml() {
                 <select id="actBillModel" class="w-full p-2 border rounded-xl bg-slate-50">
                     <option value="Regular">Regular Base</option>
                     <option value="Monthly">Custom Monthly</option>
+                    <option value="DayCare">Day Care</option>
                 </select>
             </div>
             <div id="actBillRegularWrap"><label class="block mb-1 text-slate-500">Fee agreed (₹)</label><input type="number" id="actBillFeeAgreed" min="0" class="w-full p-2 border rounded-xl bg-slate-50"></div>
             <div id="actBillMonthlyWrap" class="hidden space-y-2">
-                <div><label class="block mb-1 text-slate-500">Custom Monthly (₹)</label><input type="number" id="actBillOpt" min="0" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                <div><label class="block mb-1 text-slate-500" id="actBillOptLabel">Custom Monthly (₹)</label><input type="number" id="actBillOpt" min="0" class="w-full p-2 border rounded-xl bg-slate-50"></div>
                 <div><label class="block mb-1 text-slate-500">Admission Fee (₹)</label><input type="number" id="actBillAdm" min="0" class="w-full p-2 border rounded-xl bg-slate-50"></div>
             </div>
-            <button type="button" onclick="document.getElementById('actBillModel').dispatchEvent(new Event('change'))" class="hidden"></button>
             <button type="button" onclick="commitBillingModelChange()" class="w-full bg-amber-600 text-white font-bold py-2.5 rounded-xl">Save billing model</button>
         </div>`;
 }
@@ -2738,8 +2836,9 @@ function loadBillingActionStudent() {
     if (!s) return;
     wrap.classList.remove("hidden");
     const model = s.BillingModel || s.billingmodel || "Regular";
-    document.getElementById("actBillCurrent").innerText = "Current: " + (model === "Monthly" ? "Custom Monthly" : "Regular Base");
-    document.getElementById("actBillModel").value = model;
+    const label = model === "DayCare" ? "Day Care" : (model === "Monthly" ? "Custom Monthly" : "Regular Base");
+    document.getElementById("actBillCurrent").innerText = "Current: " + label;
+    document.getElementById("actBillModel").value = model === "DayCare" || model === "Monthly" ? model : "Regular";
     document.getElementById("actBillFeeAgreed").value = Number(s.CustomFee || s.customfee) || 0;
     document.getElementById("actBillOpt").value = Number(s.OptMonthlyFee || s.optmonthlyfee) || 0;
     document.getElementById("actBillAdm").value = Number(s.AdmissionFee || s.admissionfee) || 0;
@@ -2747,7 +2846,9 @@ function loadBillingActionStudent() {
     modelEl.onchange = () => {
         const m = modelEl.value;
         document.getElementById("actBillRegularWrap").style.display = m === "Regular" ? "block" : "none";
-        document.getElementById("actBillMonthlyWrap").style.display = m === "Monthly" ? "block" : "none";
+        document.getElementById("actBillMonthlyWrap").style.display = (m === "Monthly" || m === "DayCare") ? "block" : "none";
+        const optLabel = document.getElementById("actBillOptLabel");
+        if (optLabel) optLabel.innerText = m === "DayCare" ? "Day Care monthly (₹)" : "Custom Monthly (₹)";
     };
     modelEl.dispatchEvent(new Event("change"));
 }
@@ -2757,7 +2858,8 @@ async function commitBillingModelChange() {
     const sid = document.getElementById("actBillStudent")?.value;
     if (!sid) return;
     const model = document.getElementById("actBillModel")?.value || "Regular";
-    if (!confirm("Change billing model to " + (model === "Monthly" ? "Custom Monthly" : "Regular Base") + "?")) return;
+    const label = model === "DayCare" ? "Day Care" : (model === "Monthly" ? "Custom Monthly" : "Regular Base");
+    if (!confirm("Change billing model to " + label + "?")) return;
     return withBusy(null, async () => {
         const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
         if (!s) return;
@@ -2768,6 +2870,18 @@ async function commitBillingModelChange() {
             s.customfee = s.CustomFee;
             s.OptMonthlyFee = 0;
             s.optmonthlyfee = 0;
+            if ((s.Class || s.class) === "DayCare") { s.Class = "DR"; s.class = "DR"; }
+        } else if (model === "DayCare") {
+            s.CustomFee = 0;
+            s.customfee = 0;
+            s.OptMonthlyFee = Number(document.getElementById("actBillOpt")?.value) || 0;
+            s.optmonthlyfee = s.OptMonthlyFee;
+            s.AdmissionFee = Number(document.getElementById("actBillAdm")?.value) || 0;
+            s.admissionfee = s.AdmissionFee;
+            s.DayCareFee = 0;
+            s.daycarefee = 0;
+            s.Class = "DayCare";
+            s.class = "DayCare";
         } else {
             s.CustomFee = 0;
             s.customfee = 0;
@@ -2775,8 +2889,9 @@ async function commitBillingModelChange() {
             s.optmonthlyfee = s.OptMonthlyFee;
             s.AdmissionFee = Number(document.getElementById("actBillAdm")?.value) || 0;
             s.admissionfee = s.AdmissionFee;
+            if ((s.Class || s.class) === "DayCare") { s.Class = "DR"; s.class = "DR"; }
         }
-        await persistStudentRecord(s);
+        persistStudentRecord(s);
         alert("Billing model updated.");
         applyAppStateToViews();
     });
@@ -2893,6 +3008,118 @@ function buildDeleteStudentActionHtml() {
         <button type="button" onclick="commitDeleteStudent()" class="w-full bg-rose-600 text-white font-bold py-2.5 rounded-xl">Delete record</button>`;
 }
 
+function buildCustomReceiptActionHtml() {
+    const today = todayIsoDate();
+    return `
+        <p class="text-[10px] text-slate-500">Enter amounts paid now for any fee types. Creates payment records and one combined PDF receipt.</p>
+        <div>
+            <label class="block mb-1 text-slate-500">Student</label>
+            <select id="actRcptStudent" class="w-full p-2 border rounded-xl bg-slate-50">
+                <option value="">Select…</option>${studentOptionListHtml(true)}
+            </select>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+            <div><label class="block mb-1 text-slate-500">Date</label><input type="date" id="actRcptDate" value="${today}" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+            <div>
+                <label class="block mb-1 text-slate-500">Mode</label>
+                <select id="actRcptMode" class="w-full p-2 border rounded-xl bg-slate-50">
+                    <option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Bank">Bank</option><option value="Card">Card</option>
+                </select>
+            </div>
+        </div>
+        <div class="space-y-2 border rounded-xl p-3 bg-slate-50">
+            <p class="text-[10px] font-black uppercase text-slate-400">Fee amounts (₹) — leave 0 to skip</p>
+            <div><label class="block mb-0.5 text-slate-500">Term / Package fee</label><input type="number" id="actRcptTerm" min="0" value="0" oninput="updateCustomReceiptTotal()" class="w-full p-2 border rounded-xl bg-white"></div>
+            <div><label class="block mb-0.5 text-slate-500">Admission fee</label><input type="number" id="actRcptAdm" min="0" value="0" oninput="updateCustomReceiptTotal()" class="w-full p-2 border rounded-xl bg-white"></div>
+            <div><label class="block mb-0.5 text-slate-500">Kit (Education / Steam)</label><input type="number" id="actRcptKit" min="0" value="0" oninput="updateCustomReceiptTotal()" class="w-full p-2 border rounded-xl bg-white"></div>
+            <div><label class="block mb-0.5 text-slate-500">Uniform</label><input type="number" id="actRcptUni" min="0" value="0" oninput="updateCustomReceiptTotal()" class="w-full p-2 border rounded-xl bg-white"></div>
+            <div><label class="block mb-0.5 text-slate-500">Van (this month)</label><input type="number" id="actRcptVan" min="0" value="0" oninput="updateCustomReceiptTotal()" class="w-full p-2 border rounded-xl bg-white"></div>
+            <div><label class="block mb-0.5 text-slate-500">Day Care (this month)</label><input type="number" id="actRcptDC" min="0" value="0" oninput="updateCustomReceiptTotal()" class="w-full p-2 border rounded-xl bg-white"></div>
+            <div><label class="block mb-0.5 text-slate-500">Custom Monthly (this month)</label><input type="number" id="actRcptOpt" min="0" value="0" oninput="updateCustomReceiptTotal()" class="w-full p-2 border rounded-xl bg-white"></div>
+            <div><label class="block mb-0.5 text-slate-500">Other label</label><input type="text" id="actRcptOtherLabel" placeholder="e.g. Late fee" class="w-full p-2 border rounded-xl bg-white"></div>
+            <div><label class="block mb-0.5 text-slate-500">Other amount</label><input type="number" id="actRcptOther" min="0" value="0" oninput="updateCustomReceiptTotal()" class="w-full p-2 border rounded-xl bg-white"></div>
+        </div>
+        <div class="flex justify-between items-center bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2">
+            <span class="text-[11px] font-bold text-emerald-800">Receipt total</span>
+            <span class="text-sm font-black text-emerald-900" id="actRcptTotal">₹0</span>
+        </div>
+        <button type="button" onclick="commitCustomReceipt()" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl">Save &amp; download receipt</button>`;
+}
+
+function updateCustomReceiptTotal() {
+    const ids = ["actRcptTerm", "actRcptAdm", "actRcptKit", "actRcptUni", "actRcptVan", "actRcptDC", "actRcptOpt", "actRcptOther"];
+    let total = 0;
+    ids.forEach(id => { total += Number(document.getElementById(id)?.value) || 0; });
+    const el = document.getElementById("actRcptTotal");
+    if (el) el.innerText = "₹" + total.toLocaleString("en-IN");
+}
+
+async function commitCustomReceipt() {
+    if (isLmBusy) return;
+    const sid = document.getElementById("actRcptStudent")?.value;
+    if (!sid) { alert("Select a student."); return; }
+    const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+    if (!s) return;
+    const payDate = document.getElementById("actRcptDate")?.value || todayIsoDate();
+    const mode = document.getElementById("actRcptMode")?.value || "Cash";
+    const period = activeSystemMonthContext;
+    const monthShort = monthYearShortLabel(period);
+    const otherLabel = (document.getElementById("actRcptOtherLabel")?.value || "").trim() || "Other fee";
+
+    const specs = [
+        { amt: Number(document.getElementById("actRcptTerm")?.value) || 0, remark: "Term Fee", label: "Term / Package Fee" },
+        { amt: Number(document.getElementById("actRcptAdm")?.value) || 0, remark: "Admission Fee", label: "Admission Fee" },
+        { amt: Number(document.getElementById("actRcptKit")?.value) || 0, remark: "Kit Fee", label: "Kit Fee" },
+        { amt: Number(document.getElementById("actRcptUni")?.value) || 0, remark: "Uniform Fee", label: "Uniform Fee" },
+        { amt: Number(document.getElementById("actRcptVan")?.value) || 0, remark: "Van — " + period, label: "Van Fee- " + monthShort },
+        { amt: Number(document.getElementById("actRcptDC")?.value) || 0, remark: "DayCare — " + period, label: "Day Care- " + monthShort },
+        { amt: Number(document.getElementById("actRcptOpt")?.value) || 0, remark: "OptMonthly — " + period, label: "Monthly Fee- " + monthShort },
+        { amt: Number(document.getElementById("actRcptOther")?.value) || 0, remark: "Other — " + otherLabel, label: otherLabel }
+    ].filter(x => x.amt > 0);
+
+    if (!specs.length) { alert("Enter at least one fee amount."); return; }
+
+    return withBusy(null, async () => {
+        const batchId = "PAY-CUSTOM-" + Date.now();
+        const items = [];
+        let total = 0;
+        const posts = [];
+        specs.forEach((spec, i) => {
+            const payId = batchId + "-" + (i + 1);
+            const row = [payId, sid, period, spec.amt, payDate, mode, spec.remark, "Active", ""];
+            posts.push(postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row }));
+            globalAppState.payments.push({
+                PaymentID: payId, StudentID: sid, MonthYear: period,
+                AmountPaid: spec.amt, PaymentDate: payDate, PaymentMode: mode,
+                Remarks: spec.remark, Status: "Active", NullifiedServices: ""
+            });
+            items.push({ label: spec.label, amount: spec.amt });
+            total += spec.amt;
+        });
+        saveLocalCache();
+        applyAppStateToViews();
+        Promise.all(posts).then(() => queueBackgroundSync(500)).catch(() => queueBackgroundSync(500));
+
+        const pkgBal = getPackageBalance(s).balance;
+        const data = {
+            serial: Math.max(1, getStudentPayments(sid).filter(isMeaningfulPayment).length),
+            studentName: s.StudentName || s.studentname || "",
+            className: s.Class || s.class || "",
+            date: payDate,
+            items,
+            mode,
+            note: "Custom receipt",
+            balanceLabel: "Package balance after term fees",
+            balanceAmount: pkgBal
+        };
+        saveReceiptRecord(batchId, { text: buildFeeReceiptText(data), data, sid, amount: total, studentName: data.studentName, savedAt: Date.now() });
+        openReceiptModal(batchId, buildFeeReceiptText(data), data);
+        await downloadReceiptPdf({ data }, batchId, data.studentName);
+        alert("Receipt saved. Total ₹" + total.toLocaleString("en-IN"));
+        showActionPanel("receipt");
+    });
+}
+
 async function commitDeleteStudent(sidOpt) {
     if (isLmBusy) return;
     const sid = sidOpt || document.getElementById("actDeleteStudent")?.value;
@@ -2993,7 +3220,7 @@ function renderFrontPageReminders() {
             if (due > 0) { vTotal += due; if (renderDueCard(vanBox, "Van", due, "mode-van")) vCount++; }
         }
 
-        const isDC = (s.Class || s.class) === "DayCare";
+        const isDC = isPureDayCareStudent(s) || (s.Class || s.class) === "DayCare";
         if (Number(s.DayCareFee || s.daycarefee) > 0 || isDC) {
             const rate = isDC ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : Number(s.DayCareFee || s.daycarefee);
             let billed = elapsed * rate, paid = 0;
@@ -3183,7 +3410,7 @@ function openTermPaymentsModal(sid) {
     cachedMonthlyPaysByService = { van: vanPays, daycare: dcPays, opt: optPays };
 
     const hasVan = Number(s.VanFee || s.vanfee) > 0;
-    const isDC = (s.Class || s.class) === "DayCare";
+    const isDC = isPureDayCareStudent(s) || (s.Class || s.class) === "DayCare";
     const hasDC = Number(s.DayCareFee || s.daycarefee) > 0 || isDC;
     const hasOpt = isMonthly && Number(s.OptMonthlyFee || s.optmonthlyfee) > 0 && !isDC;
 
@@ -3231,7 +3458,7 @@ function buildStudentMonthlyStatusHtml(s) {
         if (flags.includes("Van")) due -= rate;
         pushStatus("Van", Math.max(0, due), rate);
     }
-    const isDC = (s.Class || s.class) === "DayCare";
+    const isDC = isPureDayCareStudent(s) || (s.Class || s.class) === "DayCare";
     if (Number(s.DayCareFee || s.daycarefee) > 0 || isDC) {
         const rate = isDC ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : Number(s.DayCareFee || s.daycarefee);
         let billed = elapsed * rate, paid = 0;
@@ -3391,8 +3618,9 @@ function populateStudentDetailForm(s) {
     document.getElementById("detailStudentNameHeader").innerText = s.StudentName || "";
     document.getElementById("detailStudentClassHeader").innerText = `${s.Class || ""} · Student details`;
     const bModel = s.BillingModel || s.billingmodel || "Regular";
-    if (bModel === "Regular") { document.getElementById("editModelRegular").checked = true; handleEditFormBillingTypeChange("Regular"); }
-    else { document.getElementById("editModelMonthly").checked = true; handleEditFormBillingTypeChange("Monthly"); }
+    if (bModel === "DayCare") { document.getElementById("editModelDayCare").checked = true; handleEditFormBillingTypeChange("DayCare"); }
+    else if (bModel === "Monthly") { document.getElementById("editModelMonthly").checked = true; handleEditFormBillingTypeChange("Monthly"); }
+    else { document.getElementById("editModelRegular").checked = true; handleEditFormBillingTypeChange("Regular"); }
     const fees = {
         editCustomFee: s.CustomFee || s.customfee || 0,
         editAdmissionFee: s.AdmissionFee || s.admissionfee || 0,
@@ -3419,9 +3647,9 @@ function populateStudentDetailForm(s) {
     if (svcBox) {
         const chips = [];
         const model = s.BillingModel || s.billingmodel || "Regular";
-        chips.push(`<span class="bg-indigo-50 text-indigo-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">${model === "Monthly" ? "Custom Monthly" : "Regular"}</span>`);
+        chips.push(`<span class="bg-indigo-50 text-indigo-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">${model === "DayCare" ? "Day Care" : (model === "Monthly" ? "Custom Monthly" : "Regular")}</span>`);
         if (Number(s.VanFee || s.vanfee) > 0) chips.push(`<span class="bg-sky-100 text-sky-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">Van ₹${Number(s.VanFee || s.vanfee)}</span>`);
-        if (Number(s.DayCareFee || s.daycarefee) > 0 || (s.Class || s.class) === "DayCare") {
+        if (Number(s.DayCareFee || s.daycarefee) > 0 || isPureDayCareStudent(s) || (s.Class || s.class) === "DayCare") {
             const rate = (s.Class || s.class) === "DayCare" ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : Number(s.DayCareFee || s.daycarefee);
             chips.push(`<span class="bg-violet-100 text-violet-800 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">DC ₹${rate}</span>`);
         }
@@ -3505,6 +3733,13 @@ async function handleStudentDetailUpdate(e) {
         s.OptMonthlyFee = Number(document.getElementById("editOptMonthlyFee").value) || 0;
         s.BloodGroup = document.getElementById("editBloodGroup").value;
         s.DOJ = document.getElementById("editDOJ").value;
+        if (model === "DayCare") {
+            s.Class = "DayCare";
+            s.class = "DayCare";
+            s.DayCareFee = 0;
+        } else if ((s.Class || s.class) === "DayCare" && model !== "DayCare") {
+            // keep class from form
+        }
         if (!s.Status) s.Status = "Active";
         persistStudentRecord(s);
         populateStudentDetailForm(s);
@@ -3641,7 +3876,10 @@ function renderFinanceLedger() {
     activeStudents.forEach(s => { billed += getStudentReceivables(s); });
 
     const regularFees = activeStudents
-        .filter(s => (s.BillingModel === "Regular" || s.billingmodel === "Regular" || !(s.BillingModel || s.billingmodel)))
+        .filter(s => {
+            const m = s.BillingModel || s.billingmodel || "Regular";
+            return m === "Regular";
+        })
         .map(s => Number(s.CustomFee || s.customfee) || 0)
         .filter(v => v > 0);
     const avgRegular = regularFees.length
@@ -3652,7 +3890,7 @@ function renderFinanceLedger() {
     activeStudents.forEach(s => {
         const van = Number(s.VanFee || s.vanfee) || 0;
         vanExpected += van;
-        const isDC = (s.Class || s.class) === "DayCare";
+        const isDC = isPureDayCareStudent(s) || (s.Class || s.class) === "DayCare";
         const dc = isDC ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : (Number(s.DayCareFee || s.daycarefee) || 0);
         dayCareExpected += dc;
         const opt = (!isDC && (s.BillingModel === "Monthly" || s.billingmodel === "Monthly"))
@@ -3759,7 +3997,7 @@ function renderFinanceLedger() {
     activeStudents.forEach(s => {
         projectedBillable += getOneTimeTuitionBilled(s);
         const van = Number(s.VanFee || s.vanfee) || 0;
-        const isDC = (s.Class || s.class) === "DayCare";
+        const isDC = isPureDayCareStudent(s) || (s.Class || s.class) === "DayCare";
         const dc = isDC ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : (Number(s.DayCareFee || s.daycarefee) || 0);
         const opt = (!isDC && (s.BillingModel === "Monthly" || s.billingmodel === "Monthly"))
             ? (Number(s.OptMonthlyFee || s.optmonthlyfee) || 0) : 0;
