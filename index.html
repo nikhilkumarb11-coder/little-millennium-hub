@@ -41,18 +41,36 @@
         .home-count-chip.chip-total { background: #1e1b4b; border-color: #1e1b4b; }
         .home-count-chip.chip-total .chip-label { color: #c7d2fe; }
         .home-count-chip.chip-total .chip-value { color: #fbbf24; }
-        .home-count-chip.chip-dr { background: #e0f2fe; border-color: #7dd3fc; }
-        .home-count-chip.chip-dr .chip-label { color: #0369a1; }
-        .home-count-chip.chip-dr .chip-value { color: #0c4a6e; }
-        .home-count-chip.chip-ew { background: #d1fae5; border-color: #6ee7b7; }
-        .home-count-chip.chip-ew .chip-label { color: #047857; }
-        .home-count-chip.chip-ew .chip-value { color: #064e3b; }
-        .home-count-chip.chip-rtf1 { background: #fef3c7; border-color: #fcd34d; }
-        .home-count-chip.chip-rtf1 .chip-label { color: #b45309; }
-        .home-count-chip.chip-rtf1 .chip-value { color: #78350f; }
-        .home-count-chip.chip-rtf2 { background: #ffe4e6; border-color: #fda4af; }
-        .home-count-chip.chip-rtf2 .chip-label { color: #be123c; }
-        .home-count-chip.chip-rtf2 .chip-value { color: #881337; }
+        .home-count-chip.chip-c-sky { background: #e0f2fe; border-color: #7dd3fc; }
+        .home-count-chip.chip-c-sky .chip-label { color: #0369a1; }
+        .home-count-chip.chip-c-sky .chip-value { color: #0c4a6e; }
+        .home-count-chip.chip-c-emerald { background: #d1fae5; border-color: #6ee7b7; }
+        .home-count-chip.chip-c-emerald .chip-label { color: #047857; }
+        .home-count-chip.chip-c-emerald .chip-value { color: #064e3b; }
+        .home-count-chip.chip-c-amber { background: #fef3c7; border-color: #fcd34d; }
+        .home-count-chip.chip-c-amber .chip-label { color: #b45309; }
+        .home-count-chip.chip-c-amber .chip-value { color: #78350f; }
+        .home-count-chip.chip-c-rose { background: #ffe4e6; border-color: #fda4af; }
+        .home-count-chip.chip-c-rose .chip-label { color: #be123c; }
+        .home-count-chip.chip-c-rose .chip-value { color: #881337; }
+        .home-count-chip.chip-c-indigo { background: #e0e7ff; border-color: #a5b4fc; }
+        .home-count-chip.chip-c-indigo .chip-label { color: #4338ca; }
+        .home-count-chip.chip-c-indigo .chip-value { color: #312e81; }
+        .home-count-chip.chip-c-violet { background: #f3e8ff; border-color: #d8b4fe; }
+        .home-count-chip.chip-c-violet .chip-label { color: #7e22ce; }
+        .home-count-chip.chip-c-violet .chip-value { color: #581c87; }
+        .home-count-chip.chip-c-teal { background: #ccfbf1; border-color: #5eead4; }
+        .home-count-chip.chip-c-teal .chip-label { color: #0f766e; }
+        .home-count-chip.chip-c-teal .chip-value { color: #134e4a; }
+        .home-count-chip.chip-c-orange { background: #ffedd5; border-color: #fdba74; }
+        .home-count-chip.chip-c-orange .chip-label { color: #c2410c; }
+        .home-count-chip.chip-c-orange .chip-value { color: #7c2d12; }
+        .home-count-chip.chip-c-lime { background: #ecfccb; border-color: #bef264; }
+        .home-count-chip.chip-c-lime .chip-label { color: #4d7c0f; }
+        .home-count-chip.chip-c-lime .chip-value { color: #365314; }
+        .home-count-chip.chip-c-pink { background: #fce7f3; border-color: #f9a8d4; }
+        .home-count-chip.chip-c-pink .chip-label { color: #be185d; }
+        .home-count-chip.chip-c-pink .chip-value { color: #831843; }
         .home-count-chip.chip-dc { background: #ede9fe; border-color: #c4b5fd; }
         .home-count-chip.chip-dc .chip-label { color: #6d28d9; }
         .home-count-chip.chip-dc .chip-value { color: #4c1d95; }
@@ -155,14 +173,7 @@
 
         <!-- HOME TILES -->
         <section id="view-home" class="view-screen active">
-            <div class="home-counts" aria-label="Class headcounts">
-                <div class="home-count-chip chip-total"><span class="chip-label">Total</span><span class="chip-value" id="homeCountTotal">0</span></div>
-                <div class="home-count-chip chip-dr"><span class="chip-label">DR</span><span class="chip-value" id="homeCountDR">0</span></div>
-                <div class="home-count-chip chip-ew"><span class="chip-label">EW</span><span class="chip-value" id="homeCountEW">0</span></div>
-                <div class="home-count-chip chip-rtf1"><span class="chip-label">RTF1</span><span class="chip-value" id="homeCountRTF1">0</span></div>
-                <div class="home-count-chip chip-rtf2"><span class="chip-label">RTF2</span><span class="chip-value" id="homeCountRTF2">0</span></div>
-                <div class="home-count-chip chip-dc"><span class="chip-label">DC</span><span class="chip-value" id="homeCountDC">0</span></div>
-            </div>
+            <div class="home-counts" id="homeCountsRow" aria-label="Class headcounts"></div>
             <div id="homeEventsTicker" class="home-events-ticker" aria-label="Upcoming events">
                 <div class="ticker-track" id="homeEventsTickerTrack"></div>
             </div>
@@ -215,9 +226,7 @@
                         <div><label class="block mb-1 text-slate-500">Date of Joining *</label><input type="date" id="intakeDOJ" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
                         <div>
                             <label class="block mb-1 text-slate-500">Class *</label>
-                            <select id="intakeClassSelect" onchange="onIntakeClassChange()" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50">
-                                <option value="DR">DR</option><option value="EW">EW</option><option value="RTF1">RTF1</option><option value="RTF2">RTF2</option><option value="DayCare">Day Care Only</option>
-                            </select>
+                            <select id="intakeClassSelect" onchange="onIntakeClassChange()" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50 disabled:opacity-70"></select>
                         </div>
                         <div><label class="block mb-1 text-slate-500">Guardian Name *</label><input type="text" id="intakeGuardianName" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
                         <div><label class="block mb-1 text-slate-500">Mobile *</label><input type="tel" id="intakeContact" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
@@ -345,14 +354,7 @@
             </div>
             <div class="view-scroll space-y-3">
                 <input type="text" id="rosterSearch" oninput="renderStudentCards()" placeholder="Search student name..." class="w-full px-3 py-3 rounded-xl text-sm border bg-white shadow-sm">
-                <div class="flex flex-wrap gap-1.5">
-                    <button type="button" onclick="filterCohort('ALL', this)" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white">All</button>
-                    <button type="button" onclick="filterCohort('DR', this)" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">DR</button>
-                    <button type="button" onclick="filterCohort('EW', this)" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">EW</button>
-                    <button type="button" onclick="filterCohort('RTF1', this)" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">RTF1</button>
-                    <button type="button" onclick="filterCohort('RTF2', this)" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">RTF2</button>
-                    <button type="button" onclick="filterCohort('DayCare', this)" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">Day Care</button>
-                </div>
+                <div class="flex flex-wrap gap-1.5" id="cohortFilterRow"></div>
                 <div id="studentCardsGrid" class="grid grid-cols-1 gap-3"></div>
             </div>
         </section>
@@ -412,13 +414,7 @@
                     <span class="text-[10px] uppercase font-bold text-indigo-300">Total Active</span>
                     <h4 class="text-3xl font-black text-amber-300 mt-1" id="countCohortTotal">0 Active</h4>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-white p-4 rounded-2xl border-l-4 border-indigo-600"><span class="text-[10px] uppercase font-bold text-slate-400">DR</span><h4 class="text-xl font-black mt-1" id="countCohortDR">0 Kids</h4></div>
-                    <div class="bg-white p-4 rounded-2xl border-l-4 border-rose-500"><span class="text-[10px] uppercase font-bold text-slate-400">EW</span><h4 class="text-xl font-black mt-1" id="countCohortEW">0 Kids</h4></div>
-                    <div class="bg-white p-4 rounded-2xl border-l-4 border-amber-500"><span class="text-[10px] uppercase font-bold text-slate-400">RTF1</span><h4 class="text-xl font-black mt-1" id="countCohortRTF1">0 Kids</h4></div>
-                    <div class="bg-white p-4 rounded-2xl border-l-4 border-emerald-500"><span class="text-[10px] uppercase font-bold text-slate-400">RTF2</span><h4 class="text-xl font-black mt-1" id="countCohortRTF2">0 Kids</h4></div>
-                    <div class="bg-white p-4 rounded-2xl border-l-4 border-purple-500 col-span-2"><span class="text-[10px] uppercase font-bold text-slate-400">Day Care Only</span><h4 class="text-xl font-black mt-1" id="countCohortDC">0 Kids</h4></div>
-                </div>
+                <div class="grid grid-cols-2 gap-3" id="rosterCohortGrid"></div>
             </div>
         </section>
 
@@ -738,14 +734,12 @@
                     <div><label class="block mb-1 text-slate-400">DOJ</label><input type="date" id="editDOJ" required class="w-full p-2 border rounded-xl bg-slate-50"></div>
                     <div>
                         <label class="block mb-1 text-slate-400">Class</label>
-                        <select id="editClass" onchange="updateEditClassFeeDefault()" required class="w-full p-2 border rounded-xl bg-slate-50">
-                            <option value="DR">DR</option><option value="EW">EW</option><option value="RTF1">RTF1</option><option value="RTF2">RTF2</option><option value="DayCare">Day Care</option>
-                        </select>
+                        <select id="editClass" onchange="updateEditClassFeeDefault()" required class="w-full p-2 border rounded-xl bg-slate-50 disabled:opacity-70"></select>
                     </div>
                 </div>
                 <div id="sectionEditFees" class="border-t pt-3 space-y-2">
-                    <div class="flex justify-between"><h5 class="font-black text-slate-600">Fee amounts</h5><span id="editDiscountBadge" class="bg-indigo-50 text-indigo-700 font-extrabold px-2 py-0.5 rounded text-[11px]">₹0 Discount</span></div>
-                    <div id="editRowAnnualTuition"><label class="block mb-1 text-slate-400">Fee agreed (₹)</label><input type="number" id="editCustomFee" oninput="calculateEditDiscount()" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <h5 class="font-black text-slate-600">Fee amounts</h5>
+                    <div id="editRowAnnualTuition"><label class="block mb-1 text-slate-400">Fee agreed (₹)</label><input type="number" id="editCustomFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
                     <div id="editRowAdmissionFee" class="hidden"><label class="block mb-1 text-slate-400">Admission Fee (₹)</label><input type="number" id="editAdmissionFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
                     <div id="editRowKitFee" class="hidden"><label class="block mb-1 text-slate-400">Education / Steam Kit (₹)</label><input type="number" id="editStudentKitFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
                     <div id="editRowUniformFee"><label class="block mb-1 text-slate-400">Uniform (one-time ₹)</label><input type="number" id="editSpareUniformFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
@@ -956,7 +950,81 @@ function applyCampusBranding() {
     });
 }
 
-let globalAppState = { students: [], payments: [], expenses: [], events: [], standardFees: { DR:41000, EW:42000, RTF1:43000, RTF2:44000 } };
+const DEFAULT_CAMPUS_CLASSES = [
+    { code: "DR", label: "DR", color: "sky" },
+    { code: "EW", label: "EW", color: "emerald" },
+    { code: "RTF1", label: "RTF1", color: "amber" },
+    { code: "RTF2", label: "RTF2", color: "rose" }
+];
+const CLASS_CHIP_COLORS = ["sky", "emerald", "amber", "rose", "indigo", "violet", "teal", "orange", "lime", "pink"];
+const DAYCARE_CLASS = "DayCare";
+
+const CAMPUS_CLASSES = (Array.isArray(CAMPUS.classes) && CAMPUS.classes.length ? CAMPUS.classes : DEFAULT_CAMPUS_CLASSES)
+    .filter(c => c && String(c.code || "").trim() && String(c.code).trim() !== DAYCARE_CLASS)
+    .map((c, i) => ({
+        code: String(c.code).trim(),
+        label: String(c.label || c.code).trim(),
+        color: CLASS_CHIP_COLORS.includes(c.color) ? c.color : CLASS_CHIP_COLORS[i % CLASS_CHIP_COLORS.length],
+        legacy: (Array.isArray(c.legacy) ? c.legacy : []).map(x => String(x).trim()).filter(Boolean)
+    }));
+
+function firstClassCode() { return CAMPUS_CLASSES[0]?.code || ""; }
+function lastClassCode() { return CAMPUS_CLASSES[CAMPUS_CLASSES.length - 1]?.code || ""; }
+
+/** Map a stored Class value (including legacy codes) to the campus class code. */
+function canonicalClassCode(raw) {
+    const v = String(raw == null ? "" : raw).trim();
+    if (!v) return v;
+    if (v === DAYCARE_CLASS || v.toLowerCase() === "day care") return DAYCARE_CLASS;
+    const lower = v.toLowerCase();
+    const hit = CAMPUS_CLASSES.find(c => c.code.toLowerCase() === lower)
+        || CAMPUS_CLASSES.find(c => c.legacy.some(l => l.toLowerCase() === lower));
+    return hit ? hit.code : v;
+}
+
+function classLabel(code) {
+    const c = canonicalClassCode(code);
+    if (c === DAYCARE_CLASS) return "Day Care";
+    const hit = CAMPUS_CLASSES.find(x => x.code === c);
+    return hit ? hit.label : c;
+}
+
+function studentClassCode(s) { return canonicalClassCode(s && (s.Class || s.class)); }
+
+/** Class <option>s. Day Care is a hidden option so the Day Care billing model can still set it. */
+function classOptionsHtml(includeHiddenDayCare) {
+    const opts = CAMPUS_CLASSES.map(c => `<option value="${c.code}">${c.label}</option>`).join("");
+    return opts + (includeHiddenDayCare ? `<option value="${DAYCARE_CLASS}" hidden>Day Care</option>` : "");
+}
+
+function renderCampusClassUi() {
+    ["intakeClassSelect", "editClass"].forEach(id => {
+        const sel = document.getElementById(id);
+        if (sel) sel.innerHTML = classOptionsHtml(true);
+    });
+    const chips = document.getElementById("homeCountsRow");
+    if (chips) {
+        chips.innerHTML =
+            `<div class="home-count-chip chip-total"><span class="chip-label">Total</span><span class="chip-value" id="homeCountTotal">0</span></div>`
+            + CAMPUS_CLASSES.map(c => `<div class="home-count-chip chip-c-${c.color}"><span class="chip-label">${c.label}</span><span class="chip-value" data-class-count="${c.code}">0</span></div>`).join("")
+            + `<div class="home-count-chip chip-dc"><span class="chip-label">DC</span><span class="chip-value" id="homeCountDC">0</span></div>`;
+    }
+    const filters = document.getElementById("cohortFilterRow");
+    if (filters) {
+        const btn = (code, label, active) => `<button type="button" onclick="filterCohort('${code}', this)" class="cohort-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold ${active ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-700"}">${label}</button>`;
+        filters.innerHTML = btn("ALL", "All", true)
+            + CAMPUS_CLASSES.map(c => btn(c.code, c.label, false)).join("")
+            + btn(DAYCARE_CLASS, "Day Care", false);
+    }
+    const roster = document.getElementById("rosterCohortGrid");
+    if (roster) {
+        const borders = { sky: "border-sky-500", emerald: "border-emerald-500", amber: "border-amber-500", rose: "border-rose-500", indigo: "border-indigo-600", violet: "border-violet-500", teal: "border-teal-500", orange: "border-orange-500", lime: "border-lime-500", pink: "border-pink-500" };
+        roster.innerHTML = CAMPUS_CLASSES.map(c => `<div class="bg-white p-4 rounded-2xl border-l-4 ${borders[c.color] || "border-indigo-600"}"><span class="text-[10px] uppercase font-bold text-slate-400">${c.label}</span><h4 class="text-xl font-black mt-1" data-roster-count="${c.code}">0 Kids</h4></div>`).join("")
+            + `<div class="bg-white p-4 rounded-2xl border-l-4 border-purple-500 col-span-2"><span class="text-[10px] uppercase font-bold text-slate-400">Day Care Only</span><h4 class="text-xl font-black mt-1" id="countCohortDC">0 Kids</h4></div>`;
+    }
+}
+
+let globalAppState = { students: [], payments: [], expenses: [], events: [] };
 let currentActiveCohortFilter = "ALL";
 let currentExpenseTimeframeContext = "monthly";
 const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -1078,20 +1146,6 @@ function calculateExactAge(dateVal) {
     let age = today.getFullYear() - birth.getFullYear();
     if (today.getMonth() < birth.getMonth() || (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) age--;
     return Math.max(0, age);
-}
-
-function calculateIntakeDiscount() {
-    return 0; // Class no longer autofills tuition; discount badge removed from intake
-}
-
-function calculateEditDiscount() {
-    const cls = document.getElementById("editClass")?.value;
-    const standard = Number(globalAppState.standardFees[cls]) || 0;
-    const agreed = Number(document.getElementById("editCustomFee")?.value) || 0;
-    const discount = Math.max(0, standard - agreed);
-    const badge = document.getElementById("editDiscountBadge");
-    if (badge) badge.innerText = `₹${discount} Discount`;
-    return discount;
 }
 
 function getStudentPayments(sid) {
@@ -1481,8 +1535,12 @@ function refreshIntakeAmountPanel() {
 
 function handleFormBillingTypeChange(type) {
     const cls = document.getElementById("intakeClassSelect");
+    if (cls) {
+        if (type === "DayCare") cls.value = DAYCARE_CLASS;
+        else if (!cls.value || cls.value === DAYCARE_CLASS) cls.value = firstClassCode();
+        cls.disabled = type === "DayCare";
+    }
     if (type === "DayCare") {
-        if (cls) cls.value = "DayCare";
         const t = document.getElementById("intakeAnnualTuition");
         if (t) t.value = "";
         const opt = document.getElementById("FormOptMonthlyFee");
@@ -1490,7 +1548,6 @@ function handleFormBillingTypeChange(type) {
         const adm = document.getElementById("intakeAdmissionFee");
         if (adm && adm.value === "") adm.value = "0";
     } else if (type === "Regular") {
-        if (cls && cls.value === "DayCare") cls.value = "DR";
         const t = document.getElementById("intakeAnnualTuition");
         if (t) t.value = "";
         const opt = document.getElementById("FormOptMonthlyFee");
@@ -1498,7 +1555,6 @@ function handleFormBillingTypeChange(type) {
         const dcPri = document.getElementById("FormDayCarePrimaryFee");
         if (dcPri) dcPri.value = "";
     } else {
-        if (cls && cls.value === "DayCare") cls.value = "DR";
         const t = document.getElementById("intakeAnnualTuition");
         if (t) t.value = "";
         const dcPri = document.getElementById("FormDayCarePrimaryFee");
@@ -1533,25 +1589,30 @@ function handleEditFormBillingTypeChange(type) {
     const show = (id, on) => { const el = document.getElementById(id); if (el) el.style.display = on ? "block" : "none"; };
     if (type === "Regular") {
         show("editRowAnnualTuition", true); show("editRowAdmissionFee", false); show("editRowKitFee", false); show("editBoxOptMonthly", false);
-        const badge = document.getElementById("editDiscountBadge"); if (badge) badge.style.display = "inline-block";
         const cls = document.getElementById("editClass");
-        if (cls && cls.value === "DayCare") cls.value = "DR";
-        calculateEditDiscount();
+        if (cls && (!cls.value || cls.value === DAYCARE_CLASS)) cls.value = firstClassCode();
     } else if (type === "DayCare") {
         show("editRowAnnualTuition", false); show("editRowAdmissionFee", true); show("editRowKitFee", true); show("editRowUniformFee", true); show("editBoxOptMonthly", true);
-        const badge = document.getElementById("editDiscountBadge"); if (badge) badge.style.display = "none";
         const optLabel = document.querySelector('#editBoxOptMonthly label');
         if (optLabel) optLabel.innerHTML = "Day Care monthly (₹)";
         const cls = document.getElementById("editClass");
-        if (cls) cls.value = "DayCare";
+        if (cls) cls.value = DAYCARE_CLASS;
     } else {
         show("editRowAnnualTuition", false); show("editRowAdmissionFee", true); show("editRowKitFee", true); show("editRowUniformFee", true); show("editBoxOptMonthly", true);
-        const badge = document.getElementById("editDiscountBadge"); if (badge) badge.style.display = "none";
         const optLabel = document.querySelector('#editBoxOptMonthly label');
         if (optLabel) optLabel.innerHTML = "Custom Monthly (₹)";
         const cls = document.getElementById("editClass");
-        if (cls && cls.value === "DayCare") cls.value = "DR";
+        if (cls && (!cls.value || cls.value === DAYCARE_CLASS)) cls.value = firstClassCode();
     }
+    syncEditClassLock();
+}
+
+/** Day Care students have no class choice; lock the class select while that model is chosen. */
+function syncEditClassLock() {
+    const cls = document.getElementById("editClass");
+    if (!cls) return;
+    const model = document.querySelector('input[name="EditBillingModel"]:checked')?.value || "Regular";
+    cls.disabled = !studentDetailEditMode || model === "DayCare";
 }
 
 function updateEditClassFeeDefault() {
@@ -1568,7 +1629,6 @@ function updateEditClassFeeDefault() {
             handleEditFormBillingTypeChange(model === "Monthly" ? "Monthly" : "Regular");
         }
     }
-    calculateEditDiscount();
 }
 
 function buildIntakeFeePayload() {
@@ -1639,6 +1699,14 @@ function stripStudentPhotos(list) {
         if (!s) return;
         s.PhotoBase64 = "N/A";
         if (s.photobase64 != null) s.photobase64 = "N/A";
+        const cls = s.Class != null ? s.Class : s.class;
+        if (cls != null && cls !== "") {
+            const code = canonicalClassCode(cls);
+            if (code !== cls) {
+                s.Class = code;
+                if (s.class != null) s.class = code;
+            }
+        }
     });
     return list || [];
 }
@@ -1810,7 +1878,7 @@ async function handleStudentSubmission(event) {
             const hint = (st === "Discontinued" || st === "Graduated")
                 ? "\n\nThis looks like a former student — use Actions → Former students → Reactivate instead of creating a new record."
                 : "\n\nOpen Student Details to update the existing record.";
-            alert("Duplicate student found:\n" + (dup.StudentName || "") + " · " + (dup.Class || "") + " · " + (dup.Contact || "") + " (" + st + ")" + hint);
+            alert("Duplicate student found:\n" + (dup.StudentName || "") + " · " + classLabel(dup.Class || dup.class) + " · " + (dup.Contact || "") + " (" + st + ")" + hint);
             isAdmissionSaving = false;
             if (saveBtn) { saveBtn.disabled = false; saveBtn.innerText = "Save Admission"; }
             return;
@@ -1896,23 +1964,19 @@ async function handleStudentSubmission(event) {
 function renderCohortHeadcounts() {
     const list = globalAppState.students.filter(isActiveStudent);
     const set = (id, t) => { const el = document.getElementById(id); if (el) el.innerText = t; };
-    const nDR = list.filter(s => s.Class === "DR").length;
-    const nEW = list.filter(s => s.Class === "EW").length;
-    const n1 = list.filter(s => s.Class === "RTF1").length;
-    const n2 = list.filter(s => s.Class === "RTF2").length;
+    const counts = {};
+    list.forEach(s => {
+        if (isPureDayCareStudent(s)) return;
+        const c = studentClassCode(s);
+        counts[c] = (counts[c] || 0) + 1;
+    });
     // Pure Day Care only (BillingModel DayCare) — not Regular kids with DC add-on
     const nDC = list.filter(isPureDayCareStudent).length;
-    set("countCohortDR", `${nDR} Kids`);
-    set("countCohortEW", `${nEW} Kids`);
-    set("countCohortRTF1", `${n1} Kids`);
-    set("countCohortRTF2", `${n2} Kids`);
+    document.querySelectorAll("[data-class-count]").forEach(el => { el.innerText = String(counts[el.dataset.classCount] || 0); });
+    document.querySelectorAll("[data-roster-count]").forEach(el => { el.innerText = `${counts[el.dataset.rosterCount] || 0} Kids`; });
     set("countCohortDC", `${nDC} Kids`);
     set("countCohortTotal", `${list.length} Active`);
     set("homeCountTotal", String(list.length));
-    set("homeCountDR", String(nDR));
-    set("homeCountEW", String(nEW));
-    set("homeCountRTF1", String(n1));
-    set("homeCountRTF2", String(n2));
     set("homeCountDC", String(nDC));
 }
 
@@ -1992,7 +2056,7 @@ function buildStudentSheetRow(s) {
         s.StudentName || s.studentname || "",
         formatToInputDate(s.DOB || s.dob) || (s.DOB || s.dob || ""),
         s.Gender || s.gender || "Boy",
-        s.Class || s.class || "DR",
+        s.Class || s.class || firstClassCode(),
         s.GuardianName || s.guardianname || "",
         s.Contact || s.contact || "",
         s.AltContact || s.altcontact || "N/A",
@@ -2116,6 +2180,24 @@ function receiptDivider() {
     return "==============================";
 }
 
+function receiptClassLabel(s) {
+    if (!s || !(s.Class || s.class || s.BillingModel || s.billingmodel)) return "";
+    return isPureDayCareStudent(s) ? "Day Care" : classLabel(s.Class || s.class);
+}
+
+/** Older cached receipts predate guardian fields; fill them from the student record when possible. */
+function withReceiptStudentInfo(data, sid) {
+    if (!data) return data;
+    const s = sid ? globalAppState.students.find(x => (x.StudentID || x.studentid) === sid) : null;
+    if (!s) return data;
+    return {
+        ...data,
+        className: receiptClassLabel(s) || data.className,
+        guardianName: data.guardianName || s.GuardianName || s.guardianname || "",
+        contact: data.contact || s.Contact || s.contact || ""
+    };
+}
+
 function buildFeeReceiptText(data) {
     // Preview text (logo shown separately above). Keep monospace-friendly layout.
     const width = 32;
@@ -2127,6 +2209,8 @@ function buildFeeReceiptText(data) {
     const rightStu = String(data.className || "");
     const gap = Math.max(1, width - leftStu.length - rightStu.length);
     lines.push(leftStu + " ".repeat(gap) + rightStu);
+    if (data.guardianName) lines.push(`Parent: ${data.guardianName}`);
+    if (data.contact) lines.push(`Phone: ${data.contact}`);
     lines.push(receiptDivider());
     (data.items || []).forEach(it => {
         const label = (it.label || "").toString();
@@ -2216,30 +2300,41 @@ async function downloadReceiptPdf(receiptData, payId, studentName) {
         return;
     }
 
-    const pageW = 80;
-    const margin = 6;
-    const leftX = margin;
-    const rightX = pageW - margin;
+    // A4 portrait; receipt drawn as a fixed-width block centred horizontally
+    const pageW = 210;
+    const pageH = 297;
+    const blockW = 150;
+    const leftX = (pageW - blockW) / 2;
+    const rightX = leftX + blockW;
     const midX = pageW / 2;
-    const itemCount = (data.items || []).length;
-    const pageH = Math.max(175, 120 + itemCount * 6 + (data.balanceLabel != null ? 18 : 8) + (data.mode ? 6 : 0) + (data.note ? 6 : 0));
-    const doc = new JsPDF({ unit: "mm", format: [pageW, pageH] });
-    let y = 5;
+    const topY = 18;
+    const bottomLimit = pageH - 18;
+    const doc = new JsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+    let y = topY;
+    let pageCount = 1;
+
+    const ensureSpace = (needed) => {
+        if (y + needed <= bottomLimit) return;
+        doc.addPage("a4", "portrait");
+        pageCount++;
+        y = topY;
+    };
 
     const drawDoubleLine = () => {
+        ensureSpace(8);
         doc.setDrawColor(40);
-        doc.setLineWidth(0.25);
+        doc.setLineWidth(0.35);
         doc.line(leftX, y, rightX, y);
-        y += 0.9;
+        y += 1.2;
         doc.line(leftX, y, rightX, y);
-        y += 4;
+        y += 7;
     };
 
     const logoData = await ensureLmLogoDataUrl();
     if (logoData) {
         // Preserve natural aspect ratio (do not squash height)
-        const maxW = 46;
-        const maxH = 40;
+        const maxW = 62;
+        const maxH = 48;
         const aspect = (LM_LOGO_NAT_W || 1) / (LM_LOGO_NAT_H || 1);
         let logoW = maxW;
         let logoH = logoW / aspect;
@@ -2248,70 +2343,106 @@ async function downloadReceiptPdf(receiptData, payId, studentName) {
             logoW = logoH * aspect;
         }
         doc.addImage(logoData, "PNG", (pageW - logoW) / 2, y, logoW, logoH);
-        y += logoH + 3;
+        y += logoH + 5;
     } else {
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(11);
-        doc.text(CAMPUS.brandName || "Little Millennium", midX, y + 3, { align: "center" });
-        doc.setFontSize(6.5);
+        doc.setFontSize(18);
+        doc.text(CAMPUS.brandName || "Little Millennium", midX, y + 5, { align: "center" });
+        doc.setFontSize(9);
         doc.setFont("helvetica", "normal");
-        doc.text("THE FIRST BIG STEP", midX, y + 7, { align: "center" });
-        y += 11;
+        doc.text("THE FIRST BIG STEP", midX, y + 11, { align: "center" });
+        y += 18;
     }
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(7.5);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(13);
     doc.text(CAMPUS.receiptHeader || CAMPUS.brandName || "Fee Receipt", midX, y, { align: "center" });
-    y += 4.5;
-    doc.setFontSize(8);
-    doc.text(formatReceiptDate(data.date), midX, y, { align: "center" });
-    y += 4;
+    y += 6.5;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10.5);
+    doc.text("FEE RECEIPT", midX, y, { align: "center" });
+    y += 5.5;
+    doc.text("Date: " + formatReceiptDate(data.date), midX, y, { align: "center" });
+    y += 5;
     drawDoubleLine();
 
-    doc.setFontSize(9);
+    doc.setFontSize(12.5);
     doc.setFont("helvetica", "bold");
-    const stuLeft = `${data.serial || 1}  ${data.studentName || ""}`.trim();
+    const stuLeft = `${data.serial || 1}.  ${data.studentName || ""}`.trim();
     doc.text(stuLeft, leftX, y);
     doc.text(String(data.className || ""), rightX, y, { align: "right" });
-    y += 4.5;
+    y += 6.5;
+    if (data.guardianName || data.contact) {
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10.5);
+        if (data.guardianName) doc.text("Parent: " + data.guardianName, leftX, y);
+        if (data.contact) doc.text("Phone: " + data.contact, rightX, y, { align: "right" });
+        y += 6;
+    }
     drawDoubleLine();
 
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text("PARTICULARS", leftX, y);
+    doc.text("AMOUNT", rightX, y, { align: "right" });
+    doc.setTextColor(0);
+    y += 7;
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(8.5);
+    doc.setFontSize(11.5);
+    let itemsTotal = 0;
     (data.items || []).forEach(it => {
+        ensureSpace(8);
         doc.text(String(it.label || ""), leftX, y);
         doc.text(formatReceiptMoney(it.amount), rightX, y, { align: "right" });
-        y += 5.2;
+        itemsTotal += Number(it.amount) || 0;
+        y += 7;
     });
+    if ((data.items || []).length > 1) {
+        ensureSpace(10);
+        doc.setDrawColor(160);
+        doc.setLineWidth(0.2);
+        doc.line(leftX + blockW * 0.55, y - 3.5, rightX, y - 3.5);
+        doc.setFont("helvetica", "bold");
+        doc.text("Total", leftX, y + 1);
+        doc.text(formatReceiptMoney(itemsTotal), rightX, y + 1, { align: "right" });
+        doc.setFont("helvetica", "normal");
+        y += 8;
+    }
     if (data.mode) {
-        doc.setFontSize(8);
+        ensureSpace(7);
+        doc.setFontSize(10.5);
         doc.text("Mode: " + data.mode, leftX, y);
-        y += 5;
+        y += 6.5;
     }
     if (data.note) {
-        doc.setFontSize(7.5);
-        const noteLines = doc.splitTextToSize("Note: " + data.note, pageW - margin * 2);
+        doc.setFontSize(10);
+        const noteLines = doc.splitTextToSize("Note: " + data.note, blockW);
+        ensureSpace(noteLines.length * 5 + 2);
         doc.text(noteLines, leftX, y);
-        y += noteLines.length * 4 + 1;
+        y += noteLines.length * 5 + 1.5;
     }
 
     drawDoubleLine();
-    doc.setFontSize(8);
     if (data.balanceLabel != null) {
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
         const bal = `${data.balanceLabel}- ${formatReceiptMoney(data.balanceAmount)}`;
-        const balLines = doc.splitTextToSize(bal, pageW - margin * 2);
+        const balLines = doc.splitTextToSize(bal, blockW);
+        ensureSpace(balLines.length * 5.5 + 2);
         doc.text(balLines, midX, y, { align: "center" });
-        y += balLines.length * 4.2 + 1;
+        y += balLines.length * 5.5 + 2;
     }
+    ensureSpace(8);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(9);
+    doc.setFontSize(12.5);
     doc.text("Thank you!", midX, y, { align: "center" });
-    y += 5;
+    y += 6;
 
     const stampData = await ensureLmStampDataUrl();
     if (stampData) {
-        const stampMaxW = 28;
-        const stampMaxH = 28;
+        const stampMaxW = 40;
+        const stampMaxH = 40;
         const sAspect = (LM_STAMP_NAT_W || 1) / (LM_STAMP_NAT_H || 1);
         let stampW = stampMaxW;
         let stampH = stampW / sAspect;
@@ -2319,6 +2450,7 @@ async function downloadReceiptPdf(receiptData, payId, studentName) {
             stampH = stampMaxH;
             stampW = stampH * sAspect;
         }
+        ensureSpace(stampH + 4);
         // Slightly right-aligned under Thank you
         const stampX = rightX - stampW - 1;
         try {
@@ -2331,6 +2463,12 @@ async function downloadReceiptPdf(receiptData, payId, studentName) {
         y += 2;
     }
     drawDoubleLine();
+
+    if (pageCount === 1) {
+        doc.setDrawColor(190);
+        doc.setLineWidth(0.3);
+        doc.roundedRect(leftX - 8, topY - 8, blockW + 16, (y - 4) - (topY - 8), 3, 3);
+    }
 
     const safeName = (studentName || data.studentName || "student").toString().replace(/[^\w\-]+/g, "_").slice(0, 40);
     const filename = `LM_Receipt_${safeName}_${(payId || Date.now()).toString().slice(-8)}.pdf`;
@@ -2370,7 +2508,7 @@ function closeReceiptModal() {
 async function downloadCurrentReceipt() {
     return withBusy("btnDownloadReceipt", async () => {
         const store = getReceiptStore()[currentReceiptPayId] || {};
-        let data = currentReceiptData || store.data;
+        let data = currentReceiptData || withReceiptStudentInfo(store.data, store.sid);
         if (!data && currentReceiptPayId) {
             const built = buildReceiptForPayment(currentReceiptPayId);
             data = built.data;
@@ -2396,7 +2534,7 @@ function viewPaymentReceipt(payId) {
     if (store[payId] && (store[payId].data || store[payId].text)) {
         const rec = store[payId];
         if (rec.data) {
-            const cleaned = rebuildReceiptDataDates(rec.data);
+            const cleaned = withReceiptStudentInfo(rebuildReceiptDataDates(rec.data), rec.sid);
             openReceiptModal(payId, buildFeeReceiptText(cleaned), cleaned);
             return;
         }
@@ -2516,7 +2654,9 @@ function buildReceiptForPayment(payId, extras = {}) {
     const data = {
         serial: extras.serial || serial,
         studentName: s.StudentName || s.studentname || extras.studentName || "",
-        className: s.Class || s.class || extras.className || "",
+        className: receiptClassLabel(s) || extras.className || "",
+        guardianName: s.GuardianName || s.guardianname || "",
+        contact: s.Contact || s.contact || "",
         date,
         items,
         mode,
@@ -2540,7 +2680,7 @@ function renderStudentCards() {
     let list = globalAppState.students.filter(isActiveStudent);
     if (currentActiveCohortFilter !== "ALL") {
         if (currentActiveCohortFilter === "DayCare") list = list.filter(isPureDayCareStudent);
-        else list = list.filter(s => s.Class === currentActiveCohortFilter);
+        else list = list.filter(s => !isPureDayCareStudent(s) && studentClassCode(s) === currentActiveCohortFilter);
     }
     const search = (document.getElementById("rosterSearch")?.value || "").toLowerCase();
     if (search) list = list.filter(s => (s.StudentName || "").toLowerCase().includes(search));
@@ -2560,7 +2700,7 @@ function renderStudentCards() {
                     <div class="w-14 h-14 rounded-xl overflow-hidden border flex-shrink-0">${img}</div>
                     <div class="min-w-0 flex-1">
                         <div class="flex flex-wrap items-center gap-1">
-                            <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded uppercase">${s.Class === "DayCare" ? "DayCare" : s.Class}</span>
+                            <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded uppercase">${isPureDayCareStudent(s) ? "Day Care" : classLabel(s.Class || s.class)}</span>
                             ${statusChip}
                         </div>
                         <h4 class="font-black text-sm mt-1 truncate">${name}</h4>
@@ -2630,27 +2770,26 @@ function activeStudentsSorted() {
 function studentOptionListHtml(includeClass) {
     return activeStudentsSorted().map(s => {
         const sid = s.StudentID || s.studentid;
-        const cls = s.Class || "";
+        const cls = isPureDayCareStudent(s) ? "Day Care" : classLabel(s.Class || s.class);
         return `<option value="${sid}">${s.StudentName || ""}${includeClass ? " · " + cls : ""}</option>`;
     }).join("");
 }
 
 function buildTransferActionHtml() {
     return `
-        <p class="text-[10px] text-slate-500">Select class filter, tick students, choose destination. RTF2 → Graduate exits the school.</p>
+        <p class="text-[10px] text-slate-500">Select class filter, tick students, choose destination. ${classLabel(lastClassCode())} → Graduate exits the school. Day Care students move via <strong>Billing model</strong>.</p>
         <div class="grid grid-cols-2 gap-2">
             <div>
                 <label class="block mb-1 text-slate-500">From class</label>
                 <select id="actTransferFrom" onchange="renderTransferStudentChecks()" class="w-full p-2 border rounded-xl bg-slate-50">
                     <option value="ALL">All classes</option>
-                    <option value="DR">DR</option><option value="EW">EW</option><option value="RTF1">RTF1</option><option value="RTF2">RTF2</option><option value="DayCare">Day Care</option>
+                    ${classOptionsHtml(false)}
                 </select>
             </div>
             <div>
                 <label class="block mb-1 text-slate-500">To class</label>
                 <select id="actTransferTo" class="w-full p-2 border rounded-xl bg-slate-50">
-                    <option value="DR">DR</option><option value="EW">EW</option><option value="RTF1">RTF1</option><option value="RTF2">RTF2</option>
-                    <option value="DayCare">Day Care</option>
+                    ${classOptionsHtml(false)}
                     <option value="GRADUATE">Graduate / leave school</option>
                 </select>
             </div>
@@ -2668,15 +2807,15 @@ function renderTransferStudentChecks() {
     const from = document.getElementById("actTransferFrom")?.value || "ALL";
     const box = document.getElementById("actTransferList");
     if (!box) return;
-    let list = activeStudentsSorted();
-    if (from !== "ALL") list = list.filter(s => (s.Class || s.class) === from);
+    let list = activeStudentsSorted().filter(s => !isPureDayCareStudent(s) && studentClassCode(s) !== DAYCARE_CLASS);
+    if (from !== "ALL") list = list.filter(s => studentClassCode(s) === from);
     if (!list.length) { box.innerHTML = '<p class="text-slate-400 text-[11px]">No students.</p>'; return; }
     box.innerHTML = list.map(s => {
         const sid = s.StudentID || s.studentid;
         return `<label class="flex items-center gap-2 bg-white border rounded-lg px-2 py-1.5">
             <input type="checkbox" class="act-transfer-check" value="${sid}">
             <span class="font-bold text-slate-800 truncate">${s.StudentName || ""}</span>
-            <span class="ml-auto text-[9px] font-black text-violet-700 uppercase">${s.Class || ""}</span>
+            <span class="ml-auto text-[9px] font-black text-violet-700 uppercase">${classLabel(s.Class || s.class)}</span>
         </label>`;
     }).join("");
 }
@@ -2694,7 +2833,7 @@ async function commitClassTransfer() {
     const graduate = to === "GRADUATE";
     if (!confirm(graduate
         ? `Mark ${ids.length} student(s) as Graduated / left school?`
-        : `Transfer ${ids.length} student(s) to ${to}?`)) return;
+        : `Transfer ${ids.length} student(s) to ${classLabel(to)}?`)) return;
     return withBusy(null, async () => {
         for (const sid of ids) {
             const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
@@ -2703,7 +2842,7 @@ async function commitClassTransfer() {
             if (graduate) {
                 s.Status = "Graduated";
                 s.ExitDate = todayIsoDate();
-                s.ExitReason = "Graduated / left after " + fromClass;
+                s.ExitReason = "Graduated / left after " + classLabel(fromClass);
             } else {
                 s.Class = to;
                 s.class = to;
@@ -2830,6 +2969,10 @@ function buildBillingActionHtml() {
                     <option value="DayCare">Day Care</option>
                 </select>
             </div>
+            <div id="actBillClassWrap" class="hidden">
+                <label class="block mb-1 text-slate-500">Class</label>
+                <select id="actBillClass" class="w-full p-2 border rounded-xl bg-slate-50">${classOptionsHtml(false)}</select>
+            </div>
             <div id="actBillRegularWrap"><label class="block mb-1 text-slate-500">Fee agreed (₹)</label><input type="number" id="actBillFeeAgreed" min="0" class="w-full p-2 border rounded-xl bg-slate-50"></div>
             <div id="actBillMonthlyWrap" class="hidden space-y-2">
                 <div><label class="block mb-1 text-slate-500" id="actBillOptLabel">Custom Monthly (₹)</label><input type="number" id="actBillOpt" min="0" class="w-full p-2 border rounded-xl bg-slate-50"></div>
@@ -2860,7 +3003,11 @@ function loadBillingActionStudent() {
         document.getElementById("actBillMonthlyWrap").style.display = (m === "Monthly" || m === "DayCare") ? "block" : "none";
         const optLabel = document.getElementById("actBillOptLabel");
         if (optLabel) optLabel.innerText = m === "DayCare" ? "Day Care monthly (₹)" : "Custom Monthly (₹)";
+        const needsClass = m !== "DayCare" && studentClassCode(s) === DAYCARE_CLASS;
+        document.getElementById("actBillClassWrap").style.display = needsClass ? "block" : "none";
     };
+    const clsSel = document.getElementById("actBillClass");
+    if (clsSel) clsSel.value = studentClassCode(s) === DAYCARE_CLASS ? firstClassCode() : studentClassCode(s);
     modelEl.dispatchEvent(new Event("change"));
 }
 
@@ -2874,6 +3021,7 @@ async function commitBillingModelChange() {
     return withBusy(null, async () => {
         const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
         if (!s) return;
+        const pickedClass = document.getElementById("actBillClass")?.value || firstClassCode();
         s.BillingModel = model;
         s.billingmodel = model;
         if (model === "Regular") {
@@ -2881,7 +3029,7 @@ async function commitBillingModelChange() {
             s.customfee = s.CustomFee;
             s.OptMonthlyFee = 0;
             s.optmonthlyfee = 0;
-            if ((s.Class || s.class) === "DayCare") { s.Class = "DR"; s.class = "DR"; }
+            if (studentClassCode(s) === DAYCARE_CLASS) { s.Class = pickedClass; s.class = pickedClass; }
         } else if (model === "DayCare") {
             s.CustomFee = 0;
             s.customfee = 0;
@@ -2900,7 +3048,7 @@ async function commitBillingModelChange() {
             s.optmonthlyfee = s.OptMonthlyFee;
             s.AdmissionFee = Number(document.getElementById("actBillAdm")?.value) || 0;
             s.admissionfee = s.AdmissionFee;
-            if ((s.Class || s.class) === "DayCare") { s.Class = "DR"; s.class = "DR"; }
+            if (studentClassCode(s) === DAYCARE_CLASS) { s.Class = pickedClass; s.class = pickedClass; }
         }
         persistStudentRecord(s);
         alert("Billing model updated.");
@@ -2939,7 +3087,7 @@ function loadFeesActionStudent() {
     wrap.classList.remove("hidden");
     const model = s.BillingModel || s.billingmodel || "Regular";
     const { total, paid, balance } = getPackageBalance(s);
-    document.getElementById("actFeesMeta").innerText = `${s.Class || ""} · ${model === "Monthly" ? "Custom Monthly" : "Regular"} · Package ₹${total} · Paid ₹${paid} · Bal ₹${balance}`;
+    document.getElementById("actFeesMeta").innerText = `${classLabel(s.Class || s.class)} · ${model === "Monthly" ? "Custom Monthly" : "Regular"} · Package ₹${total} · Paid ₹${paid} · Bal ₹${balance}`;
     document.getElementById("actFeesAgreed").value = Number(s.CustomFee || s.customfee) || 0;
     document.getElementById("actFeesOpt").value = Number(s.OptMonthlyFee || s.optmonthlyfee) || 0;
     document.getElementById("actFeesAdm").value = Number(s.AdmissionFee || s.admissionfee) || 0;
@@ -2987,7 +3135,7 @@ function buildFormerStudentsHtml() {
         return `<div class="bg-slate-50 border rounded-xl p-2.5 flex justify-between items-center gap-2">
             <div class="min-w-0">
                 <p class="font-black text-slate-800 truncate">${s.StudentName || ""}</p>
-                <p class="text-[10px] text-slate-500 font-semibold">${st} · ${s.Class || ""} · ${formatDisplayDate(s.ExitDate || s.exitdate) || "—"}</p>
+                <p class="text-[10px] text-slate-500 font-semibold">${st} · ${classLabel(s.Class || s.class)} · ${formatDisplayDate(s.ExitDate || s.exitdate) || "—"}</p>
                 <p class="text-[10px] text-slate-400 truncate">${s.ExitReason || s.exitreason || ""}</p>
             </div>
             <div class="flex flex-col gap-1 shrink-0">
@@ -3006,7 +3154,7 @@ function buildDeleteStudentActionHtml() {
         .map(s => {
             const sid = s.StudentID || s.studentid;
             const st = getStudentStatus(s);
-            return `<option value="${sid}">${s.StudentName || ""} · ${s.Class || ""} · ${st}</option>`;
+            return `<option value="${sid}">${s.StudentName || ""} · ${classLabel(s.Class || s.class)} · ${st}</option>`;
         }).join("");
     return `
         <p class="text-[10px] text-slate-500">Removes the student from all lists. Payment history in the sheet is kept but the student will no longer appear in the app.</p>
@@ -3115,7 +3263,9 @@ async function commitCustomReceipt() {
         const data = {
             serial: Math.max(1, getStudentPayments(sid).filter(isMeaningfulPayment).length),
             studentName: s.StudentName || s.studentname || "",
-            className: s.Class || s.class || "",
+            className: receiptClassLabel(s),
+            guardianName: s.GuardianName || s.guardianname || "",
+            contact: s.Contact || s.contact || "",
             date: payDate,
             items,
             mode,
@@ -3269,7 +3419,7 @@ function openPaymentModal(sid) {
 
     document.getElementById("modalTargetStudentID").value = sid;
     document.getElementById("modalStudentTitleName").innerText = s.StudentName || "Update Fee";
-    document.getElementById("modalStudentCohortSubtitle").innerText = `${s.Class || ""} · ${isMonthly ? "Custom Monthly" : "Regular Base"}`;
+    document.getElementById("modalStudentCohortSubtitle").innerText = `${classLabel(s.Class || s.class)} · ${isMonthly ? "Custom Monthly" : "Regular Base"}`;
     document.getElementById("lblModalPackageLabel").innerText = isMonthly ? "Initial package" : "Package total";
     document.getElementById("lblModalPaidLabel").innerText = isMonthly ? "Initial paid" : "Term fees paid";
     document.getElementById("lblModalTotalBilled").innerText = `₹${totalBilled}`;
@@ -3380,7 +3530,7 @@ function openTermPaymentsModal(sid) {
     const logs = getStudentPayments(sid).filter(isMeaningfulPayment);
 
     document.getElementById("termPayTitleName").innerText = s.StudentName || "Payments";
-    document.getElementById("termPaySubtitle").innerText = `${s.Class || ""} · ${isMonthly ? "Custom Monthly" : "Regular Base"}`;
+    document.getElementById("termPaySubtitle").innerText = `${classLabel(s.Class || s.class)} · ${isMonthly ? "Custom Monthly" : "Regular Base"}`;
     const statusEl = document.getElementById("termPayPackageStatus");
     if (total <= 0) {
         statusEl.innerText = "No package";
@@ -3618,7 +3768,7 @@ function populateStudentDetailForm(s) {
         editDOB: formatToInputDate(s.DOB || s.dob),
         editDOJ: formatToInputDate(s.DOJ || s.doj),
         editGender: s.Gender || s.gender || "Boy",
-        editClass: s.Class || s.class || "DR",
+        editClass: studentClassCode(s) || firstClassCode(),
         editGuardianName: s.GuardianName || s.guardianname || "",
         editContact: s.Contact || s.contact || "",
         editAltContact: s.AltContact || s.altcontact || "N/A",
@@ -3627,7 +3777,7 @@ function populateStudentDetailForm(s) {
     };
     Object.keys(maps).forEach(id => { const el = document.getElementById(id); if (el) el.value = maps[id]; });
     document.getElementById("detailStudentNameHeader").innerText = s.StudentName || "";
-    document.getElementById("detailStudentClassHeader").innerText = `${s.Class || ""} · Student details`;
+    document.getElementById("detailStudentClassHeader").innerText = `${isPureDayCareStudent(s) ? "Day Care" : classLabel(s.Class || s.class)} · Student details`;
     const bModel = s.BillingModel || s.billingmodel || "Regular";
     if (bModel === "DayCare") { document.getElementById("editModelDayCare").checked = true; handleEditFormBillingTypeChange("DayCare"); }
     else if (bModel === "Monthly") { document.getElementById("editModelMonthly").checked = true; handleEditFormBillingTypeChange("Monthly"); }
@@ -3643,7 +3793,6 @@ function populateStudentDetailForm(s) {
     };
     Object.keys(fees).forEach(id => { const el = document.getElementById(id); if (el) el.value = fees[id]; });
     if ((s.Class || s.class) === "DayCare") updateEditClassFeeDefault();
-    calculateEditDiscount();
     const photoSlot = document.getElementById("detailProfilePhotoSlot");
     if (photoSlot) photoSlot.innerHTML = (s.StudentName || "LM").charAt(0);
 
@@ -3690,6 +3839,7 @@ function setStudentDetailEditMode(on) {
         el.classList.toggle("opacity-80", !on);
         el.classList.toggle("cursor-default", !on);
     });
+    syncEditClassLock();
     const editBtn = document.getElementById("btnStudentDetailEdit");
     const cancelBtn = document.getElementById("btnStudentDetailCancelEdit");
     const editActions = document.getElementById("studentDetailEditActions");
@@ -3701,7 +3851,7 @@ function setStudentDetailEditMode(on) {
     const sub = document.getElementById("detailStudentClassHeader");
     if (sub && currentDetailStudentSid) {
         const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === currentDetailStudentSid);
-        if (s) sub.innerText = `${s.Class || ""} · ${on ? "Editing" : "Student details"}`;
+        if (s) sub.innerText = `${classLabel(s.Class || s.class)} · ${on ? "Editing" : "Student details"}`;
     }
 }
 
@@ -4278,6 +4428,7 @@ async function triggerDeleteEvent(eventId) {
 
 document.addEventListener("DOMContentLoaded", () => {
     applyCampusBranding();
+    renderCampusClassUi();
     const now = new Date();
     const monthSel = document.getElementById("expensePeriodMonth");
     const yearSel = document.getElementById("expensePeriodYear");
