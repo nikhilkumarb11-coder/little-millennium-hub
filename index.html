@@ -164,7 +164,6 @@
             </div>
         </div>
         <div id="headerMenu" class="hidden absolute right-2 top-[calc(var(--header-h)-4px)] bg-white text-slate-800 rounded-xl shadow-xl border p-2 w-40 z-50">
-            <button type="button" onclick="openChangePasswordModal(); toggleHeaderMenu(false)" class="w-full text-left px-3 py-2 text-xs font-bold rounded-lg hover:bg-slate-50">Security</button>
             <button type="button" onclick="triggerSystemLogout(); toggleHeaderMenu(false)" class="w-full text-left px-3 py-2 text-xs font-bold rounded-lg hover:bg-rose-50 text-rose-600">Logout</button>
         </div>
     </header>
@@ -229,8 +228,8 @@
                             <select id="intakeClassSelect" onchange="onIntakeClassChange()" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50 disabled:opacity-70"></select>
                         </div>
                         <div><label class="block mb-1 text-slate-500">Guardian Name *</label><input type="text" id="intakeGuardianName" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
-                        <div><label class="block mb-1 text-slate-500">Mobile *</label><input type="tel" id="intakeContact" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
-                        <div><label class="block mb-1 text-slate-500">Alt Contact</label><input type="tel" id="intakeAltContact" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50" placeholder="Optional"></div>
+                        <div><label class="block mb-1 text-slate-500">Mobile *</label><input type="tel" id="intakeContact" required maxlength="10" inputmode="numeric" pattern="[0-9]{10}" title="Enter a 10-digit mobile number" oninput="sanitizePhoneInput(this)" placeholder="10-digit mobile" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
+                        <div><label class="block mb-1 text-slate-500">Alt Contact</label><input type="tel" id="intakeAltContact" maxlength="10" inputmode="numeric" pattern="[0-9]{10}" title="Enter a 10-digit number or leave blank" oninput="sanitizePhoneInput(this)" class="w-full px-3 py-2.5 rounded-xl border bg-slate-50" placeholder="Optional"></div>
                         <div><label class="block mb-1 text-slate-500">Address *</label><input type="text" id="intakeAddress" required class="w-full px-3 py-2.5 rounded-xl border bg-slate-50"></div>
                         <div>
                             <label class="block mb-1 text-slate-500">Blood Group *</label>
@@ -350,11 +349,14 @@
         <section id="view-search" class="view-screen px-3 pb-6 pt-2">
             <div class="view-back-bar">
                 <button type="button" onclick="goAppBack()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Back</button>
-                <h3 class="font-black text-sm text-indigo-950">Student Details</h3>
+                <h3 class="font-black text-sm text-indigo-950 flex-1">Student Details</h3>
+                <button type="button" id="btnPkgFilterSettled" onclick="setPackageFilter('SETTLED')" class="pkg-filter-btn px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Settled</button>
+                <button type="button" id="btnPkgFilterBalance" onclick="setPackageFilter('BALANCE')" class="pkg-filter-btn px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">Balance</button>
             </div>
             <div class="view-scroll space-y-3">
                 <input type="text" id="rosterSearch" oninput="renderStudentCards()" placeholder="Search student name..." class="w-full px-3 py-3 rounded-xl text-sm border bg-white shadow-sm">
                 <div class="flex flex-wrap gap-1.5" id="cohortFilterRow"></div>
+                <p id="pkgFilterSummary" class="hidden text-[11px] font-bold text-slate-600 bg-white border rounded-xl px-3 py-2"></p>
                 <div id="studentCardsGrid" class="grid grid-cols-1 gap-3"></div>
             </div>
         </section>
@@ -364,6 +366,7 @@
             <div class="view-back-bar">
                 <button type="button" onclick="goAppBack()" class="bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold">← Back</button>
                 <h3 class="font-black text-sm text-indigo-950 flex-1">Monthly Fee Check</h3>
+                <button type="button" onclick="openReminderModal()" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold">Send reminders</button>
             </div>
             <div class="view-scroll space-y-3">
                 <div class="bg-white p-3 rounded-2xl border flex items-center justify-between gap-2">
@@ -741,9 +744,19 @@
                     <h5 class="font-black text-slate-600">Fee amounts</h5>
                     <div id="editRowAnnualTuition"><label class="block mb-1 text-slate-400">Fee agreed (₹)</label><input type="number" id="editCustomFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
                     <div id="editRowAdmissionFee" class="hidden"><label class="block mb-1 text-slate-400">Admission Fee (₹)</label><input type="number" id="editAdmissionFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
-                    <div id="editRowKitFee" class="hidden"><label class="block mb-1 text-slate-400">Education / Steam Kit (₹)</label><input type="number" id="editStudentKitFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
-                    <div id="editRowUniformFee"><label class="block mb-1 text-slate-400">Uniform (one-time ₹)</label><input type="number" id="editSpareUniformFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div id="editRowKitFee"><label class="block mb-1 text-slate-400">Education / Steam Kit total (₹)</label><input type="number" id="editStudentKitFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div id="editRowUniformFee"><label class="block mb-1 text-slate-400">Uniform total (one-time ₹)</label><input type="number" id="editSpareUniformFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
                     <div id="editBoxOptMonthly" class="hidden"><label class="block mb-1 text-slate-400">Custom Monthly (₹)</label><input type="number" id="editOptMonthlyFee" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                </div>
+                <div id="sectionEditAddLater" class="border-t pt-3 space-y-2">
+                    <h5 class="font-black text-slate-600">Opt services later</h5>
+                    <p class="text-[10px] text-slate-400 font-semibold">Amounts entered here are added to the totals above and to the package balance.</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div><label class="block mb-1 text-slate-400">Education Kit (₹)</label><input type="number" id="editAddEduKit" min="0" placeholder="0" oninput="updateEditAddLaterHint()" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                        <div><label class="block mb-1 text-slate-400">Steam Kit (₹)</label><input type="number" id="editAddSteamKit" min="0" placeholder="0" oninput="updateEditAddLaterHint()" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                        <div><label class="block mb-1 text-slate-400">Uniform (₹)</label><input type="number" id="editAddUniform" min="0" placeholder="0" oninput="updateEditAddLaterHint()" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    </div>
+                    <p id="editAddLaterHint" class="hidden text-[10px] font-bold text-indigo-700"></p>
                 </div>
                 <div id="sectionEditServices" class="border-t pt-3 space-y-2">
                     <h5 class="font-black text-slate-600">Monthly services</h5>
@@ -752,8 +765,8 @@
                 </div>
                 <div class="grid grid-cols-1 gap-3 border-t pt-3">
                     <div><label class="block mb-1 text-slate-400">Guardian</label><input type="text" id="editGuardianName" required class="w-full p-2 border rounded-xl bg-slate-50"></div>
-                    <div><label class="block mb-1 text-slate-400">Mobile</label><input type="tel" id="editContact" required class="w-full p-2 border rounded-xl bg-slate-50"></div>
-                    <div><label class="block mb-1 text-slate-400">Alt Contact</label><input type="tel" id="editAltContact" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div><label class="block mb-1 text-slate-400">Mobile</label><input type="tel" id="editContact" required maxlength="10" inputmode="numeric" pattern="[0-9]{10}" title="Enter a 10-digit mobile number" oninput="sanitizePhoneInput(this)" class="w-full p-2 border rounded-xl bg-slate-50"></div>
+                    <div><label class="block mb-1 text-slate-400">Alt Contact</label><input type="tel" id="editAltContact" maxlength="10" inputmode="numeric" pattern="[0-9]{10}" title="Enter a 10-digit number or leave blank" oninput="sanitizePhoneInput(this)" placeholder="Optional" class="w-full p-2 border rounded-xl bg-slate-50"></div>
                     <div><label class="block mb-1 text-slate-400">Address</label><input type="text" id="editAddress" class="w-full p-2 border rounded-xl bg-slate-50"></div>
                     <div>
                         <label class="block mb-1 text-slate-400">Blood Group</label>
@@ -835,6 +848,19 @@
                     <span>Package status</span>
                     <span id="termPayPackageStatus" class="text-rose-600">Pending ₹0</span>
                 </div>
+                <div id="termPayShortCloseWrap" class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-3 space-y-2">
+                    <div class="flex items-center justify-between gap-2">
+                        <p class="text-[10px] font-semibold text-amber-800">Parent will not pay the rest? Write off the balance and mark the package settled.</p>
+                        <button type="button" id="btnShortCloseToggle" onclick="toggleShortCloseForm(true)" class="shrink-0 bg-amber-500 text-white font-bold px-3 py-1.5 rounded-lg text-[10px]">Short-close</button>
+                    </div>
+                    <div id="termPayShortCloseForm" class="hidden space-y-2">
+                        <input type="text" id="shortCloseReason" maxlength="60" placeholder="Reason (e.g. agreed concession)" class="w-full p-2 border rounded-xl bg-white text-xs">
+                        <div class="flex gap-2">
+                            <button type="button" onclick="toggleShortCloseForm(false)" class="flex-1 bg-white border font-bold py-2 rounded-xl text-[11px]">Cancel</button>
+                            <button type="button" id="btnShortCloseConfirm" onclick="commitShortClose()" class="flex-1 bg-amber-600 text-white font-bold py-2 rounded-xl text-[11px]">Write off ₹0</button>
+                        </div>
+                    </div>
+                </div>
                 <h4 class="font-black text-[10px] uppercase tracking-wider text-slate-400">Package / regular payments</h4>
                 <div id="termPayPackageList" class="space-y-2"></div>
             </div>
@@ -851,6 +877,42 @@
         </div>
     </div>
 
+    <!-- WhatsApp Reminders -->
+    <div id="reminderModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-[1.5rem] max-w-md w-full p-5 shadow-2xl space-y-3 border max-h-[90vh] overflow-y-auto text-xs">
+            <div class="flex justify-between items-center border-b pb-2">
+                <div>
+                    <h3 class="font-black text-indigo-950 text-sm">WhatsApp reminders</h3>
+                    <p id="reminderPeriodLabel" class="text-[10px] font-bold text-amber-600 uppercase"></p>
+                </div>
+                <button type="button" onclick="closeReminderModal()" class="text-2xl text-slate-400 font-bold">&times;</button>
+            </div>
+            <div class="space-y-1">
+                <div class="flex justify-between items-center">
+                    <label class="font-black text-slate-600">Message</label>
+                    <button type="button" onclick="resetReminderTemplate()" class="text-[10px] font-bold text-indigo-600">Reset to default</button>
+                </div>
+                <textarea id="reminderTemplate" rows="5" oninput="onReminderTemplateInput()" class="w-full p-2 border rounded-xl bg-slate-50 text-[11px] leading-relaxed"></textarea>
+                <p class="text-[10px] text-slate-400 font-semibold">Fill-ins: {parent} {student} {services} {amount} {month} {school}</p>
+            </div>
+            <div class="bg-slate-50 border rounded-xl p-2">
+                <p class="text-[10px] font-black uppercase text-slate-400 mb-1">Preview</p>
+                <p id="reminderPreview" class="text-[11px] text-slate-700 whitespace-pre-wrap"></p>
+            </div>
+            <div class="flex justify-between items-center">
+                <span id="reminderCountLabel" class="font-bold text-slate-600"></span>
+                <div class="flex gap-2">
+                    <button type="button" onclick="setAllReminderChecks(true)" class="text-[10px] font-bold text-indigo-600">All</button>
+                    <button type="button" onclick="setAllReminderChecks(false)" class="text-[10px] font-bold text-indigo-600">None</button>
+                    <button type="button" onclick="clearRemindersSent()" class="text-[10px] font-bold text-rose-600">Reset sent</button>
+                </div>
+            </div>
+            <div id="reminderList" class="space-y-1.5 max-h-64 overflow-y-auto"></div>
+            <button type="button" id="btnReminderSendNext" onclick="sendNextReminder()" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl disabled:opacity-50">Send next</button>
+            <p class="text-[10px] text-slate-400 font-semibold text-center">Each tap opens the parent's WhatsApp chat with the message ready — tap Send there, then come back for the next one.</p>
+        </div>
+    </div>
+
     <!-- Fee Receipt Preview -->
     <div id="receiptModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-[1.5rem] max-w-sm w-full p-5 shadow-2xl space-y-3 border max-h-[90vh] overflow-y-auto">
@@ -863,20 +925,13 @@
             </div>
             <pre id="receiptPreviewBody" class="text-[11px] leading-relaxed font-mono whitespace-pre-wrap bg-slate-50 border rounded-xl p-3 overflow-x-auto"></pre>
             <div class="flex gap-2">
+                <button type="button" id="btnShareReceiptPdf" onclick="shareCurrentReceiptPdf()" class="flex-1 bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs hidden">Share PDF</button>
+                <button type="button" id="btnWhatsAppReceipt" onclick="whatsAppCurrentReceipt()" class="flex-1 bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold py-2.5 rounded-xl text-xs">WhatsApp message</button>
+            </div>
+            <p id="receiptWhatsAppHint" class="text-[10px] text-slate-400 font-semibold text-center -mt-1"></p>
+            <div class="flex gap-2">
                 <button type="button" onclick="closeReceiptModal()" class="w-1/3 bg-slate-100 font-bold py-2.5 rounded-xl text-xs">Close</button>
                 <button type="button" id="btnDownloadReceipt" onclick="downloadCurrentReceipt()" class="w-2/3 bg-indigo-600 text-white font-bold py-2.5 rounded-xl text-xs">Download PDF</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Password Modal -->
-    <div id="changePasswordModalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border-2 border-amber-400 text-center space-y-4">
-            <h3 class="font-black text-indigo-950 text-lg">Security</h3>
-            <input type="text" id="newPasscodeInput" class="w-full px-3 py-2 border rounded-xl text-center font-mono">
-            <div class="flex gap-2">
-                <button type="button" onclick="closeChangePasswordModal()" class="w-1/3 bg-slate-100 py-2 rounded-xl text-xs font-bold">Cancel</button>
-                <button type="button" onclick="commitNewPasscodeKey()" class="w-2/3 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold">Save</button>
             </div>
         </div>
     </div>
@@ -926,13 +981,9 @@ let APP_SHEET_API_URL = CAMPUS.apiUrl || "";
 const DEFAULT_GATE_PASSPHRASE = CAMPUS.passcode || "";
 const storageKey = (base) => `LM_${CAMPUS_ID}_${base}`;
 
-let CURRENT_GATE_PASSPHRASE = localStorage.getItem(storageKey("PASSPHRASE"))
-    || (CAMPUS_ID === "demo" ? localStorage.getItem("LM_PASSPHRASE") : null)
-    || DEFAULT_GATE_PASSPHRASE;
-if (CURRENT_GATE_PASSPHRASE === "2026" || CURRENT_GATE_PASSPHRASE === "2026!") {
-    CURRENT_GATE_PASSPHRASE = DEFAULT_GATE_PASSPHRASE;
-    localStorage.setItem(storageKey("PASSPHRASE"), DEFAULT_GATE_PASSPHRASE);
-}
+const CURRENT_GATE_PASSPHRASE = DEFAULT_GATE_PASSPHRASE;
+localStorage.removeItem(storageKey("PASSPHRASE"));
+if (CAMPUS_ID === "demo") localStorage.removeItem("LM_PASSPHRASE");
 
 function applyCampusBranding() {
     document.title = CAMPUS.pageTitle || "LM Campus ERP";
@@ -1151,8 +1202,18 @@ function calculateExactAge(dateVal) {
 function getStudentPayments(sid) {
     return globalAppState.payments.filter(p => (p.StudentID || p.studentid) === sid);
 }
+/** Write-offs (monthly waiver / package short-close) reduce dues but are not money collected. */
+const ADJUSTMENT_MODE = "Waiver";
+const SHORT_CLOSE_PREFIX = "Short-close";
+function isAdjustmentPayment(p) {
+    return !!p && String(p.PaymentMode || p.paymentmode || "").trim() === ADJUSTMENT_MODE;
+}
+function isShortCloseRemark(remarks) {
+    return String(remarks || "").startsWith(SHORT_CLOSE_PREFIX);
+}
 function isServicePayment(remarks, key) {
     const r = (remarks || "").toString();
+    if (isShortCloseRemark(r)) return false;
     if (key === "Van") return r.includes("Van");
     if (key === "DayCare") return r.includes("DayCare") || r.includes("Day Care");
     if (key === "OptMonthly") return r.includes("OptMonthly");
@@ -1174,8 +1235,8 @@ function getElapsedMonthsToBill(student, periodLabel = activeSystemMonthContext)
     const joinDate = new Date(jYear, jMonth, 1);
     const currentPeriodDate = new Date(period.year, period.month, 1);
     const diff = (currentPeriodDate.getFullYear() - joinDate.getFullYear()) * 12 + (currentPeriodDate.getMonth() - joinDate.getMonth());
-    if (diff > 0) elapsed += diff;
-    return elapsed;
+    if (diff < 0) return 0;
+    return elapsed + diff;
 }
 function getOneTimeTuitionBilled(s) {
     // Package / term total (excludes Van, DayCare, OptMonthly recurring)
@@ -1185,6 +1246,7 @@ function getOneTimeTuitionBilled(s) {
 function isTermPayment(remarks) {
     const r = (remarks || "").toString();
     if (!r || r.includes("Admission Record Initialized")) return false;
+    if (isShortCloseRemark(r)) return true;
     if (r.includes("Van") || r.includes("DayCare") || r.includes("Day Care") || r.includes("OptMonthly")) return false;
     return true;
 }
@@ -1336,13 +1398,13 @@ function goAppBack() {
     const pay = document.getElementById("paymentModalOverlay");
     const term = document.getElementById("termPaymentsModalOverlay");
     const detail = document.getElementById("studentDetailModalOverlay");
-    const pwd = document.getElementById("changePasswordModalOverlay");
+    const reminders = document.getElementById("reminderModalOverlay");
+    if (reminders && !reminders.classList.contains("hidden")) { closeReminderModal(); return; }
     if (action && !action.classList.contains("hidden")) { hideActionPanel(); return; }
     if (receipt && !receipt.classList.contains("hidden")) { closeReceiptModal(); return; }
     if (pay && !pay.classList.contains("hidden")) { closePaymentModal(); return; }
     if (term && !term.classList.contains("hidden")) { closeTermPaymentsModal(); return; }
     if (detail && !detail.classList.contains("hidden")) { closeStudentDetailModal(); return; }
-    if (pwd && !pwd.classList.contains("hidden")) { closeChangePasswordModal(); return; }
 
     if (currentViewId === "home") return;
     if (history.state && history.state.appNav) {
@@ -1360,7 +1422,11 @@ function showView(viewId, opts = {}) {
     toggleHeaderMenu(false);
     document.querySelectorAll(".view-screen").forEach(el => el.classList.remove("active"));
     const target = document.getElementById("view-" + viewId);
-    if (target) target.classList.add("active");
+    if (target) {
+        target.classList.add("active");
+        target.scrollTop = 0;
+        target.querySelectorAll(".view-scroll").forEach(el => { el.scrollTop = 0; });
+    }
     window.scrollTo(0, 0);
 
     if (!fromPop && !suppressHistoryPush) {
@@ -1376,6 +1442,10 @@ function showView(viewId, opts = {}) {
     if (viewId === "fees") renderFrontPageReminders();
     if (viewId === "rosters") renderCohortHeadcounts();
     if (viewId === "finances" || viewId === "expenses") renderFinanceLedger();
+    if (viewId === "expenses") {
+        const d = document.getElementById("expenseInputDate");
+        if (d && !document.getElementById("expenseFormID")?.value) d.value = todayIsoLocal();
+    }
     if (viewId === "events") renderCalendarAgenda();
     if (viewId === "intake") {
         const doj = document.getElementById("intakeDOJ");
@@ -1391,9 +1461,14 @@ window.addEventListener("popstate", (e) => {
     const pay = document.getElementById("paymentModalOverlay");
     const term = document.getElementById("termPaymentsModalOverlay");
     const detail = document.getElementById("studentDetailModalOverlay");
-    const pwd = document.getElementById("changePasswordModalOverlay");
+    const reminders = document.getElementById("reminderModalOverlay");
     if (receipt && !receipt.classList.contains("hidden")) {
         closeReceiptModal();
+        history.pushState({ appNav: true, view: currentViewId }, "", "#/" + currentViewId);
+        return;
+    }
+    if (reminders && !reminders.classList.contains("hidden")) {
+        closeReminderModal();
         history.pushState({ appNav: true, view: currentViewId }, "", "#/" + currentViewId);
         return;
     }
@@ -1409,11 +1484,6 @@ window.addEventListener("popstate", (e) => {
     }
     if (detail && !detail.classList.contains("hidden")) {
         closeStudentDetailModal();
-        history.pushState({ appNav: true, view: currentViewId }, "", "#/" + currentViewId);
-        return;
-    }
-    if (pwd && !pwd.classList.contains("hidden")) {
-        closeChangePasswordModal();
         history.pushState({ appNav: true, view: currentViewId }, "", "#/" + currentViewId);
         return;
     }
@@ -1444,15 +1514,6 @@ document.addEventListener("click", (e) => {
     }
 });
 
-function openChangePasswordModal() {
-    document.getElementById("newPasscodeInput").value = CURRENT_GATE_PASSPHRASE;
-    document.getElementById("changePasswordModalOverlay").classList.remove("hidden");
-}
-function closeChangePasswordModal() { document.getElementById("changePasswordModalOverlay").classList.add("hidden"); }
-function commitNewPasscodeKey() {
-    const val = document.getElementById("newPasscodeInput").value.trim();
-    if (val) { CURRENT_GATE_PASSPHRASE = val; localStorage.setItem(storageKey("PASSPHRASE"), val); alert("Passcode updated!"); closeChangePasswordModal(); }
-}
 function toggleFormFeeInput(checkbox, targetInputId) {
     const inp = document.getElementById(targetInputId);
     if (!inp) return;
@@ -1588,7 +1649,7 @@ function updateIntakeClassFeeDefault() { onIntakeClassChange(); }
 function handleEditFormBillingTypeChange(type) {
     const show = (id, on) => { const el = document.getElementById(id); if (el) el.style.display = on ? "block" : "none"; };
     if (type === "Regular") {
-        show("editRowAnnualTuition", true); show("editRowAdmissionFee", false); show("editRowKitFee", false); show("editBoxOptMonthly", false);
+        show("editRowAnnualTuition", true); show("editRowAdmissionFee", false); show("editRowKitFee", true); show("editRowUniformFee", true); show("editBoxOptMonthly", false);
         const cls = document.getElementById("editClass");
         if (cls && (!cls.value || cls.value === DAYCARE_CLASS)) cls.value = firstClassCode();
     } else if (type === "DayCare") {
@@ -1832,7 +1893,7 @@ async function refreshApplicationState(showUserAlert) {
         } else if (showUserAlert) {
             const apiErr = (result && (result.error || result.message)) ? String(result.error || result.message) : "";
             if (/unauthor/i.test(apiErr)) {
-                alert("Sync failed: Google Apps Script still rejects password \"" + CURRENT_GATE_PASSPHRASE + "\".\n\nFix: Sheet → Extensions → Apps Script → set SCRIPT_PASSWORD = \"" + CURRENT_GATE_PASSPHRASE + "\" (see Code.gs / campuses.js) → Deploy → Manage deployments → Edit → New version → Deploy.\n\nChanging only the webpage Security passcode is not enough.");
+                alert("Sync failed: Google Apps Script still rejects password \"" + CURRENT_GATE_PASSPHRASE + "\".\n\nFix: Sheet → Extensions → Apps Script → set SCRIPT_PASSWORD = \"" + CURRENT_GATE_PASSPHRASE + "\" (see Code.gs / campuses.js) → Deploy → Manage deployments → Edit → New version → Deploy.");
             } else {
                 alert("Sync failed" + (apiErr ? ": " + apiErr : " (no data)."));
             }
@@ -2032,6 +2093,18 @@ function normalizePhoneDigits(v) {
     return String(v || "").replace(/\D/g, "");
 }
 
+/** Stored numbers may carry +91 / leading 0; keep the last 10 digits. */
+function toTenDigitPhone(v) {
+    const d = normalizePhoneDigits(v);
+    return d.length > 10 ? d.slice(-10) : d;
+}
+
+function sanitizePhoneInput(el) {
+    if (!el) return;
+    const clean = normalizePhoneDigits(el.value).slice(0, 10);
+    if (el.value !== clean) el.value = clean;
+}
+
 /** Returns matching non-deleted student if duplicate name+mobile, name+DOB, or same mobile. */
 function findDuplicateStudent(name, contact, dob) {
     const nName = normalizePersonName(name);
@@ -2095,7 +2168,7 @@ function persistStudentRecord(s) {
 function formatPackageStatusChip(s) {
     const { total, balance } = getPackageBalance(s);
     if (total <= 0) return '<span class="bg-slate-100 text-slate-500 text-[9px] font-black px-2 py-0.5 rounded uppercase">No pkg</span>';
-    if (balance <= 0) return '<span class="bg-emerald-100 text-emerald-700 text-[9px] font-black px-2 py-0.5 rounded uppercase">Settled</span>';
+    if (balance <= 0) return `<span class="bg-emerald-100 text-emerald-700 text-[9px] font-black px-2 py-0.5 rounded uppercase">${isShortClosed(s.StudentID || s.studentid) ? "Short-closed" : "Settled"}</span>`;
     return `<span class="bg-rose-100 text-rose-700 text-[9px] font-black px-2 py-0.5 rounded uppercase">Due ₹${balance}</span>`;
 }
 
@@ -2123,12 +2196,21 @@ function isMeaningfulPayment(p) {
 
 function isMonthlyServicePayment(remarks) {
     const r = (remarks || "").toString();
+    if (isShortCloseRemark(r)) return false;
     return r.includes("OptMonthly") || r.includes("Van") || r.includes("DayCare") || r.includes("Day Care");
 }
 
 function friendlyPaymentLabel(remarks, month) {
     const r = (remarks || "").toString();
     const m = (month && month !== "—") ? ` · ${month}` : "";
+    if (isShortCloseRemark(r)) {
+        const reason = r.split("—").slice(1).join("—").trim();
+        return "Short-closed" + (reason ? " · " + reason : "");
+    }
+    if (/Waived/i.test(r)) {
+        const base = /OptMonthly/i.test(r) ? "Custom Monthly" : (/Van/i.test(r) ? "Van" : "Day Care");
+        return base + " waived" + m;
+    }
     if (/1st\s*Term/i.test(r)) return "1st Term Fee";
     if (/Term Fee/i.test(r)) return "Term / Package Fee";
     if (/OptMonthly/i.test(r)) return "Custom Monthly" + m;
@@ -2146,14 +2228,15 @@ function paymentHistoryRowHtml(p) {
     const mode = (p.PaymentMode || p.paymentmode || "—").toString();
     const rem = (p.Remarks || p.remarks || "").toString();
     const label = friendlyPaymentLabel(rem, monthShort);
-    const canReceipt = payId && (isTermPayment(rem) || isMonthlyServicePayment(rem));
+    const canReceipt = payId && !isAdjustmentPayment(p) && (isTermPayment(rem) || isMonthlyServicePayment(rem));
     const receiptBtn = canReceipt
         ? `<button type="button" onclick="viewPaymentReceipt('${payId}')" class="shrink-0 bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded text-[9px]">Receipt</button>`
         : "";
     const isMonthly = isMonthlyServicePayment(rem);
-    return `<div class="bg-slate-50 border rounded-lg px-2.5 py-1.5 text-[10px]">
+    const adj = isAdjustmentPayment(p);
+    return `<div class="${adj ? "bg-amber-50 border-amber-200" : "bg-slate-50"} border rounded-lg px-2.5 py-1.5 text-[10px]">
         <div class="flex items-center justify-between gap-2">
-            <span class="font-black text-slate-900">₹${amt.toLocaleString("en-IN")}</span>
+            <span class="font-black ${adj ? "text-amber-800" : "text-slate-900"}">₹${amt.toLocaleString("en-IN")}</span>
             ${isMonthly ? `<span class="bg-amber-100 text-amber-800 font-black px-1.5 py-0.5 rounded uppercase">${monthShort}</span>` : `<span class="text-slate-500 font-bold">${date}</span>`}
             <span class="text-slate-600 font-semibold">${mode}</span>
             ${receiptBtn}
@@ -2293,11 +2376,17 @@ function ensureLmStampDataUrl() {
 }
 
 async function downloadReceiptPdf(receiptData, payId, studentName) {
+    const built = await buildReceiptPdfDoc(receiptData, payId, studentName);
+    if (built) built.doc.save(built.filename);
+}
+
+/** Builds the A4 receipt; returns { doc, filename } or null when jsPDF is unavailable. */
+async function buildReceiptPdfDoc(receiptData, payId, studentName) {
     const data = (receiptData && receiptData.data) ? receiptData.data : (receiptData || {});
     const JsPDF = window.jspdf && window.jspdf.jsPDF;
     if (!JsPDF) {
         alert("PDF library not loaded. Check internet connection and try again.");
-        return;
+        return null;
     }
 
     // A4 portrait; receipt drawn as a fixed-width block centred horizontally
@@ -2472,7 +2561,7 @@ async function downloadReceiptPdf(receiptData, payId, studentName) {
 
     const safeName = (studentName || data.studentName || "student").toString().replace(/[^\w\-]+/g, "_").slice(0, 40);
     const filename = `LM_Receipt_${safeName}_${(payId || Date.now()).toString().slice(-8)}.pdf`;
-    doc.save(filename);
+    return { doc, filename };
 }
 
 function downloadReceiptTextFallback(text, payId, studentName) {
@@ -2497,6 +2586,13 @@ function openReceiptModal(payId, text, data) {
     currentReceiptData = data || null;
     document.getElementById("receiptPreviewBody").innerText = currentReceiptText;
     document.getElementById("receiptModalOverlay").classList.remove("hidden");
+    const shareBtn = document.getElementById("btnShareReceiptPdf");
+    if (shareBtn) shareBtn.classList.toggle("hidden", !canSharePdfFiles());
+    const hint = document.getElementById("receiptWhatsAppHint");
+    const phone = whatsAppPhone(currentReceiptData && currentReceiptData.contact);
+    if (hint) hint.innerText = phone
+        ? `WhatsApp opens the chat with +${phone.slice(0, 2)} ${phone.slice(2)}`
+        : "No 10-digit mobile saved — WhatsApp will ask you to pick the contact.";
     ensureLmLogoDataUrl();
     ensureLmStampDataUrl();
 }
@@ -2505,20 +2601,85 @@ function closeReceiptModal() {
     document.getElementById("receiptModalOverlay").classList.add("hidden");
 }
 
+function getCurrentReceiptData() {
+    const store = getReceiptStore()[currentReceiptPayId] || {};
+    let data = currentReceiptData || withReceiptStudentInfo(store.data, store.sid);
+    if (!data && currentReceiptPayId) {
+        data = buildReceiptForPayment(currentReceiptPayId).data;
+    }
+    if (data) currentReceiptData = data;
+    return data;
+}
+
 async function downloadCurrentReceipt() {
     return withBusy("btnDownloadReceipt", async () => {
-        const store = getReceiptStore()[currentReceiptPayId] || {};
-        let data = currentReceiptData || withReceiptStudentInfo(store.data, store.sid);
-        if (!data && currentReceiptPayId) {
-            const built = buildReceiptForPayment(currentReceiptPayId);
-            data = built.data;
-            currentReceiptData = data;
-        }
+        const data = getCurrentReceiptData();
         if (!data) {
             alert("Unable to build PDF receipt for this payment.");
             return;
         }
-        await downloadReceiptPdf({ data }, currentReceiptPayId, store.studentName || data.studentName || "");
+        await downloadReceiptPdf({ data }, currentReceiptPayId, data.studentName || "");
+    }, "Preparing…");
+}
+
+/** India numbers: 10 saved digits → 91XXXXXXXXXX for wa.me links. */
+function whatsAppPhone(contact) {
+    const d = toTenDigitPhone(contact);
+    return d.length === 10 ? "91" + d : "";
+}
+
+function openWhatsApp(phone, text) {
+    const url = `https://wa.me/${phone || ""}?text=${encodeURIComponent(text)}`;
+    const win = window.open(url, "_blank");
+    if (!win) location.href = url;
+}
+
+function canSharePdfFiles() {
+    try {
+        if (!navigator.canShare || !window.File) return false;
+        return navigator.canShare({ files: [new File([""], "test.pdf", { type: "application/pdf" })] });
+    } catch (e) {
+        return false;
+    }
+}
+
+function buildReceiptWhatsAppText(data) {
+    const school = CAMPUS.receiptHeader || CAMPUS.brandName || "School";
+    const lines = [`*${school}*`, "Fee Receipt", ""];
+    lines.push(`Student: ${data.studentName || ""}${data.className ? " (" + data.className + ")" : ""}`);
+    lines.push(`Date: ${formatReceiptDate(data.date)}`);
+    (data.items || []).forEach(it => lines.push(`${it.label}: ${formatReceiptMoney(it.amount)}`));
+    if ((data.items || []).length > 1) {
+        lines.push(`Total: ${formatReceiptMoney((data.items || []).reduce((a, it) => a + (Number(it.amount) || 0), 0))}`);
+    }
+    if (data.mode) lines.push(`Mode: ${data.mode}`);
+    if (data.note) lines.push(`Note: ${data.note}`);
+    if (data.balanceLabel != null) lines.push(`${data.balanceLabel}: ${formatReceiptMoney(data.balanceAmount)}`);
+    lines.push("", "Thank you!");
+    return lines.join("\n");
+}
+
+function whatsAppCurrentReceipt() {
+    const data = getCurrentReceiptData();
+    if (!data) { alert("Unable to build this receipt."); return; }
+    openWhatsApp(whatsAppPhone(data.contact), buildReceiptWhatsAppText(data));
+}
+
+/** Phone share sheet with the PDF attached; parent's chat is chosen inside WhatsApp. */
+async function shareCurrentReceiptPdf() {
+    const data = getCurrentReceiptData();
+    if (!data) { alert("Unable to build this receipt."); return; }
+    return withBusy("btnShareReceiptPdf", async () => {
+        const built = await buildReceiptPdfDoc({ data }, currentReceiptPayId, data.studentName || "");
+        if (!built) return;
+        const file = new File([built.doc.output("blob")], built.filename, { type: "application/pdf" });
+        try {
+            await navigator.share({ files: [file], title: "Fee Receipt", text: `Fee receipt — ${data.studentName || ""}` });
+        } catch (e) {
+            if (e && e.name === "AbortError") return;
+            built.doc.save(built.filename);
+            alert("Sharing isn't available here, so the PDF was downloaded. Attach it in WhatsApp.");
+        }
     }, "Preparing…");
 }
 
@@ -2577,7 +2738,6 @@ function issueFeeReceipt(payId, extras) {
     const built = buildReceiptForPayment(payId, extras || {});
     saveReceiptRecord(payId, { text: built.text, data: built.data, ...built.meta, savedAt: Date.now() });
     openReceiptModal(payId, built.text, built.data);
-    downloadReceiptPdf(built, payId, built.meta.studentName);
     return built;
 }
 
@@ -2649,7 +2809,7 @@ function buildReceiptForPayment(payId, extras = {}) {
         items.push({ label: "Fee Collected", amount });
     }
 
-    const serial = Math.max(1, getStudentPayments(sid).filter(x => isMeaningfulPayment(x) && isTermPayment(x.Remarks || x.remarks)).length);
+    const serial = Math.max(1, getStudentPayments(sid).filter(x => isMeaningfulPayment(x) && !isAdjustmentPayment(x) && isTermPayment(x.Remarks || x.remarks)).length);
 
     const data = {
         serial: extras.serial || serial,
@@ -2684,6 +2844,25 @@ function renderStudentCards() {
     }
     const search = (document.getElementById("rosterSearch")?.value || "").toLowerCase();
     if (search) list = list.filter(s => (s.StudentName || "").toLowerCase().includes(search));
+    if (currentPackageFilter === "SETTLED") {
+        list = list.filter(s => { const b = getPackageBalance(s); return b.total > 0 && b.balance <= 0; });
+    } else if (currentPackageFilter === "BALANCE") {
+        list = list.map(s => ({ s, bal: getPackageBalance(s).balance }))
+            .filter(x => x.bal > 0)
+            .sort((a, b) => b.bal - a.bal)
+            .map(x => x.s);
+    }
+    const summary = document.getElementById("pkgFilterSummary");
+    if (summary) {
+        if (currentPackageFilter === "ALL") summary.classList.add("hidden");
+        else {
+            const totalBal = currentPackageFilter === "BALANCE" ? list.reduce((a, s) => a + getPackageBalance(s).balance, 0) : 0;
+            summary.innerText = currentPackageFilter === "BALANCE"
+                ? `${list.length} student(s) with balance · ₹${totalBal.toLocaleString("en-IN")} pending (highest first)`
+                : `${list.length} student(s) with package settled`;
+            summary.classList.remove("hidden");
+        }
+    }
     if (!list.length) { grid.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">No students found.</p>'; return; }
 
     list.forEach((s, index) => {
@@ -3202,7 +3381,7 @@ function buildCustomReceiptActionHtml() {
             <span class="text-[11px] font-bold text-emerald-800">Receipt total</span>
             <span class="text-sm font-black text-emerald-900" id="actRcptTotal">₹0</span>
         </div>
-        <button type="button" onclick="commitCustomReceipt()" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl">Save &amp; download receipt</button>`;
+        <button type="button" onclick="commitCustomReceipt()" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl">Save receipt</button>`;
 }
 
 function updateCustomReceiptTotal() {
@@ -3274,10 +3453,8 @@ async function commitCustomReceipt() {
             balanceAmount: pkgBal
         };
         saveReceiptRecord(batchId, { text: buildFeeReceiptText(data), data, sid, amount: total, studentName: data.studentName, savedAt: Date.now() });
-        openReceiptModal(batchId, buildFeeReceiptText(data), data);
-        await downloadReceiptPdf({ data }, batchId, data.studentName);
-        alert("Receipt saved. Total ₹" + total.toLocaleString("en-IN"));
         showActionPanel("receipt");
+        openReceiptModal(batchId, buildFeeReceiptText(data), data);
     });
 }
 
@@ -3320,6 +3497,21 @@ async function reactivateStudent(sid) {
     });
 }
 
+let currentPackageFilter = "ALL";
+
+/** Tapping the active Settled/Balance button again clears it. */
+function setPackageFilter(kind) {
+    currentPackageFilter = currentPackageFilter === kind ? "ALL" : kind;
+    const style = (id, on, onCls, offCls) => {
+        const b = document.getElementById(id);
+        if (!b) return;
+        b.className = `pkg-filter-btn px-2.5 py-1.5 rounded-lg text-[11px] font-bold border ${on ? onCls : offCls}`;
+    };
+    style("btnPkgFilterSettled", currentPackageFilter === "SETTLED", "bg-emerald-600 text-white border-emerald-600", "bg-emerald-50 text-emerald-700 border-emerald-200");
+    style("btnPkgFilterBalance", currentPackageFilter === "BALANCE", "bg-rose-600 text-white border-rose-600", "bg-rose-50 text-rose-700 border-rose-200");
+    renderStudentCards();
+}
+
 function filterCohort(type, btn) {
     currentActiveCohortFilter = type;
     document.querySelectorAll(".cohort-filter-btn").forEach(b => {
@@ -3344,6 +3536,7 @@ function renderFrontPageReminders() {
     if (badge) badge.innerText = period;
 
     const emptyMsg = '<p class="text-slate-400 text-[11px]">No outstanding dues.</p>';
+    currentMonthDues = [];
 
     globalAppState.students.filter(isActiveStudent).forEach(s => {
         const sid = s.StudentID || s.studentid;
@@ -3356,19 +3549,31 @@ function renderFrontPageReminders() {
         const renderDueCard = (box, serviceKey, due, modeIdPrefix) => {
             if (due <= 0 || !box) return false;
             const frozen = flags.includes(serviceKey);
+            currentMonthDues.push({ sid, serviceKey, due });
+            const hasPhone = !!whatsAppPhone(s.Contact || s.contact);
             box.insertAdjacentHTML("beforeend", `
                 <div class="bg-slate-50 p-3 rounded-xl border mb-2 space-y-2">
-                    <div class="flex justify-between"><span class="font-bold text-slate-800">${name}</span><span class="text-rose-600 font-black">₹${due}</span></div>
+                    <div class="flex justify-between items-center gap-2"><span class="font-bold text-slate-800 flex-1">${name}</span>
+                        ${hasPhone ? `<button type="button" onclick="sendSingleReminder('${sid}')" title="WhatsApp reminder" class="bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold px-1.5 py-0.5 rounded text-[10px]">WhatsApp</button>` : ""}
+                        <span class="text-rose-600 font-black">₹${due}</span></div>
                     <div class="flex items-center justify-between gap-1 pt-1 border-t">
                         <label class="flex items-center gap-1 text-[10px] text-rose-500">
                             <input type="checkbox" onchange="toggleReminderNullify('${sid}','${serviceKey}',this.checked)" ${frozen ? "checked" : ""}>
                             <span>Freeze</span>
                         </label>
                         <div class="flex items-center gap-1">
+                            <span class="text-[10px] text-slate-500 font-bold">₹</span>
+                            <input type="number" id="${modeIdPrefix}-amt-${sid}" value="${due}" min="1" max="${due}" inputmode="numeric"
+                                oninput="onSettleAmountInput('${modeIdPrefix}','${sid}',${due})"
+                                class="w-16 text-[10px] bg-white border rounded p-0.5 font-bold text-right">
                             <select id="${modeIdPrefix}-${sid}" class="text-[10px] bg-white border rounded p-0.5"><option value="Cash">Cash</option><option value="UPI">UPI</option></select>
                             <button type="button" onclick="commitReminderSettlement('${sid}','${serviceKey}',${due})" class="bg-emerald-500 text-white font-bold px-2 py-0.5 rounded text-[10px]">Settle</button>
                         </div>
                     </div>
+                    <label id="${modeIdPrefix}-closewrap-${sid}" class="hidden flex items-center justify-end gap-1 text-[10px] text-amber-700 font-bold">
+                        <input type="checkbox" id="${modeIdPrefix}-close-${sid}">
+                        <span id="${modeIdPrefix}-closelbl-${sid}">Close this month (waive rest)</span>
+                    </label>
                 </div>`);
             return true;
         };
@@ -3408,6 +3613,168 @@ function renderFrontPageReminders() {
     setT("sumVanPending", `₹${vTotal}`); setT("sumDayCarePending", `₹${dTotal}`); setT("sumOptPending", `₹${oTotal}`);
     setT("hdrVanPending", `₹${vTotal}`); setT("hdrDayCarePending", `₹${dTotal}`); setT("hdrOptPending", `₹${oTotal}`);
     updateTileBadge("tileBadgeFees", vCount + dCount + oCount);
+    const remModal = document.getElementById("reminderModalOverlay");
+    if (remModal && !remModal.classList.contains("hidden")) renderReminderList();
+}
+
+let currentMonthDues = [];
+const DEFAULT_REMINDER_TEMPLATE = "Dear {parent}, this is a gentle reminder that the {services} fee for {student} for {month} is pending (total ₹{amount}). Kindly pay at the earliest. Please ignore if already paid.\n– {school}";
+const REMINDER_SERVICE_LABELS = { Van: "Van", DayCare: "Day Care", OptMonthly: "Monthly" };
+
+function getReminderTemplate() {
+    return localStorage.getItem(storageKey("REMINDER_TEMPLATE")) || DEFAULT_REMINDER_TEMPLATE;
+}
+
+function remindersSentKey() {
+    return storageKey("REMINDERS_SENT_" + activeSystemMonthContext);
+}
+
+function getRemindersSent() {
+    try { return JSON.parse(localStorage.getItem(remindersSentKey()) || "[]"); }
+    catch (e) { return []; }
+}
+
+function markReminderSent(sid) {
+    const sent = getRemindersSent();
+    if (!sent.includes(sid)) sent.push(sid);
+    localStorage.setItem(remindersSentKey(), JSON.stringify(sent));
+}
+
+/** One message per student, combining all of that student's monthly dues. */
+function buildReminderRecipients() {
+    const bySid = {};
+    currentMonthDues.forEach(d => {
+        if (!bySid[d.sid]) {
+            const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === d.sid) || {};
+            bySid[d.sid] = {
+                sid: d.sid,
+                student: s.StudentName || s.studentname || "",
+                parent: s.GuardianName || s.guardianname || "Parent",
+                phone: whatsAppPhone(s.Contact || s.contact),
+                items: [],
+                amount: 0
+            };
+        }
+        bySid[d.sid].items.push(`${REMINDER_SERVICE_LABELS[d.serviceKey] || d.serviceKey} ₹${d.due}`);
+        bySid[d.sid].amount += d.due;
+    });
+    return Object.values(bySid).sort((a, b) => a.student.localeCompare(b.student));
+}
+
+function fillReminderMessage(template, r) {
+    const month = String(activeSystemMonthContext || "").replace("-", " ");
+    const values = {
+        parent: r.parent,
+        student: r.student,
+        services: r.items.join(", "),
+        service: r.items.join(", "),
+        amount: r.amount.toLocaleString("en-IN"),
+        month,
+        school: CAMPUS.receiptHeader || CAMPUS.brandName || ""
+    };
+    return template.replace(/\{(\w+)\}/g, (m, k) => (values[k] != null ? values[k] : m));
+}
+
+function openReminderModal() {
+    renderFrontPageReminders();
+    document.getElementById("reminderTemplate").value = getReminderTemplate();
+    document.getElementById("reminderPeriodLabel").innerText = activeSystemMonthContext;
+    renderReminderList(true);
+    document.getElementById("reminderModalOverlay").classList.remove("hidden");
+}
+
+function closeReminderModal() {
+    document.getElementById("reminderModalOverlay").classList.add("hidden");
+}
+
+function onReminderTemplateInput() {
+    const tpl = document.getElementById("reminderTemplate").value;
+    if (tpl.trim()) localStorage.setItem(storageKey("REMINDER_TEMPLATE"), tpl);
+    updateReminderPreview();
+}
+
+function resetReminderTemplate() {
+    localStorage.removeItem(storageKey("REMINDER_TEMPLATE"));
+    document.getElementById("reminderTemplate").value = DEFAULT_REMINDER_TEMPLATE;
+    updateReminderPreview();
+}
+
+function updateReminderPreview() {
+    const first = buildReminderRecipients()[0];
+    const el = document.getElementById("reminderPreview");
+    if (!el) return;
+    el.innerText = first
+        ? fillReminderMessage(document.getElementById("reminderTemplate").value || DEFAULT_REMINDER_TEMPLATE, first)
+        : "No monthly dues for this month.";
+}
+
+function renderReminderList(resetChecks) {
+    const box = document.getElementById("reminderList");
+    if (!box) return;
+    const prevChecked = resetChecks ? null : new Set([...box.querySelectorAll(".reminder-check:checked")].map(c => c.value));
+    const sent = getRemindersSent();
+    const list = buildReminderRecipients();
+    box.innerHTML = list.length ? list.map(r => {
+        const isSent = sent.includes(r.sid);
+        const checked = r.phone && (prevChecked ? prevChecked.has(r.sid) : !isSent);
+        return `<label class="flex items-center gap-2 bg-white border rounded-lg px-2 py-1.5 ${r.phone ? "" : "opacity-60"}">
+            <input type="checkbox" class="reminder-check" value="${r.sid}" ${checked ? "checked" : ""} ${r.phone ? "" : "disabled"} onchange="updateReminderCount()">
+            <div class="min-w-0 flex-1">
+                <p class="font-bold text-slate-800 truncate">${r.student} <span class="text-slate-400 font-semibold">· ${r.parent}</span></p>
+                <p class="text-[10px] text-slate-500 truncate">${r.items.join(", ")}${r.phone ? "" : " · no 10-digit mobile"}</p>
+            </div>
+            ${isSent ? '<span class="text-[9px] font-black text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded uppercase">Sent</span>' : ""}
+            ${r.phone ? `<button type="button" onclick="event.preventDefault(); sendReminderTo('${r.sid}')" class="bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold px-2 py-0.5 rounded text-[10px]">Send</button>` : ""}
+        </label>`;
+    }).join("") : '<p class="text-[11px] text-slate-400 text-center py-4">No monthly dues for this month.</p>';
+    updateReminderPreview();
+    updateReminderCount();
+}
+
+function updateReminderCount() {
+    const pending = [...document.querySelectorAll(".reminder-check:checked")].length;
+    const total = buildReminderRecipients().length;
+    const lbl = document.getElementById("reminderCountLabel");
+    if (lbl) lbl.innerText = `${total} parent(s) with dues · ${pending} selected`;
+    const btn = document.getElementById("btnReminderSendNext");
+    if (btn) {
+        btn.disabled = pending === 0;
+        btn.innerText = pending ? `Send next (${pending} left)` : "All selected reminders sent";
+    }
+}
+
+function setAllReminderChecks(on) {
+    document.querySelectorAll(".reminder-check:not(:disabled)").forEach(c => { c.checked = !!on; });
+    updateReminderCount();
+}
+
+function clearRemindersSent() {
+    localStorage.removeItem(remindersSentKey());
+    renderReminderList(true);
+}
+
+function sendReminderTo(sid) {
+    const r = buildReminderRecipients().find(x => x.sid === sid);
+    if (!r || !r.phone) return;
+    const tpl = document.getElementById("reminderTemplate")?.value || getReminderTemplate();
+    openWhatsApp(r.phone, fillReminderMessage(tpl, r));
+    markReminderSent(sid);
+    const box = document.querySelector(`.reminder-check[value="${sid}"]`);
+    if (box) box.checked = false;
+    renderReminderList();
+}
+
+function sendNextReminder() {
+    const next = document.querySelector(".reminder-check:checked");
+    if (!next) return;
+    sendReminderTo(next.value);
+}
+
+function sendSingleReminder(sid) {
+    const r = buildReminderRecipients().find(x => x.sid === sid);
+    if (!r || !r.phone) { alert("No 10-digit mobile number saved for this student."); return; }
+    openWhatsApp(r.phone, fillReminderMessage(getReminderTemplate(), r));
+    markReminderSent(sid);
 }
 
 function openPaymentModal(sid) {
@@ -3536,12 +3903,17 @@ function openTermPaymentsModal(sid) {
         statusEl.innerText = "No package";
         statusEl.className = "text-slate-500";
     } else if (balance <= 0) {
-        statusEl.innerText = "Settled";
+        statusEl.innerText = isShortClosed(sid) ? "Settled (short-closed)" : "Settled";
         statusEl.className = "text-emerald-700";
     } else {
         statusEl.innerText = `Pending ₹${balance}`;
         statusEl.className = "text-rose-600";
     }
+    const scWrap = document.getElementById("termPayShortCloseWrap");
+    if (scWrap) scWrap.classList.toggle("hidden", !(total > 0 && balance > 0));
+    toggleShortCloseForm(false);
+    const scBtn = document.getElementById("btnShortCloseConfirm");
+    if (scBtn) scBtn.innerText = `Write off ₹${balance.toLocaleString("en-IN")}`;
 
     const packagePays = logs.filter(p => isTermPayment(p.Remarks || p.remarks))
         .sort((a, b) => {
@@ -3591,6 +3963,38 @@ function openTermPaymentsModal(sid) {
     document.getElementById("termPaymentsModalOverlay").classList.remove("hidden");
 }
 function closeTermPaymentsModal() { document.getElementById("termPaymentsModalOverlay").classList.add("hidden"); }
+
+function isShortClosed(sid) {
+    return getStudentPayments(sid).some(p => isAdjustmentPayment(p) && isShortCloseRemark(p.Remarks || p.remarks));
+}
+
+function toggleShortCloseForm(show) {
+    const form = document.getElementById("termPayShortCloseForm");
+    const btn = document.getElementById("btnShortCloseToggle");
+    if (form) form.classList.toggle("hidden", !show);
+    if (btn) btn.classList.toggle("hidden", !!show);
+    const reason = document.getElementById("shortCloseReason");
+    if (reason && !show) reason.value = "";
+    if (reason && show) reason.focus();
+}
+
+async function commitShortClose() {
+    if (isLmBusy) return;
+    const sid = currentPaymentsModalSid;
+    const s = globalAppState.students.find(x => (x.StudentID || x.studentid) === sid);
+    if (!s) return;
+    const { balance } = getPackageBalance(s);
+    if (balance <= 0) { alert("Package is already settled."); return; }
+    const reason = (document.getElementById("shortCloseReason")?.value || "").replace(/—/g, "-").trim();
+    if (!confirm(`Write off ₹${balance.toLocaleString("en-IN")} for ${s.StudentName || "this student"} and mark the package settled?\n\nThis is not counted as money collected.`)) return;
+    return withBusy("btnShortCloseConfirm", async () => {
+        recordFeePayment(sid, activeSystemMonthContext, balance, todayIsoLocal(), ADJUSTMENT_MODE, SHORT_CLOSE_PREFIX + (reason ? " — " + reason : ""));
+        saveLocalCache();
+        applyAppStateToViews();
+        queueBackgroundSync();
+        openTermPaymentsModal(sid);
+    }, "Saving…");
+}
 
 function buildStudentMonthlyStatusHtml(s) {
     const sid = s.StudentID || s.studentid;
@@ -3711,37 +4115,61 @@ async function toggleReminderNullify(sid, serviceKey, isChecked) {
     });
 }
 
+function onSettleAmountInput(prefix, sid, due) {
+    const amt = Number(document.getElementById(`${prefix}-amt-${sid}`)?.value) || 0;
+    const wrap = document.getElementById(`${prefix}-closewrap-${sid}`);
+    const partial = amt > 0 && amt < Number(due);
+    if (wrap) wrap.classList.toggle("hidden", !partial);
+    const lbl = document.getElementById(`${prefix}-closelbl-${sid}`);
+    if (lbl && partial) lbl.innerText = `Close this month (waive ₹${Number(due) - amt})`;
+    if (!partial) { const c = document.getElementById(`${prefix}-close-${sid}`); if (c) c.checked = false; }
+}
+
+function todayIsoLocal() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function recordFeePayment(sid, monthYear, amount, payDate, mode, remark) {
+    const payId = "PAY-" + sid + "-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
+    const row = [payId, sid, monthYear, amount, payDate, mode, remark, "Active", ""];
+    globalAppState.payments.push({
+        PaymentID: payId, StudentID: sid, MonthYear: monthYear,
+        AmountPaid: amount, PaymentDate: payDate, PaymentMode: mode,
+        Remarks: remark, Status: "Active", NullifiedServices: ""
+    });
+    postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row });
+    return payId;
+}
+
 async function commitReminderSettlement(sid, serviceKey, dueAmount) {
     if (isLmBusy) return;
-    const amount = Number(dueAmount) || 0;
-    if (amount <= 0) { alert("Nothing to settle."); return; }
+    const due = Number(dueAmount) || 0;
+    if (due <= 0) { alert("Nothing to settle."); return; }
+    const prefix = serviceKey === "DayCare" ? "mode-dc" : (serviceKey === "OptMonthly" ? "mode-opt" : "mode-van");
+    const amount = Math.round(Number(document.getElementById(`${prefix}-amt-${sid}`)?.value) || 0);
+    if (amount <= 0) { alert("Enter the amount received."); return; }
+    if (amount > due) { alert(`Amount cannot be more than the due (₹${due}).`); return; }
+    const closeMonth = amount < due && !!document.getElementById(`${prefix}-close-${sid}`)?.checked;
+    const waive = closeMonth ? due - amount : 0;
+    if (waive > 0 && !confirm(`Collect ₹${amount} and waive the remaining ₹${waive} for ${activeSystemMonthContext}?`)) return;
     return withBusy(null, async () => {
-        let modeElId = "mode-van-" + sid;
-        if (serviceKey === "DayCare") modeElId = "mode-dc-" + sid;
-        if (serviceKey === "OptMonthly") modeElId = "mode-opt-" + sid;
-        const mode = document.getElementById(modeElId)?.value || "Cash";
-        const payId = "PAY-" + sid + "-" + serviceKey + "-" + Date.now();
-        const payDate = new Date().toISOString().substring(0, 10);
-        const remark = serviceKey === "DayCare"
-            ? ("DayCare — " + activeSystemMonthContext)
-            : (serviceKey === "OptMonthly"
-                ? ("OptMonthly — " + activeSystemMonthContext)
-                : ("Van — " + activeSystemMonthContext));
-        const row = [payId, sid, activeSystemMonthContext, amount, payDate, mode, remark, "Active", ""];
-        globalAppState.payments.push({
-            PaymentID: payId, StudentID: sid, MonthYear: activeSystemMonthContext,
-            AmountPaid: amount, PaymentDate: payDate, PaymentMode: mode,
-            Remarks: remark, Status: "Active", NullifiedServices: ""
-        });
+        const mode = document.getElementById(prefix + "-" + sid)?.value || "Cash";
+        const payDate = todayIsoLocal();
+        const period = activeSystemMonthContext;
+        const base = serviceKey === "DayCare" ? "DayCare" : (serviceKey === "OptMonthly" ? "OptMonthly" : "Van");
+        const remark = base + " — " + period;
+        const payId = recordFeePayment(sid, period, amount, payDate, mode, remark);
+        if (waive > 0) recordFeePayment(sid, period, waive, payDate, ADJUSTMENT_MODE, remark + " — Waived");
         saveLocalCache();
-        postSheetRow({ password: CURRENT_GATE_PASSPHRASE, action: "addRow", targetSheet: "Fee_Payments", rowData: row });
         issueFeeReceipt(payId, {
             sid,
             amount,
             date: payDate,
             mode,
             remarks: remark,
-            monthYear: activeSystemMonthContext
+            note: waive > 0 ? `Partial payment · balance ₹${waive} waived for ${monthYearShortLabel(period)}` : "",
+            monthYear: period
         });
         applyAppStateToViews();
         queueBackgroundSync();
@@ -3770,8 +4198,8 @@ function populateStudentDetailForm(s) {
         editGender: s.Gender || s.gender || "Boy",
         editClass: studentClassCode(s) || firstClassCode(),
         editGuardianName: s.GuardianName || s.guardianname || "",
-        editContact: s.Contact || s.contact || "",
-        editAltContact: s.AltContact || s.altcontact || "N/A",
+        editContact: toTenDigitPhone(s.Contact || s.contact),
+        editAltContact: toTenDigitPhone(s.AltContact || s.altcontact),
         editAddress: s.Address || s.address || "N/A",
         editBloodGroup: s.BloodGroup || s.bloodgroup || ""
     };
@@ -3792,6 +4220,7 @@ function populateStudentDetailForm(s) {
         editOptMonthlyFee: s.OptMonthlyFee || s.optmonthlyfee || 0
     };
     Object.keys(fees).forEach(id => { const el = document.getElementById(id); if (el) el.value = fees[id]; });
+    resetEditAddLater();
     if ((s.Class || s.class) === "DayCare") updateEditClassFeeDefault();
     const photoSlot = document.getElementById("detailProfilePhotoSlot");
     if (photoSlot) photoSlot.innerHTML = (s.StudentName || "LM").charAt(0);
@@ -3866,6 +4295,25 @@ function closeStudentDetailModal() {
     document.getElementById("studentDetailModalOverlay").classList.add("hidden");
 }
 
+function getEditAddLaterAmounts() {
+    const v = (id) => Math.max(0, Number(document.getElementById(id)?.value) || 0);
+    return { kit: v("editAddEduKit") + v("editAddSteamKit"), uniform: v("editAddUniform") };
+}
+
+function resetEditAddLater() {
+    ["editAddEduKit", "editAddSteamKit", "editAddUniform"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+    updateEditAddLaterHint();
+}
+
+function updateEditAddLaterHint() {
+    const { kit, uniform } = getEditAddLaterAmounts();
+    const hint = document.getElementById("editAddLaterHint");
+    if (!hint) return;
+    const total = kit + uniform;
+    hint.classList.toggle("hidden", total <= 0);
+    if (total > 0) hint.innerText = `+₹${total.toLocaleString("en-IN")} will be added to the package balance on save.`;
+}
+
 async function handleStudentDetailUpdate(e) {
     e.preventDefault();
     if (!studentDetailEditMode) return;
@@ -3881,14 +4329,15 @@ async function handleStudentDetailUpdate(e) {
         s.Class = document.getElementById("editClass").value;
         s.GuardianName = document.getElementById("editGuardianName").value;
         s.Contact = document.getElementById("editContact").value;
-        s.AltContact = document.getElementById("editAltContact").value;
+        s.AltContact = document.getElementById("editAltContact").value.trim() || "N/A";
         s.Address = document.getElementById("editAddress").value;
         s.PhotoBase64 = "N/A";
         s.BillingModel = model;
         s.CustomFee = Number(document.getElementById("editCustomFee").value) || 0;
         s.AdmissionFee = Number(document.getElementById("editAdmissionFee").value) || 0;
-        s.StudentKitFee = Number(document.getElementById("editStudentKitFee").value) || 0;
-        s.SpareUniformFee = Number(document.getElementById("editSpareUniformFee").value) || 0;
+        const addLater = getEditAddLaterAmounts();
+        s.StudentKitFee = (Number(document.getElementById("editStudentKitFee").value) || 0) + addLater.kit;
+        s.SpareUniformFee = (Number(document.getElementById("editSpareUniformFee").value) || 0) + addLater.uniform;
         s.VanFee = Number(document.getElementById("editVanFee").value) || 0;
         s.DayCareFee = Number(document.getElementById("editDayCareFee").value) || 0;
         s.OptMonthlyFee = Number(document.getElementById("editOptMonthlyFee").value) || 0;
@@ -4060,18 +4509,19 @@ function renderFinanceLedger() {
     });
 
     const sumPaymentsForAy = (ay) => {
-        let collected = 0, van = 0, dc = 0, other = 0;
+        let collected = 0, van = 0, dc = 0, other = 0, waived = 0;
         globalAppState.payments.forEach(p => {
             const amt = Number(p.AmountPaid || p.amountpaid) || 0;
             if (!amt) return;
             if (!paymentInAcademicYear(p, ay)) return;
+            if (isAdjustmentPayment(p)) { waived += amt; return; }
             const rem = (p.Remarks || p.remarks || "").toString();
             collected += amt;
             if (isServicePayment(rem, "Van")) van += amt;
             else if (isServicePayment(rem, "DayCare")) dc += amt;
             else if (isMeaningfulPayment(p)) other += amt;
         });
-        return { collected, van, dc, other };
+        return { collected, van, dc, other, waived };
     };
 
     const sumExpensesForAy = (ay) => {
@@ -4088,7 +4538,7 @@ function renderFinanceLedger() {
     const ayExpenses = sumExpensesForAy(ayCurrent);
     setK("kpiGrossRevenue", fmt(billed));
     setK("kpiCollectedRevenue", fmt(curPay.collected));
-    setK("kpiDuesPending", fmt(Math.max(0, billed - curPay.collected)));
+    setK("kpiDuesPending", fmt(Math.max(0, billed - curPay.collected - curPay.waived)));
     setK("kpiAyTotalExpenses", fmt(ayExpenses));
     setK("kpiAvgRegularFee", fmt(avgRegular));
     setK("kpiVanMonthly", fmt(vanExpected));
@@ -4215,6 +4665,7 @@ function loadExpenseToEditForm(expId) {
 function resetExpenseForm() {
     document.getElementById("expenseForm").reset();
     document.getElementById("expenseFormID").value = "";
+    document.getElementById("expenseInputDate").value = todayIsoLocal();
     document.getElementById("expenseFormHeader").innerText = "Add Expense";
     document.getElementById("expenseFormActions").innerHTML = `<button type="submit" id="btnSaveExpense" class="w-full bg-rose-600 text-white font-bold py-3 rounded-xl disabled:opacity-60">Save Expense</button>`;
 }
