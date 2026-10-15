@@ -1,0 +1,18 @@
+{
+  "id": "./?campus=tadepalligudam",
+  "name": "Little Millennium Tadepalligudam",
+  "short_name": "LM TDG",
+  "description": "Campus management: students, fees, receipts and reminders.",
+  "start_url": "./?campus=tadepalligudam",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1e1b4b",
+  "theme_color": "#1e1b4b",
+  "icons": [
+    { "src": "icons/lm-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/lm-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/lm-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/lm-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

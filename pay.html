@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="robots" content="noindex">
+    <title>Pay school fees</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <script src="campuses.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 1rem;
+            font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; color: #1e1b4b;
+            background: linear-gradient(160deg, #1e1b4b 0%, #312e81 55%, #4338ca 100%);
+        }
+        .card { width: 100%; max-width: 23rem; background: #fff; border-radius: 1.5rem; padding: 1.5rem 1.4rem 1.3rem; box-shadow: 0 20px 50px rgb(0 0 0 / 0.35); text-align: center; }
+        .logo { width: 4.5rem; height: 4.5rem; border-radius: 1rem; object-fit: cover; border: 2px solid #fde68a; }
+        h1 { font-size: 1.05rem; font-weight: 900; margin: 0.6rem 0 0.1rem; }
+        .sub { font-size: 0.75rem; color: #64748b; font-weight: 600; }
+        .amount { font-size: 2.4rem; font-weight: 900; letter-spacing: -0.02em; margin: 0.9rem 0 0.1rem; }
+        .note { font-size: 0.8rem; color: #475569; font-weight: 600; }
+        .pay-btn {
+            display: block; margin: 1.1rem 0 0.6rem; padding: 0.95rem; border-radius: 0.9rem; text-decoration: none;
+            background: #059669; color: #fff; font-weight: 800; font-size: 1rem; box-shadow: 0 6px 16px rgb(5 150 105 / 0.35);
+        }
+        .apps { font-size: 0.68rem; color: #94a3b8; font-weight: 700; }
+        .qr { margin: 1rem auto 0.4rem; width: 11rem; height: 11rem; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 1rem; }
+        .qr svg, .qr img { width: 100%; height: 100%; display: block; }
+        .small { font-size: 0.7rem; color: #64748b; font-weight: 600; }
+        .upi-row { display: flex; align-items: center; justify-content: center; gap: 0.4rem; margin-top: 0.8rem; }
+        .upi-id { font-family: ui-monospace, Consolas, monospace; font-size: 0.8rem; background: #f1f5f9; padding: 0.35rem 0.6rem; border-radius: 0.5rem; }
+        .copy { border: 0; background: #e0e7ff; color: #3730a3; font-weight: 800; font-size: 0.72rem; padding: 0.4rem 0.7rem; border-radius: 0.5rem; cursor: pointer; }
+        .foot { margin-top: 1rem; font-size: 0.66rem; color: #94a3b8; line-height: 1.4; }
+        .err { color: #be123c; font-weight: 700; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="card" id="card"></div>
+<script>
+(function () {
+    const q = new URLSearchParams(location.search);
+    const campuses = window.LM_CAMPUSES || {};
+    const campus = campuses[q.get("c")] || campuses[window.LM_DEFAULT_CAMPUS] || {};
+    const card = document.getElementById("card");
+    const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    const upiId = (campus.upiId || "").trim();
+    const payee = (campus.upiName || campus.receiptHeader || campus.brandName || "School").trim();
+    const amount = Math.max(0, Math.round(Number(q.get("am")) || 0));
+    const student = (q.get("s") || "").slice(0, 60);
+    const note = (q.get("tn") || "School fees").slice(0, 60);
+
+    if (!upiId) {
+        card.innerHTML = `<p class="err">Online payment is not set up for this school yet.</p><p class="small">Please pay at the school office.</p>`;
+        return;
+    }
+
+    const upiParams = new URLSearchParams({ pa: upiId, pn: payee, cu: "INR", tn: note });
+    if (amount > 0) upiParams.set("am", amount.toFixed(2));
+    const upiLink = "upi://pay?" + upiParams.toString().replace(/\+/g, "%20");
+    const logo = campus.logoFile ? `${campus.logoFile}?v=${campus.logoVersion || "1"}` : "";
+    document.title = "Pay fees · " + (campus.brandName || payee);
+
+    card.innerHTML = `
+        ${logo ? `<img class="logo" src="${esc(logo)}" alt="" onerror="this.remove()">` : ""}
+        <h1>${esc(campus.receiptHeader || campus.brandName || payee)}</h1>
+        <div class="sub">Fee payment</div>
+        <div class="amount">${amount > 0 ? "₹" + amount.toLocaleString("en-IN") : "Any amount"}</div>
+        <div class="note">${esc(student && !note.includes(student) ? student + " · " : "")}${esc(note)}</div>
+        <a class="pay-btn" href="${esc(upiLink)}">Pay ${amount > 0 ? "₹" + amount.toLocaleString("en-IN") + " " : ""}with UPI app</a>
+        <div class="apps">Google Pay · PhonePe · Paytm · BHIM · any UPI app</div>
+        <div class="qr" id="qr"></div>
+        <div class="small">Or scan this QR from another phone</div>
+        <div class="upi-row"><span class="upi-id">${esc(upiId)}</span><button class="copy" id="copyBtn" type="button">Copy</button></div>
+        <div class="foot">After paying, please share the payment screenshot with the school on WhatsApp so it can be recorded.</div>`;
+
+    try {
+        const qr = qrcode(0, "M");
+        qr.addData(upiLink);
+        qr.make();
+        document.getElementById("qr").innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+    } catch (e) {
+        document.getElementById("qr").style.display = "none";
+    }
+
+    document.getElementById("copyBtn").addEventListener("click", async (e) => {
+        try { await navigator.clipboard.writeText(upiId); e.target.textContent = "Copied"; }
+        catch (err) { e.target.textContent = "Copy failed"; }
+        setTimeout(() => { e.target.textContent = "Copy"; }, 1800);
+    });
+})();
+</script>
+</body>
+</html>

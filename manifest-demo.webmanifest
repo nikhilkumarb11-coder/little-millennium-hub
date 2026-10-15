@@ -1,0 +1,18 @@
+{
+  "id": "./?campus=demo",
+  "name": "School ERP — Demo",
+  "short_name": "School ERP",
+  "description": "Campus management: students, fees, receipts and reminders.",
+  "start_url": "./?campus=demo",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1e1b4b",
+  "theme_color": "#1e1b4b",
+  "icons": [
+    { "src": "icons/dummy-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/dummy-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/dummy-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/dummy-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
