@@ -230,9 +230,10 @@
         .seg > button.bg-white { color: var(--ink); font-weight: 600; box-shadow: 0 1px 2px rgb(15 23 42 / 0.08); }
 
         .dot { width: 0.5rem; height: 0.5rem; border-radius: 999px; flex-shrink: 0; display: inline-block; }
-        .mini-stat { padding: 0.8rem 0.9rem; min-width: 0; }
+        .mini-stat { padding: 0.8rem 0.9rem; min-width: 0; container-type: inline-size; }
+        @media (max-width: 480px) { .mini-stat { padding: 0.7rem 0.6rem; } }
         .mini-stat .l { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; font-weight: 500; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .mini-stat .v { font-size: 1.15rem; font-weight: 700; color: var(--ink); margin-top: 0.25rem; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mini-stat .v { font-size: clamp(0.8rem, 14cqi, 1.15rem); font-weight: 700; color: var(--ink); margin-top: 0.25rem; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
         .mini-stat .s { font-size: 0.72rem; color: var(--ink-3); margin-top: 0.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .sec-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; font-size: 0.9rem; font-weight: 650; color: var(--ink); padding: 0.1rem 0.15rem 0.5rem; }
